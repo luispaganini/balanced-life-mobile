@@ -3,5 +3,5 @@ import styled from "styled-components";
 
 export const SafeAreaViewComponent = styled(SafeAreaView)`
     flex: 1;
-    padding-top: ${ StatusBar.currentHeight };
+    padding-top: ${ StatusBar.currentHeight }px;
 `;

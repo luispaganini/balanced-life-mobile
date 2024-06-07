@@ -1,15 +1,18 @@
-import React, { useState } from 'react'
-import { ThemedView } from '@/components/ThemedView'
-import { ThemedText } from '@/components/ThemedText'
+import React from 'react'
 import { SafeAreaViewComponent } from '@/styles/pages'
-import { Button, Image, View } from 'react-native'
-import { ButtonComponent, ContainerPage, ImageContainer, TextComponent, Title } from './styles'
+import { Keyboard, View } from 'react-native'
+import { ButtonComponent, ContainerPage, ImageContainer, ImageItem, TextComponent, Title } from './styles'
 import { Controller, useForm } from 'react-hook-form'
 import InputFormComponent from '@/components/application/Forms/InputFormComponent'
 import CreateAccountInfoComponent from '@/components/application/Info/CreateAccountInfoComponent'
+import { useTranslation } from 'react-i18next'
 
 export default function LoginOne() {
-    const onSubmit = (data: any) => console.log(data)
+    const { t } = useTranslation();
+    const onSubmit = (data: {cpf: string}) => {
+        Keyboard.dismiss()
+    }
+
     const {
         control,
         handleSubmit,
@@ -21,18 +24,21 @@ export default function LoginOne() {
     })
     return (
         <SafeAreaViewComponent>
-            <ContainerPage style={{ flex: 1, justifyContent: 'space-between' }}>
+            <ContainerPage>
                 <ImageContainer>
-                    <Image source={require('@/assets/images/logo.png')} style={{ width: 200, height: 200 }} />
+                    <ImageItem source={require('@/assets/images/logo.png')} />
                 </ImageContainer>
 
-
                 <View>
-                    <Title type='title'>Login</Title>
                     <Controller
                         control={control}
                         rules={{
-                            required: true,
+                            required: t("CPF is required"),
+                            validate: {
+                                cpf: (value) => {
+                                    if (value.length < 14) 
+                                        return t("CPF is required")
+                            }},
                         }}
                         render={({ field: { onChange, onBlur, value } }) => (
                             <InputFormComponent
@@ -41,13 +47,17 @@ export default function LoginOne() {
                                 onChangeText={onChange}
                                 value={value}
                                 errors={errors.cpf}
+                                editable={true}
+                                keyboardType="numeric"
+                                mask={true}
+                                typeMask={"cpf"}
                             />
                         )}
                         name="cpf"
                     />
 
                     <ButtonComponent onPress={handleSubmit(onSubmit)}>
-                        <TextComponent>Entrar</TextComponent>
+                        <TextComponent>{t("Login")}</TextComponent>
                     </ButtonComponent>
                 </View>
                 <CreateAccountInfoComponent />
