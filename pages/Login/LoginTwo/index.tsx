@@ -1,17 +1,18 @@
 import React from 'react'
 import { SafeAreaViewComponent } from '@/styles/pages'
 import { Keyboard, View } from 'react-native'
-import { ButtonComponent, ContainerPage, ImageContainer, ImageItem, TextComponent, Title } from './styles'
+import { ButtonComponent, ContainerPage, ImageContainer, ImageItem, TextComponent } from './styles'
 import { Controller, useForm } from 'react-hook-form'
 import InputFormComponent from '@/components/application/Forms/InputFormComponent'
 import CreateAccountInfoComponent from '@/components/application/Info/CreateAccountInfoComponent'
 import { useTranslation } from 'react-i18next'
+import { router } from 'expo-router'
 
 export default function LoginTwo() {
     const { t } = useTranslation();
     const onSubmit = (data: { cpf: string, password: string }) => {
         Keyboard.dismiss()
-        console.log(data)
+        router.navigate("/")
     }
 
     const {

@@ -6,11 +6,13 @@ import { Controller, useForm } from 'react-hook-form'
 import InputFormComponent from '@/components/application/Forms/InputFormComponent'
 import CreateAccountInfoComponent from '@/components/application/Info/CreateAccountInfoComponent'
 import { useTranslation } from 'react-i18next'
+import { router } from 'expo-router'
 
 export default function LoginOne() {
     const { t } = useTranslation();
     const onSubmit = (data: {cpf: string}) => {
         Keyboard.dismiss()
+        router.navigate("login/login-two")
     }
 
     const {
