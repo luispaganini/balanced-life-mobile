@@ -14,15 +14,21 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
       }}>
+        {/* <Tabs.Screen
+          name="login/login-one"
+          options={{
+            href: null
+          }} />
+        <Tabs.Screen
+          name="login/login-two"
+          options={{
+            href: null
+          }} />
       <Tabs.Screen
-        name="login/login-one"
+        name="login/create/create-one"
         options={{
-          title: 'Login',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-          ),
-        }}
-      />
+          href: null
+        }} /> */}
       <Tabs.Screen
         name="index"
         options={{
@@ -30,6 +36,8 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
           ),
+          headerShown: true,
+          headerTitle: 'Home'
         }}
       />
     </Tabs>

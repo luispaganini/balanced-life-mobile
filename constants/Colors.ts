@@ -29,8 +29,12 @@ export const Colors = {
   color: {
     white: '#fff',
     black: '#11181C',
-    green: '#00B38C'
+    green: '#39BD6E',
+    cyan: '#00B38C',
+    red: '#FF0000',
+    blue: '#00A3FF',
+    purple: "#A077B9",
+    lightPurple: "#BFB5FD",
+    lightBlue: "#98D0F0"
   },
-
-
 };

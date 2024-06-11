@@ -1,9 +1,9 @@
 import React from 'react';
-import { TextInputComponent, TextInputComponentWithMask, TextInputContainer } from './styles';
+import { ErrorText, TextInputComponent, TextInputComponentWithMask, TextInputContainer, TitleInput } from './styles';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ThemedText } from '@/components/ThemedText';
 import { FieldError } from 'react-hook-form';
-import { Keyboard } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { TextInputMaskTypeProp } from 'react-native-masked-text';
 
@@ -18,6 +18,7 @@ interface InputFormProps {
     editable?: boolean
     password?: boolean
     keyboardType?: "default" | "number-pad" | "decimal-pad" | "numeric" | "email-address" | "phone-pad"
+    title?: boolean
 }
 
 export default function InputFormComponent(props: InputFormProps) {
@@ -27,31 +28,37 @@ export default function InputFormComponent(props: InputFormProps) {
     return (
         <TextInputContainer>
             {props.mask && props.typeMask ?
-                <TextInputComponentWithMask 
-                    type={props.typeMask}
-                    placeholder={props.placeholder}
-                    placeholderTextColor={`black`}
-                    onChangeText={props.onChangeText}
-                    value={props.value}
-                    theme={colorTheme}
-                    onBlur={props.onBlur}
-                    editable={props.editable}
-                    keyboardType={props.keyboardType}
-                />
+                <View>
+                    {props.title && <TitleInput>{t(props.placeholder)}</TitleInput>}
+                    <TextInputComponentWithMask
+                        type={props.typeMask}
+                        placeholder={props.placeholder}
+                        placeholderTextColor={`black`}
+                        onChangeText={props.onChangeText}
+                        value={props.value}
+                        theme={colorTheme}
+                        onBlur={props.onBlur}
+                        editable={props.editable}
+                        keyboardType={props.keyboardType}
+                    />
+                </View>
                 :
-                <TextInputComponent
-                    placeholder={props.placeholder}
-                    placeholderTextColor={`black`}
-                    onChangeText={props.onChangeText}
-                    value={props.value}
-                    theme={colorTheme}
-                    onBlur={props.onBlur}
-                    editable={props.editable}
-                    secureTextEntry={props.password}
-                    keyboardType={props.keyboardType}
-                />
+                <View>
+                    {props.title && <TitleInput>{t(props.placeholder)}</TitleInput>}
+                    <TextInputComponent
+                        placeholder={props.placeholder}
+                        placeholderTextColor={`black`}
+                        onChangeText={props.onChangeText}
+                        value={props.value}
+                        theme={colorTheme}
+                        onBlur={props.onBlur}
+                        editable={props.editable}
+                        secureTextEntry={props.password}
+                        keyboardType={props.keyboardType}
+                    />
+                </View>
             }
-            {props.errors && <ThemedText>{t(props.errors.message ?? "This is required")}</ThemedText>}
+            {props.errors && <ErrorText>{t(props.errors.message ?? "This is required")}</ErrorText>}
         </TextInputContainer>
     );
 };
