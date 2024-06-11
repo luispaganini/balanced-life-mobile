@@ -1,8 +1,7 @@
 import React from 'react'
 import RNDateTimePicker from '@react-native-community/datetimepicker'
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { Text, TouchableOpacity, View } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
+import { Text, View } from 'react-native';
 import { CalendarPickerComponentContainer, ErrorText, InputContainer, TitleInput } from './styles';
 import { FieldError } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +23,7 @@ export default function CalendarPickerComponent(props: CalendarPickerComponentPr
         <View>
             <InputContainer>
                 {props.title && <TitleInput>{t(props.placeholder)}</TitleInput>}
-                <CalendarPickerComponentContainer onPress={() => setShow(!show)}>
+                <CalendarPickerComponentContainer onPress={() => setShow(!show)} theme={colorTheme}>
                     <Text>{props.value ? new Date(props.value).toLocaleDateString('pt-BR') : t(props.placeholder)}</Text>
                 </CalendarPickerComponentContainer>
                 {props.errors && <ErrorText>{t(props.errors.message ?? "This is required")}</ErrorText>}

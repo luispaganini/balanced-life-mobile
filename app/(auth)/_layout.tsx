@@ -7,28 +7,13 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-
+  
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
       }}>
-        {/* <Tabs.Screen
-          name="login/login-one"
-          options={{
-            href: null
-          }} />
-        <Tabs.Screen
-          name="login/login-two"
-          options={{
-            href: null
-          }} />
-      <Tabs.Screen
-        name="login/create/create-one"
-        options={{
-          href: null
-        }} /> */}
       <Tabs.Screen
         name="index"
         options={{

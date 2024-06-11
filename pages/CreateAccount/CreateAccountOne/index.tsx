@@ -24,7 +24,7 @@ export default function CreateAccountOne() {
             district: "",
             expirationLicence: null,
             facebook: "",
-            id: null,
+            id: null, 
             idCity: null,
             idUserLevel: null,
             instagram: "",
@@ -41,7 +41,6 @@ export default function CreateAccountOne() {
         Keyboard.dismiss()
         router.navigate("/")
     }
-
 
     const {
         control,
@@ -196,7 +195,7 @@ export default function CreateAccountOne() {
                     />
                     <ButtonsContainer>
                         <ButtonComponent onPress={handleSubmit(onSubmit)} title="Create Account" color={Colors.color.green} />
-                        <ButtonComponent onPress={() => router.navigate("/login/login-one")} title="Back" color={Colors.color.blue} />
+                        <ButtonComponent onPress={() => router.back()} title="Back" color={Colors.color.blue} />
                     </ButtonsContainer>
                 </ScrollView>
             </ContainerPage>
