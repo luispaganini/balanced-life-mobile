@@ -12,7 +12,7 @@ export default function LoginOne() {
     const { t } = useTranslation();
     const onSubmit = (data: {cpf: string}) => {
         Keyboard.dismiss()
-        router.navigate("login/login-two")
+        router.navigate("login-two")
     }
 
     const {

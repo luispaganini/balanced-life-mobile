@@ -9,12 +9,13 @@ export default function _layout() {
   
     return (
       <Stack
+        initialRouteName='login-one'
         screenOptions={{
           headerShown: false,
         }}>
-        <Stack.Screen
-          name="login-one"
-        />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="login-two" options={{ headerShown: false }} />
+        <Stack.Screen name="(create)/create-one" options={{ headerShown: false }} />
       </Stack>
     );
 }

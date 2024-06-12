@@ -12,7 +12,7 @@ export default function LoginTwo() {
     const { t } = useTranslation();
     const onSubmit = (data: { cpf: string, password: string }) => {
         Keyboard.dismiss()
-        router.navigate("/")
+        router.navigate("home")
     }
 
     const {

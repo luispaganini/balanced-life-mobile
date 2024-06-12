@@ -8,7 +8,7 @@ export default function CreateAccountInfoComponent() {
     return (
         <ContainerPage>
             <AskForCreateAccount>Ainda não tem uma conta?</AskForCreateAccount>
-            <TouchableOpacity onPress={() => router.navigate('/login/create/create-one')}>
+            <TouchableOpacity onPress={() => router.navigate('(create)/create-one')}>
                 <RedirectLink>Criar uma conta</RedirectLink>
             </TouchableOpacity>
         </ContainerPage>

@@ -32,5 +32,10 @@
     "experiments": {
       "typedRoutes": true
     }
+  },
+  "application": {
+    "uris": {
+      "api": "http://localhost:3000"
+    }
   }
 }

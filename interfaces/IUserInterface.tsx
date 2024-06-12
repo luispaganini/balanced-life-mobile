@@ -1,22 +1,45 @@
 export default interface IUserInterface {
-    id: number | null
-    name: string | null
-    birth: string | null
-    password: string | null
-    email: string | null
-    urlImage: string | null
-    sex: string | null
-    cpf: string | null
-    street: string | null
-    number: number | null
-    zipCode: string | null
-    idCity: number | null
-    idUserLevel: number | null
-    phoneNumber: string | null
-    instagram: string | null
-    facebook: string | null
-    whatsapp: string | null
-    expirationLicence: Date | null
-    isCompleteProfile: boolean | null
-    district: string | null
-}
+    id: number | null | undefined
+    name: string | null | undefined
+    birth: string | null | undefined
+    password: string | undefined
+    email: string | null | undefined
+    urlImage: string | null | undefined
+    gender: string | null | undefined
+    cpf: string | null | undefined
+    street: string | null | undefined
+    number: number | null | undefined
+    zipCode: string | null | undefined
+    location: Location | null | undefined
+    userRole: UserRole | number | null | undefined 
+    phoneNumber: string | null | undefined
+    instagram: string | null | undefined
+    facebook: string | null | undefined
+    whatsapp: string | null | undefined
+    expirationLicence: string | null | undefined
+    isCompleteProfile: boolean | null | undefined
+    district: string | null | undefined
+  }
+  
+  export interface Location {
+    city: City
+    state: State
+  }
+  
+  export interface City {
+    id: number
+    name: string
+  }
+  
+  export interface State {
+    id: number
+    name: string
+    country: any
+    uf: string
+  }
+  
+  export interface UserRole {
+    id: number
+    name: string
+  }
+  

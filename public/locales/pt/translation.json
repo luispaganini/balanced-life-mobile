@@ -1,5 +1,6 @@
 {
     "This is required": "Campo obrigatório",
+    "Name is required": "Nome é obrigatório",
     "CPF is required": "CPF é obrigatório",
     "Password is required": "Senha é obrigatória",
     "Passwords do not match": "Senhas não conferem",
@@ -7,6 +8,9 @@
     "Invalid e-mail address": "E-mail inválido",
     "Cellphone is required": "Celular é obrigatório",
     "Birth Date is required": "Data de Nascimento é obrigatória",
+    "Gender is required": "Sexo é obrigatório",
+    "Password must contain at least 8 characters, including a letter and a number": "Senha deve conter pelo menos 8 caracteres, incluindo uma letra e um número",
+    "Name": "Nome",
     "Password": "Senha",
     "Create Account": "Criar Conta",
     "Confirm Password": "Confirmar Senha",
@@ -22,5 +26,8 @@
     "Nutritionist": "Nutricionista",
     "Schedule Appointment": "Agendar Consulta",
     "My Body": "Meu Corpo",
-    "Meals": "Refeições"
+    "Meals": "Refeições",
+    "Gender": "Sexo",
+    "Male": "Masculino",
+    "Female": "Feminino"
 }
