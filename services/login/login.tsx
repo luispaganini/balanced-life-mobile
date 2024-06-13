@@ -3,9 +3,7 @@ import IUserInterface from '@/interfaces/IUserInterface'
 
 export async function loginVerifyCPF(cpf: string): Promise<IUserInterface> {
     try {
-        
         const response = await api.post('/login/verify', { cpf })
-        console.log(response)
         if (response.status !== 200)
             throw new Error('Error on login')
 

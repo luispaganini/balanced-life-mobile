@@ -29,5 +29,10 @@
     "Meals": "Refeições",
     "Gender": "Sexo",
     "Male": "Masculino",
-    "Female": "Feminino"
+    "Female": "Feminino",
+    "Weight": "Peso",
+    "Height": "Altura",
+    "Age": "Idade",
+    "BMI": "IMC",
+    "Update body data": "Atualizar dados corporais"
 }

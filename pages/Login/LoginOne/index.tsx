@@ -1,6 +1,6 @@
 import React from 'react'
 import { SafeAreaViewComponent } from '@/styles/pages'
-import { Keyboard, View } from 'react-native'
+import { ActivityIndicator, Keyboard, View } from 'react-native'
 import { ButtonComponent, ContainerPage, ImageContainer, ImageItem, TextComponent, Title } from './styles'
 import { Controller, set, useForm } from 'react-hook-form'
 import InputFormComponent from '@/components/application/Forms/InputFormComponent'
@@ -13,19 +13,24 @@ import useUserStore from '@/store/UserStore'
 export default function LoginOne() {
     const { t } = useTranslation();
     const { setUser } = useUserStore();
+    const [loading, setLoading] = React.useState(false)
     const onSubmit = async (data: {cpf: string}) => {
         Keyboard.dismiss()
-        // const response = await loginVerifyCPF(data.cpf)
-        // console.log(response)
-        // if (!response)
-        //     throw new Error('User not found')
-
-        // setUser(response)
-
-        // if (response.isCompleteProfile)
-            router.navigate("login-two")
-        // else
-        //     router.navigate("(create)/create-one")
+        setLoading(true);
+        try {
+            const response = await loginVerifyCPF(data.cpf)
+    
+            if (response && response.isCompleteProfile) {
+                setUser(response)
+                router.navigate("login-two")
+            } else
+                router.navigate("(create)/create-one")
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false)
+            return;
+        }
     }
 
     const {
@@ -72,7 +77,11 @@ export default function LoginOne() {
                     />
 
                     <ButtonComponent onPress={handleSubmit(onSubmit)}>
-                        <TextComponent>{t("Login")}</TextComponent>
+                        {loading ? 
+                            <ActivityIndicator size="small" color="#fff" /> 
+                        : 
+                            <TextComponent>{t("Login")}</TextComponent>
+                        }
                     </ButtonComponent>
                 </View>
                 <CreateAccountInfoComponent />

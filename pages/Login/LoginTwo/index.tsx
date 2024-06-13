@@ -7,9 +7,11 @@ import InputFormComponent from '@/components/application/Forms/InputFormComponen
 import CreateAccountInfoComponent from '@/components/application/Info/CreateAccountInfoComponent'
 import { useTranslation } from 'react-i18next'
 import { router } from 'expo-router'
+import useUserStore from '@/store/UserStore'
 
 export default function LoginTwo() {
     const { t } = useTranslation();
+    const { user } = useUserStore();
     const onSubmit = (data: { cpf: string, password: string }) => {
         Keyboard.dismiss()
         router.navigate("home")
@@ -21,7 +23,7 @@ export default function LoginTwo() {
         formState: { errors },
     } = useForm({
         defaultValues: {
-            cpf: "",
+            cpf: user?.cpf || "",
             password: "",
         },
     })
@@ -51,7 +53,7 @@ export default function LoginTwo() {
                                 onChangeText={onChange}
                                 value={value}
                                 errors={errors.cpf}
-                                editable={true}
+                                editable={user?.cpf ? false : true}
                                 keyboardType="numeric"
                                 mask={true}
                                 typeMask={"cpf"}
