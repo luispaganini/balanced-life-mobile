@@ -2,17 +2,30 @@ import React from 'react'
 import { SafeAreaViewComponent } from '@/styles/pages'
 import { Keyboard, View } from 'react-native'
 import { ButtonComponent, ContainerPage, ImageContainer, ImageItem, TextComponent, Title } from './styles'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, set, useForm } from 'react-hook-form'
 import InputFormComponent from '@/components/application/Forms/InputFormComponent'
 import CreateAccountInfoComponent from '@/components/application/Info/CreateAccountInfoComponent'
 import { useTranslation } from 'react-i18next'
 import { router } from 'expo-router'
+import { loginVerifyCPF } from '@/services/login/login'
+import useUserStore from '@/store/UserStore'
 
 export default function LoginOne() {
     const { t } = useTranslation();
-    const onSubmit = (data: {cpf: string}) => {
+    const { setUser } = useUserStore();
+    const onSubmit = async (data: {cpf: string}) => {
         Keyboard.dismiss()
-        router.navigate("login-two")
+        // const response = await loginVerifyCPF(data.cpf)
+        // console.log(response)
+        // if (!response)
+        //     throw new Error('User not found')
+
+        // setUser(response)
+
+        // if (response.isCompleteProfile)
+            router.navigate("login-two")
+        // else
+        //     router.navigate("(create)/create-one")
     }
 
     const {
