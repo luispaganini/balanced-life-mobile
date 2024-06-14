@@ -11,7 +11,7 @@ export default interface IUserInterface {
     number: number | null | undefined
     zipCode: string | null | undefined
     location: Location | null | undefined
-    userRole: UserRole | number | null | undefined 
+    userRole: UserRole  | null | undefined 
     phoneNumber: string | null | undefined
     instagram: string | null | undefined
     facebook: string | null | undefined
@@ -19,6 +19,7 @@ export default interface IUserInterface {
     expirationLicence: string | null | undefined
     isCompleteProfile: boolean | null | undefined
     district: string | null | undefined
+    idUserRole?: number
   }
   
   export interface Location {

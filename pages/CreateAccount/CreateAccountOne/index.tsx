@@ -1,8 +1,8 @@
-import { View, Text, Keyboard, ScrollView, Button } from 'react-native'
+import { View, Text, Keyboard, ScrollView, Button, Alert } from 'react-native'
 import React from 'react'
 import { SafeAreaViewComponent } from '@/styles/pages'
 import { router } from 'expo-router'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, set, useForm } from 'react-hook-form'
 import { ButtonsContainer, ContainerPage, ImageContainer, ImageItem, TitleItem } from './styles'
 import { useTranslation } from 'react-i18next'
 import InputFormComponent from '@/components/application/Forms/InputFormComponent'
@@ -12,12 +12,28 @@ import { Colors } from '@/constants/Colors'
 import CalendarPickerComponent from '@/components/application/Forms/CalendarPickerComponent'
 import GenderRadioComponent from '@/components/application/Forms/GenderRadioComponent'
 import { UserRole } from '@/enums/UserRole'
+import { createAccount } from '@/services/login/login'
+import IUserInterface from '@/interfaces/IUserInterface'
+import { AxiosError } from 'axios'
+
+type FormData = {
+    name: string,
+    email: string,
+    cpf: string,
+    password: string,
+    confirmPassword: string,
+    phoneNumber: string,
+    birthDate: string,
+    gender: string,
+}
 
 export default function CreateAccountOne() {
     const { t } = useTranslation();
     const { user, setUser } = useUserStore();
-    const onSubmit = (data: { name: string, email: string, cpf: string, password: string, phoneNumber: string, birthDate: string, gender: string }) => {
-        setUser({
+    const [loading, setLoading] = React.useState(false)
+    const onSubmit = async (data: FormData) => {
+        setLoading(true)
+        const userData: IUserInterface = {
             name: data.name,
             email: data.email,
             cpf: data.cpf,
@@ -25,7 +41,7 @@ export default function CreateAccountOne() {
             phoneNumber: data.phoneNumber,
             birth: data.birthDate,
             gender: data.gender,
-            userRole: UserRole.CLIENT,
+            idUserRole: UserRole.CLIENT,
             isCompleteProfile: false,
             district: undefined,
             expirationLicence: undefined,
@@ -37,12 +53,25 @@ export default function CreateAccountOne() {
             street: undefined,
             urlImage: undefined,
             whatsapp: undefined,
-            zipCode: undefined
-        })
-        
+            zipCode: undefined,
+            userRole: undefined
+        }
+        setUser(userData)
 
         Keyboard.dismiss()
-        router.navigate("/")
+        try {
+            const response = await createAccount(userData)
+
+            if (response) {
+                setUser(response)
+                router.navigate("/login-two")
+            }
+        } catch (error) {
+            console.log(error)
+            Alert.alert(t("Create Account"), t("CPF or E-mail already registered"))
+        } finally {
+            setLoading(false)
+        }
     }
 
     const {
@@ -231,12 +260,12 @@ export default function CreateAccountOne() {
                             required: t("Gender is required"),
                         }}
                         render={({ field: { onChange, onBlur, value } }) => (
-                            <GenderRadioComponent onChange={onChange} value={value} errors={errors.gender} title={true}/>
+                            <GenderRadioComponent onChange={onChange} value={value} errors={errors.gender} title={true} />
                         )}
                         name="gender"
                     />
                     <ButtonsContainer>
-                        <ButtonComponent onPress={handleSubmit(onSubmit)} title="Create Account" color={Colors.color.green} />
+                        <ButtonComponent onPress={handleSubmit(onSubmit)} title="Create Account" color={Colors.color.green} loading={loading} />
                         <ButtonComponent onPress={() => router.back()} title="Back" color={Colors.color.blue} />
                     </ButtonsContainer>
                 </ScrollView>

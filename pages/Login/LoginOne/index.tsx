@@ -1,6 +1,6 @@
 import React from 'react'
 import { SafeAreaViewComponent } from '@/styles/pages'
-import { ActivityIndicator, Keyboard, View } from 'react-native'
+import { ActivityIndicator, Alert, Keyboard, View } from 'react-native'
 import { ButtonComponent, ContainerPage, ImageContainer, ImageItem, TextComponent, Title } from './styles'
 import { Controller, set, useForm } from 'react-hook-form'
 import InputFormComponent from '@/components/application/Forms/InputFormComponent'
@@ -27,6 +27,7 @@ export default function LoginOne() {
                 router.navigate("(create)/create-one")
         } catch (error) {
             console.log(error)
+            Alert.alert("Login", t("Invalid CPF"))
         } finally {
             setLoading(false)
             return;

@@ -1,6 +1,6 @@
 import React from 'react'
 import { SafeAreaViewComponent } from '@/styles/pages'
-import { Keyboard, View } from 'react-native'
+import { ActivityIndicator, Alert, Keyboard, View } from 'react-native'
 import { ButtonComponent, ContainerPage, ImageContainer, ImageItem, TextComponent } from './styles'
 import { Controller, useForm } from 'react-hook-form'
 import InputFormComponent from '@/components/application/Forms/InputFormComponent'
@@ -8,13 +8,32 @@ import CreateAccountInfoComponent from '@/components/application/Info/CreateAcco
 import { useTranslation } from 'react-i18next'
 import { router } from 'expo-router'
 import useUserStore from '@/store/UserStore'
+import { login } from '@/services/login/login'
+import useTokenStore from '@/store/TokenStore'
 
 export default function LoginTwo() {
     const { t } = useTranslation();
     const { user } = useUserStore();
-    const onSubmit = (data: { cpf: string, password: string }) => {
+    const { setRefreshToken, setAccessToken } = useTokenStore();
+    const [loading, setLoading] = React.useState(false)
+    const onSubmit = async (data: { cpf: string, password: string }) => {
+        setLoading(true)
         Keyboard.dismiss()
-        router.navigate("home")
+        try {
+            const response = await login(data.cpf, data.password);
+
+            if (response) {
+                setAccessToken(response.token)
+                setRefreshToken(response.refreshToken)
+                router.navigate("home")
+            } else {
+                Alert.alert("Login", t("Invalid CPF or password"))
+            }
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoading(false)
+        }
     }
 
     const {
@@ -82,7 +101,11 @@ export default function LoginTwo() {
                     />
 
                     <ButtonComponent onPress={handleSubmit(onSubmit)}>
-                        <TextComponent>{t("Login")}</TextComponent>
+                        {loading ?
+                            <ActivityIndicator size="small" color="#fff" />
+                            :
+                            <TextComponent>{t("Login")}</TextComponent>
+                        }
                     </ButtonComponent>
                 </View>
                 <CreateAccountInfoComponent />
