@@ -11,11 +11,11 @@ interface TokenStore extends ITokenInterface {
 
 const useTokenStore = create<TokenStore>()(persist(
   (set) => ({
-    token: null,
+    accessToken: null,
     refreshToken: null,
-    setAccessToken: (token) => set({ token }),
+    setAccessToken: (accessToken) => set({ accessToken }),
     setRefreshToken: (refreshToken) => set({ refreshToken }),
-    clearTokens: () => set({ token: null, refreshToken: null }),
+    clearTokens: () => set({ accessToken: null, refreshToken: null }),
   }),
   {
     name: 'token-storage',

@@ -1,13 +1,20 @@
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import React from 'react';
 
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import useTokenStore from '@/store/TokenStore';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  
+  const { accessToken, refreshToken } = useTokenStore();
+  if (!accessToken || !refreshToken) {
+    console.log(accessToken)
+    console.log(refreshToken)
+    return <Redirect href={"/login-one"}/>
+  }
+
   return (
     <Tabs
       screenOptions={{
@@ -15,7 +22,7 @@ export default function TabLayout() {
         headerShown: false,
       }}>
       <Tabs.Screen
-        name="home"
+        name="index"
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (

@@ -1,11 +1,20 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { MenuContainer, PageContainer } from './styles'
 import CardRedirect from '@/components/application/Cards/CardRedirect'
 import { useTranslation } from 'react-i18next'
 import { Colors } from '@/constants/Colors';
+import { setupTokenRefresh } from '@/services/login/login';
+import { Button } from 'react-native-paper';
+import useTokenStore from '@/store/TokenStore';
 
 export default function HomePage() {
     const { t } = useTranslation();
+    const { clearTokens } = useTokenStore();
+
+    useEffect(() => {
+        setupTokenRefresh();
+      }, []);
+
     return (
         <PageContainer>
             <MenuContainer>
@@ -14,6 +23,7 @@ export default function HomePage() {
                 <CardRedirect color={Colors.color.green} title={t('My Body')} img={require('@/assets/images/fit.png')} route='/body/bodyinfo'/>
                 <CardRedirect color={Colors.color.lightBlue} title={t('Meals')} img={require('@/assets/images/meals.png')} route='/'/>
             </MenuContainer>
+            <Button onPress={() => clearTokens()}>Logout</Button>
         </PageContainer>
     )
 }

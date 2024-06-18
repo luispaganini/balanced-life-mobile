@@ -23,9 +23,9 @@ export default function LoginTwo() {
             const response = await login(data.cpf, data.password);
 
             if (response) {
-                setAccessToken(response.token)
+                setAccessToken(response.accessToken)
                 setRefreshToken(response.refreshToken)
-                router.navigate("home")
+                router.navigate("/")
             } else {
                 Alert.alert("Login", t("Invalid CPF or password"))
             }

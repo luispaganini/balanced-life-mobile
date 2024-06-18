@@ -1,6 +1,7 @@
 import ITokenInterface from '@/interfaces/ITokenInterface'
 import api from '../api'
 import IUserInterface from '@/interfaces/IUserInterface'
+import useTokenStore from '@/store/TokenStore'
 
 export async function loginVerifyCPF(cpf: string): Promise<IUserInterface> {
     const response = await api.post('/login/verify', { cpf })
@@ -18,7 +19,6 @@ export async function login(cpf: string, password: string): Promise<ITokenInterf
         throw new Error(response.data.message)
 
     return response.data
-
 }
 
 export async function createAccount(user: IUserInterface): Promise<IUserInterface> {
@@ -28,3 +28,30 @@ export async function createAccount(user: IUserInterface): Promise<IUserInterfac
 
     return response.data
 }
+
+export const refreshAccessToken = async (refreshToken: string, token: string): Promise<ITokenInterface> => {
+    const response = await api.post(`login/refresh`, { refreshToken, accessToken: token });
+
+    console.log(response.data)
+    return response.data;
+  };
+
+export const setupTokenRefresh = () => {
+    const { accessToken, setAccessToken, refreshToken, setRefreshToken } = useTokenStore.getState();
+    
+    if (!refreshToken || !accessToken) return;
+  
+    setInterval(async () => {
+      try {
+        const tokens = await refreshAccessToken(refreshToken, accessToken);
+        if (!tokens.success) throw new Error('Erro ao renovar o token');
+
+        console.log("DEU BOA")
+        setAccessToken(tokens.accessToken);
+        setRefreshToken(tokens.refreshToken);
+
+      } catch (error) {
+        console.error('Erro ao renovar o token:', error);
+      }
+    }, 15000); // Renova o token a cada 15 minutos
+  };

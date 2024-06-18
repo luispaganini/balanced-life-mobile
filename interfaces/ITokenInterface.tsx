@@ -1,4 +1,5 @@
 export default interface ITokenInterface {
-    token: string | null;
+    accessToken: string | null;
     refreshToken: string | null;
+    success?: boolean;
   }

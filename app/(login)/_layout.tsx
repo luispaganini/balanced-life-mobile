@@ -13,7 +13,7 @@ export default function _layout() {
         screenOptions={{
           headerShown: false,
         }}>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="login-one" options={{ headerShown: false }} />
         <Stack.Screen name="login-two" options={{ headerShown: false }} />
         <Stack.Screen name="(create)/create-one" options={{ headerShown: false }} />
       </Stack>
