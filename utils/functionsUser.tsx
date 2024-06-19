@@ -9,3 +9,7 @@ export function calculateAge(birthDate: Date): string {
   
     return age.toString();
   }
+
+  export function calculateBMI(weight: number, height: number): string {
+    return (weight / (height * height)).toFixed(2);
+  }

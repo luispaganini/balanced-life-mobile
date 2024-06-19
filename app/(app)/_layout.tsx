@@ -10,8 +10,6 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { accessToken, refreshToken } = useTokenStore();
   if (!accessToken || !refreshToken) {
-    console.log(accessToken)
-    console.log(refreshToken)
     return <Redirect href={"/login-one"}/>
   }
 

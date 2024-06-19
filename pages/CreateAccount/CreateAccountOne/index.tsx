@@ -136,6 +136,7 @@ export default function CreateAccountOne() {
                                 errors={errors.email}
                                 editable={true}
                                 title={true}
+                                keyboardType='email-address'
                             />
                         )}
                         name="email"

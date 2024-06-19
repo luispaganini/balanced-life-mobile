@@ -32,7 +32,6 @@ export async function createAccount(user: IUserInterface): Promise<IUserInterfac
 export const refreshAccessToken = async (refreshToken: string, token: string): Promise<ITokenInterface> => {
     const response = await api.post(`login/refresh`, { refreshToken, accessToken: token });
 
-    console.log(response.data)
     return response.data;
   };
 
@@ -41,17 +40,19 @@ export const setupTokenRefresh = () => {
     
     if (!refreshToken || !accessToken) return;
   
-    setInterval(async () => {
-      try {
-        const tokens = await refreshAccessToken(refreshToken, accessToken);
-        if (!tokens.success) throw new Error('Erro ao renovar o token');
+    // setInterval(async () => {
+    //   try {
+    //     console.log(refreshToken)
+    //     console.log(accessToken)
+    //     const tokens = await refreshAccessToken(refreshToken, accessToken);
+    //     if (!tokens.success) throw new Error('Erro ao renovar o token');
 
-        console.log("DEU BOA")
-        setAccessToken(tokens.accessToken);
-        setRefreshToken(tokens.refreshToken);
+    //     clearTokens()
+    //     setAccessToken(tokens.accessToken);
+    //     setRefreshToken(tokens.refreshToken);
 
-      } catch (error) {
-        console.error('Erro ao renovar o token:', error);
-      }
-    }, 15000); // Renova o token a cada 15 minutos
+    //   } catch (error) {
+    //     console.error('Erro ao renovar o token:', error);
+    //   }
+    // }, 15000); // Renova o token a cada 15 minutos
   };

@@ -1,3 +1,4 @@
+import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
 import { ColorSchemeName, Dimensions } from "react-native";
@@ -31,4 +32,16 @@ export const CardsInfoBody = styled.View`
     flex-wrap: wrap;
     justify-content: space-around;
     margin-top: 20px;
+`;
+
+export const Loading = styled.ActivityIndicator`
+    margin-top: ${height / 2 - (height * 0.2)}px;
+`;
+
+export const NoDataFound = styled(ThemedText)`
+    text-align: center;
+    margin-top: 70px;
+    margin-bottom: 30px;
+    font-size: 25px;
+    font-weight: bold;
 `;

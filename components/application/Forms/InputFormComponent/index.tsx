@@ -5,7 +5,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { FieldError } from 'react-hook-form';
 import { Keyboard, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { TextInputMaskTypeProp } from 'react-native-masked-text';
+import { TextInputMaskOptionProp, TextInputMaskTypeProp } from 'react-native-masked-text';
 
 interface InputFormProps {
     onChangeText: (value: string) => void;
@@ -19,6 +19,7 @@ interface InputFormProps {
     password?: boolean
     keyboardType?: "default" | "number-pad" | "decimal-pad" | "numeric" | "email-address" | "phone-pad"
     title?: boolean
+    options?: TextInputMaskOptionProp
 }
 
 export default function InputFormComponent(props: InputFormProps) {
@@ -40,6 +41,7 @@ export default function InputFormComponent(props: InputFormProps) {
                         onBlur={props.onBlur}
                         editable={props.editable}
                         keyboardType={props.keyboardType}
+                        options={props.options}
                     />
                 </View>
                 :
