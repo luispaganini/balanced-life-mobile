@@ -14,7 +14,7 @@ import { calculateAge, calculateBMI } from '@/utils/functionsUser';
 import { router } from 'expo-router';
 import { IBodyDataInterface } from '@/interfaces/IBodyDataInterface';
 import { getLastFourBodyData } from '@/services/body/body';
-import { ThemedText } from '@/components/ThemedText';
+
 const screenWidth = Dimensions.get("window").width;
 
 export default function MyBodyPage() {
