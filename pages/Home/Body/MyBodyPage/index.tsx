@@ -14,6 +14,7 @@ import { calculateAge, calculateBMI } from '@/utils/functionsUser';
 import { router } from 'expo-router';
 import { IBodyDataInterface } from '@/interfaces/IBodyDataInterface';
 import { getLastFourBodyData } from '@/services/body/body';
+import { chartConfig } from '@/constants/charts/chartConfig';
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -46,13 +47,6 @@ export default function MyBodyPage() {
         }
     }
 
-    const chartConfig = {
-        color: (opacity = 1) => `rgba(0,9,48, ${opacity})`,
-        strokeWidth: 2,
-        barPercentage: 0.5,
-        useShadowColorFromDataset: false
-    };
-
     const sortedBodyData = bodyData.sort((a, b) => new Date(a.datetime as Date).getTime() - new Date(b.datetime as Date).getTime());
 
     const data = {
@@ -71,41 +65,38 @@ export default function MyBodyPage() {
         dark: require('@/assets/images/fullbody.png'),
     };
     return (
-        <SafeAreaViewComponent>
-            <PageContainer>
-                <ScrollView>
-                    <ImageContainer source={images[colorTheme == 'light' ? 'light' : 'dark']} />
-                    {loadingPage ? (
-                        <Loading size="large" color={Colors.color.cyan} />
-                    ) : (
-                        <View>
-                            {bodyData.length > 0 ? (
-                                <View>
-                                    <ChartContainer theme={colorTheme}>
-                                        <LineChart
-                                            data={data}
-                                            width={screenWidth / 1.1}
-                                            height={180}
-                                            chartConfig={chartConfig}
-                                            transparent={true}
-                                        />
-                                    </ChartContainer>
-                                    <CardsInfoBody>
-                                        <CardInfoBody title={t('Weight')} description={weight.toFixed(2) + ' kg'} />
-                                        <CardInfoBody title={t('Height')} description={height.toFixed(2) + ' m'} />
-                                        <CardInfoBody title={t('BMI')} description={calculateBMI(weight, height) + ' kg/m²'} />
-                                        <CardInfoBody title={t('Age')} description={calculateAge(new Date(user.birth as string)) + ' anos'} />
-                                    </CardsInfoBody>
-                                </View>
-                            ) : (
-                                <NoDataFound>{t('No data found')}</NoDataFound>
-                            )}
-                            <ButtonComponent title={t('Update body data')} onPress={() => router.navigate('body/add-body-data')} color={Colors.color.blue} />
-                        </View>
-                    )}
-                </ScrollView>
-            </PageContainer>
-
-        </SafeAreaViewComponent>
+        <PageContainer>
+            <ScrollView>
+                <ImageContainer source={images[colorTheme == 'light' ? 'light' : 'dark']} />
+                {loadingPage ? (
+                    <Loading size="large" color={Colors.color.cyan} />
+                ) : (
+                    <View>
+                        {bodyData.length > 0 ? (
+                            <View>
+                                <ChartContainer theme={colorTheme}>
+                                    <LineChart
+                                        data={data}
+                                        width={screenWidth / 1.1}
+                                        height={180}
+                                        chartConfig={chartConfig}
+                                        transparent={true}
+                                    />
+                                </ChartContainer>
+                                <CardsInfoBody>
+                                    <CardInfoBody title={t('Weight')} description={weight.toFixed(2) + ' kg'} />
+                                    <CardInfoBody title={t('Height')} description={height.toFixed(2) + ' m'} />
+                                    <CardInfoBody title={t('BMI')} description={calculateBMI(weight, height) + ' kg/m²'} />
+                                    <CardInfoBody title={t('Age')} description={calculateAge(new Date(user.birth as string)) + ' anos'} />
+                                </CardsInfoBody>
+                            </View>
+                        ) : (
+                            <NoDataFound>{t('No data found')}</NoDataFound>
+                        )}
+                        <ButtonComponent title={t('Update body data')} onPress={() => router.navigate('body/add-body-data')} color={Colors.color.blue} />
+                    </View>
+                )}
+            </ScrollView>
+        </PageContainer>
     )
 }

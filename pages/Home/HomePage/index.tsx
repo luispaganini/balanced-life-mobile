@@ -20,8 +20,8 @@ export default function HomePage() {
             <MenuContainer>
                 <CardRedirect color={Colors.color.purple} title={t('Nutritionist')} img={require('@/assets/images/nutritionist.png')} route='/'/>
                 <CardRedirect color={Colors.color.lightPurple} title={t('Schedule Appointment')} img={require('@/assets/images/clipboard.png')} route='/'/>
-                <CardRedirect color={Colors.color.green} title={t('My Body')} img={require('@/assets/images/fit.png')} route='/body/bodyinfo'/>
-                <CardRedirect color={Colors.color.lightBlue} title={t('Meals')} img={require('@/assets/images/meals.png')} route='/'/>
+                <CardRedirect color={Colors.color.green} title={t('My Body')} img={require('@/assets/images/fit.png')} route='/body/'/>
+                <CardRedirect color={Colors.color.lightBlue} title={t('Meals')} img={require('@/assets/images/meals.png')} route='/snack/'/>
             </MenuContainer>
             <Button onPress={() => clearTokens()}>Logout</Button>
         </PageContainer>
