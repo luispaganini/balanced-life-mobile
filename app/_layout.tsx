@@ -1,4 +1,4 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -7,6 +7,7 @@ import 'react-native-reanimated';
 import i18n from '@/translation/i18n';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { I18nextProvider } from 'react-i18next';
+import { Colors, DarkTheme } from '@/constants/Colors';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
