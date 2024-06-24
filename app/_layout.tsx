@@ -4,10 +4,10 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import i18n from '@/translation/i18n';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { I18nextProvider } from 'react-i18next';
 import { Colors, DarkTheme } from '@/constants/Colors';
+import i18n from '@/translation/i18n';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
