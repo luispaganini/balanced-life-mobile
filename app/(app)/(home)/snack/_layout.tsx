@@ -18,7 +18,8 @@ export default function BodyLayout() {
         headerTitleAlign: 'center',
       }}
     >
-      <Stack.Screen name='index' options={{ title: t("Snack") }} />
+      <Stack.Screen name='index' options={{ title: t("Snacks") }} />
+      <Stack.Screen name='[id]' options={{ title: t("Snacks") }} />
     </Stack>
   );
 }

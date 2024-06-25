@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { PageContainer, TitleText } from './styles'
+import { PageContainer, SnackContainer, TitleText } from './styles'
 import { PieChart } from 'react-native-chart-kit';
 import { Dimensions, FlatList, View } from 'react-native';
 import { getDataPieChart } from '@/constants/charts/dataPieChart';
@@ -45,30 +45,30 @@ export default function SnackPage() {
     return (
         <PageContainer>
             {snackStore.data ? (
-                <View>
+                <SnackContainer>
                     {pieChartData.length > 0 &&
                         <PieChart
                             data={pieChartData}
                             width={screenWidth}
-                            height={200}
+                            height={150}
                             chartConfig={chartConfig}
                             accessor={"population"}
                             backgroundColor={"transparent"}
                             paddingLeft={"0"}
                         />
                     }
-                    <TitleText type='title'>{snackStore.data.totalCalories} Cal</TitleText>
+                    <TitleText type='title'>{snackStore.data.totalCalories} Kcal</TitleText>
                     <DatePickerComponent onChange={snackStore.setDate} value={snackStore.date} />
                     <FlatList
                         data={snackStore.data?.snacks || []}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({ item }) =>
-                            <CardSnack title={item.title} description={item.description} />}
+                            <CardSnack id={item.id} title={item.title} description={item.description} />}
                         ListEmptyComponent={() => <NoDataComponent onPress={loadData} />}
                         onRefresh={loadData}
                         refreshing={snackStore.loading}
                     />
-                </View>
+                </SnackContainer>
             ) : (
                 <View>
 

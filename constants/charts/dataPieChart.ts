@@ -23,7 +23,7 @@ export const getDataPieChart = (data: DataPieChartInput[], theme: ColorSchemeNam
         population: item.population,
         color: item.color,
         legendFontColor: theme == 'light' ? Colors.light.text : Colors.dark.text,
-        legendFontSize: 15
+        legendFontSize: 13
     }));
 
     return dataPieChart;

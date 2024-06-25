@@ -7,7 +7,7 @@ export const CardContainer = styled.TouchableOpacity<{ themed: ColorSchemeName }
     background-color: ${Colors.light.background};
     border-radius: 10px;
     padding: 10px;
-    margin: 10px;
+    margin-top: 10px;
     border-width: 1px;
     border-color: ${(props) => props.themed == 'light' ? Colors.light.border : Colors.dark.border};
     width: 90%;

@@ -7,6 +7,10 @@ export const PageContainer = styled(ThemedView)`
     padding: 10px;
 `;
 
+export const SnackContainer = styled(ThemedView)`
+    flex: 1;
+`;
+
 export const TitleText = styled(ThemedText)`
     text-align: center;
     margin-top: 10px;
