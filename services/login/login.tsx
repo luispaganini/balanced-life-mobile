@@ -1,6 +1,6 @@
-import ITokenInterface from '@/interfaces/ITokenInterface'
+import ITokenInterface from '@/interfaces/Login/ITokenInterface'
 import api from '../api'
-import IUserInterface from '@/interfaces/IUserInterface'
+import IUserInterface from '@/interfaces/User/IUserInterface'
 import useTokenStore from '@/store/TokenStore'
 
 export async function loginVerifyCPF(cpf: string): Promise<IUserInterface> {

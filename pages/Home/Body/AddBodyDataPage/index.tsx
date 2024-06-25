@@ -9,7 +9,7 @@ import InputFormComponent from '@/components/application/Forms/InputFormComponen
 import ButtonComponent from '@/components/application/Forms/ButtonComponent';
 import { Colors } from '@/constants/Colors';
 import useUserStore from '@/store/UserStore';
-import IUserInterface from '@/interfaces/IUserInterface';
+import IUserInterface from '@/interfaces/User/IUserInterface';
 import { addBodyData } from '@/services/body/body';
 import { router } from 'expo-router';
 

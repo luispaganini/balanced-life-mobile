@@ -18,6 +18,7 @@ export const CalendarPickerComponentContainer = styled.TouchableOpacity<{ theme:
     flex-direction: row;
     align-items: center;
     margin-top: 10px;
+    margin-bottom: 10px;
 `;
 
 export const TitleInput = styled(ThemedText)`

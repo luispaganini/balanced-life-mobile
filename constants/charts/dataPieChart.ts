@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Colors } from "../Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { ColorSchemeName } from "react-native";
 
 type DataPieChart = {
     name: string;
@@ -16,12 +17,9 @@ type DataPieChartInput = {
     color: string;
 }
 
-export const getDataPieChart = (data: DataPieChartInput[]): Array<DataPieChart> => {
-    const { t } = useTranslation();
-    const theme = useColorScheme();
-
+export const getDataPieChart = (data: DataPieChartInput[], theme: ColorSchemeName): Array<DataPieChart> => {
     const dataPieChart = data.map(item => ({
-        name: t(item.nameKey),
+        name: item.nameKey,
         population: item.population,
         color: item.color,
         legendFontColor: theme == 'light' ? Colors.light.text : Colors.dark.text,

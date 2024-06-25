@@ -1,4 +1,4 @@
-import { IBodyDataInterface } from "@/interfaces/IBodyDataInterface"
+import { IBodyDataInterface } from "@/interfaces/Body/IBodyDataInterface"
 import api from "../api"
 
 export async function addBodyData(data: IBodyDataInterface): Promise<IBodyDataInterface> {

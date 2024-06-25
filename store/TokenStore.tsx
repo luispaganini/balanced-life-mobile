@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ITokenInterface from '@/interfaces/ITokenInterface';
+import ITokenInterface from '@/interfaces/Login/ITokenInterface';
 
 interface TokenStore extends ITokenInterface {
   setAccessToken: (accessToken: string | null) => void;

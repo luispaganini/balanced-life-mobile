@@ -9,10 +9,10 @@ import { useTranslation } from 'react-i18next';
 import ButtonComponent from '@/components/application/Forms/ButtonComponent';
 import { Colors } from '@/constants/Colors';
 import useUserStore from '@/store/UserStore';
-import IUserInterface from '@/interfaces/IUserInterface';
+import IUserInterface from '@/interfaces/User/IUserInterface';
 import { calculateAge, calculateBMI } from '@/utils/functionsUser';
 import { router } from 'expo-router';
-import { IBodyDataInterface } from '@/interfaces/IBodyDataInterface';
+import { IBodyDataInterface } from '@/interfaces/Body/IBodyDataInterface';
 import { getLastFourBodyData } from '@/services/body/body';
 import { chartConfig } from '@/constants/charts/chartConfig';
 

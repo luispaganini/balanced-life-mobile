@@ -13,7 +13,7 @@ import CalendarPickerComponent from '@/components/application/Forms/CalendarPick
 import GenderRadioComponent from '@/components/application/Forms/GenderRadioComponent'
 import { UserRole } from '@/enums/UserRole'
 import { createAccount } from '@/services/login/login'
-import IUserInterface from '@/interfaces/IUserInterface'
+import IUserInterface from '@/interfaces/User/IUserInterface'
 import { AxiosError } from 'axios'
 
 type FormData = {

@@ -1,4 +1,4 @@
-import IUserInterface from '@/interfaces/IUserInterface';
+import IUserInterface from '@/interfaces/User/IUserInterface';
 import {create} from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
