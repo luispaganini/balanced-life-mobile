@@ -1,6 +1,5 @@
-import { Text } from 'react-native'
 import React from 'react'
-import { Modal, Portal } from 'react-native-paper'
+import { Portal } from 'react-native-paper'
 import { AddWaterContainer, ModalContainer } from './styles';
 import InputWithTagComponent from '../../Inputs/InputWithTagComponent';
 import { useTranslation } from 'react-i18next';

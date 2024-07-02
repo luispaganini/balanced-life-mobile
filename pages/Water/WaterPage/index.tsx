@@ -21,7 +21,7 @@ export default function WaterPage() {
     const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
-        if (formatDate(waterStore.waterDay) !== formatDate(new Date())) {
+        if (formatDate(new Date(waterStore.waterDay)) !== formatDate(new Date())) {
             waterStore.setCurrentWater(0);
             waterStore.setWaterDay(new Date());
         }
@@ -45,7 +45,6 @@ export default function WaterPage() {
     }
     return (
         <PaperProvider>
-
             <ContainerPage>
                 <WaterEditModal visible={modalVisible} setVisible={setModalVisible} onPress={() => { }} />
                 <ScrollView>
