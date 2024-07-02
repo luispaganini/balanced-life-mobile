@@ -5,7 +5,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { SafeAreaViewComponent } from '@/styles/pages';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import InputFormComponent from '@/components/application/Forms/InputFormComponent';
+import InputFormComponent from '@/components/application/Inputs/InputFormComponent';
 import ButtonComponent from '@/components/application/Forms/ButtonComponent';
 import { Colors } from '@/constants/Colors';
 import useUserStore from '@/store/UserStore';

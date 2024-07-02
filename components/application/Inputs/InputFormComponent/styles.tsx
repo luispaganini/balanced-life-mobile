@@ -23,7 +23,6 @@ export const TextInputComponent = styled.TextInput<{ theme: ColorSchemeName}>`
     color: ${Colors.color.black};
     background-color: ${Colors.color.white};
     padding: 10px;
-
 `;
 
 export const TextInputComponentWithMask = styled(TextInputMask)<{ theme: ColorSchemeName}>`

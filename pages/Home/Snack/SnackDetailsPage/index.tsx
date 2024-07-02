@@ -11,7 +11,6 @@ import { PieChart } from 'react-native-chart-kit'
 import { Colors } from '@/constants/Colors'
 import ItemSnackComponent from '@/components/application/Lists/ItemSnackComponent'
 import { ButtonComponentContainer } from '@/components/application/Forms/ButtonComponent/styles'
-import ButtonComponent from '@/components/application/Forms/ButtonComponent'
 
 export default function SnackDetailsPage() {
     const { id } = useLocalSearchParams()
