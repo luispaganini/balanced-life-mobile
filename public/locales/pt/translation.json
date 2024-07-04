@@ -3,6 +3,7 @@
     "Add water": "Adicionar água",
     "Age": "Idade",
     "Amount of water": "Quantidade de água",
+    "Apply goal": "Aplicar meta",
     "Back": "Voltar",
     "BMI": "IMC",
     "Birthdate": "Data de Nascimento",
@@ -62,6 +63,7 @@
     "User already exists": "Usuário já existe",
     "Update body data": "Atualizar dados corporais",
     "Water": "Água",
+    "Water goal": "Meta de água",
     "Weight": "Peso",
     "Weight is required": "Peso é obrigatório",
     "Weight in kilograms": "Peso em kg"

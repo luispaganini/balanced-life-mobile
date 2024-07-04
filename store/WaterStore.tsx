@@ -15,9 +15,9 @@ type WaterStore = {
 
 const useWaterStore = create<WaterStore>()(persist(
     (set) => ({
-        goalWater: 2000,
+        goalWater: 0,
         setGoalWater: (goalWater) => set({ goalWater }),
-        currentWater: 2500,
+        currentWater: 0,
         setCurrentWater: (currentWater) => set({ currentWater }),
         consumedWaterPercent: 0,
         setConsumedWaterPercent: (consumedWaterPercent) => set({ consumedWaterPercent }),

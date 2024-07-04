@@ -1,6 +1,6 @@
 import React from 'react'
-import { Portal } from 'react-native-paper'
-import { AddWaterContainer, ModalContainer } from './styles';
+import { Modal, Portal } from 'react-native-paper'
+import { AddWaterContainer, TitleModal } from './styles';
 import InputWithTagComponent from '../../Inputs/InputWithTagComponent';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '@/constants/Colors';
@@ -25,12 +25,14 @@ export default function WaterEditModal(props: WaterEditModalProps) {
     }
     return (
         <Portal>
-            <ModalContainer visible={props.visible} onDismiss={() => props.setVisible(!props.visible)}>
+            <Modal visible={props.visible} onDismiss={() => props.setVisible(!props.visible)}>
                 <AddWaterContainer>
-                    <InputWithTagComponent colorTag='red' onChangeText={setTextAddWater} placeholder={t('Amount of water')} value={textAddWater} tagText='ml' />
-                    <ButtonComponent onPress={onPressEdit} title={t('Add water')} color={Colors.color.blue} />
+                    <TitleModal type='subtitle'>{t('Water goal')}</TitleModal>
+                    <InputWithTagComponent colorTag='red' onChangeText={setTextAddWater} placeholder={t('Water goal')} value={textAddWater} tagText='ml' />
+                    <ButtonComponent onPress={onPressEdit} title={t('Apply goal')} color={Colors.color.blue} />
+                    <ButtonComponent onPress={onPressEdit} title={t('Back')} color={Colors.color.lightRed} />
                 </AddWaterContainer>
-            </ModalContainer>
+            </Modal>
         </Portal>
     )
 }

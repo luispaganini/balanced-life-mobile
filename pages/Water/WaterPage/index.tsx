@@ -11,7 +11,6 @@ import useWaterStore from '@/store/WaterStore';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import WaterEditModal from '@/components/application/Modals/WaterEditModal';
-import { PaperProvider } from 'react-native-paper';
 
 export default function WaterPage() {
     const { t } = useTranslation();
@@ -44,35 +43,33 @@ export default function WaterPage() {
         }
     }
     return (
-        <PaperProvider>
-            <ContainerPage>
-                <WaterEditModal visible={modalVisible} setVisible={setModalVisible} onPress={() => { }} />
-                <ScrollView>
-                    <GoalContainer>
-                        <ThemedText type='subtitle'>{t('Goal')}: {waterStore.goalWater}ml</ThemedText>
-                        <EditIcon onPress={() => setModalVisible(true)}>
-                            <MaterialIcons name="edit" size={30} color={colorTheme == 'light' ? Colors.light.text : Colors.dark.text} />
-                        </EditIcon>
-                    </GoalContainer>
-                    <PieContainer>
-                        <PieChart
-                            donut
-                            innerRadius={80}
-                            data={pieData}
-                            centerLabelComponent={() => <Text style={{ fontSize: 30 }}>{waterStore.consumedWaterPercent}%</Text>}
-                        />
-                    </PieContainer>
-                    <PercentContainer>
-                        <ThemedText type='subtitle'>{waterStore.currentWater <= waterStore.goalWater ? t('Missing') + ': ' + (waterStore.goalWater - waterStore.currentWater) + 'ml' : t('Completed')}</ThemedText>
-                    </PercentContainer>
+        <ContainerPage>
+            <WaterEditModal visible={modalVisible} setVisible={setModalVisible} onPress={waterStore.setGoalWater} />
+            <ScrollView>
+                <GoalContainer>
+                    <ThemedText type='subtitle'>{t('Goal')}: {waterStore.goalWater}ml</ThemedText>
+                    <EditIcon onPress={() => setModalVisible(true)}>
+                        <MaterialIcons name="edit" size={30} color={colorTheme == 'light' ? Colors.light.text : Colors.dark.text} />
+                    </EditIcon>
+                </GoalContainer>
+                <PieContainer>
+                    <PieChart
+                        donut
+                        innerRadius={80}
+                        data={pieData}
+                        centerLabelComponent={() => <Text style={{ fontSize: 30 }}>{waterStore.consumedWaterPercent.toFixed(2)}%</Text>}
+                    />
+                </PieContainer>
+                <PercentContainer>
+                    <ThemedText type='subtitle'>{waterStore.currentWater <= waterStore.goalWater ? t('Missing') + ': ' + (waterStore.goalWater - waterStore.currentWater) + 'ml' : t('Completed')}</ThemedText>
+                </PercentContainer>
 
-                    <AddWaterContainer>
-                        <InputWithTagComponent colorTag='red' onChangeText={setTextAddWater} placeholder={t('Amount of water')} value={textAddWater} tagText='ml' />
-                        <ButtonComponent onPress={addWater} title={t('Add water')} color={Colors.color.blue} />
-                    </AddWaterContainer>
-                </ScrollView>
-            </ContainerPage>
-        </PaperProvider>
+                <AddWaterContainer>
+                    <InputWithTagComponent colorTag='red' onChangeText={setTextAddWater} placeholder={t('Amount of water')} value={textAddWater} tagText='ml' />
+                    <ButtonComponent onPress={addWater} title={t('Add water')} color={Colors.color.blue} />
+                </AddWaterContainer>
+            </ScrollView>
+        </ContainerPage>
     );
 };
 
