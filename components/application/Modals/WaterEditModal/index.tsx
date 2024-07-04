@@ -30,7 +30,7 @@ export default function WaterEditModal(props: WaterEditModalProps) {
                     <TitleModal type='subtitle'>{t('Water goal')}</TitleModal>
                     <InputWithTagComponent colorTag='red' onChangeText={setTextAddWater} placeholder={t('Water goal')} value={textAddWater} tagText='ml' />
                     <ButtonComponent onPress={onPressEdit} title={t('Apply goal')} color={Colors.color.blue} />
-                    <ButtonComponent onPress={onPressEdit} title={t('Back')} color={Colors.color.lightRed} />
+                    <ButtonComponent onPress={() => props.setVisible(false)} title={t('Back')} color={Colors.color.lightRed} />
                 </AddWaterContainer>
             </Modal>
         </Portal>
