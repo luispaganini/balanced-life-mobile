@@ -2,7 +2,6 @@ import { ScrollView, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { ImageContainer, InputsContainer, PageContainer } from './styles'
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { SafeAreaViewComponent } from '@/styles/pages';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import InputFormComponent from '@/components/application/Inputs/InputFormComponent';
@@ -43,8 +42,8 @@ export default function AddBodyDataPage() {
                 idUser: user.id as number
             });
             Alert.alert(
-                t("Body data"),
-                t("Body data updated successfully"),
+                t("Body Data"),
+                t("Body data updated"),
                 [
                     {
                         text: "OK",
@@ -54,7 +53,7 @@ export default function AddBodyDataPage() {
             );
         } catch (error) {
             console.error(error);
-            Alert.alert(t("Body data"), t("Error updating body data"));
+            Alert.alert(t("Body Data"), t("Error updating body data"));
         } finally {
             setLoading(false);
         }

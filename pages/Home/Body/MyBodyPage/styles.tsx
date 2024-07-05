@@ -45,3 +45,7 @@ export const NoDataFound = styled(ThemedText)`
     font-size: 25px;
     font-weight: bold;
 `;
+
+export const BodyContainer = styled.View`
+    margin-bottom: 20px;
+`;

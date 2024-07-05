@@ -1,7 +1,6 @@
-import { ActivityIndicator, Dimensions, ScrollView, View } from 'react-native'
+import { Dimensions, ScrollView, View } from 'react-native'
 import React, { useEffect } from 'react'
-import { SafeAreaViewComponent } from '@/styles/pages'
-import { CardsInfoBody, ChartContainer, ImageContainer, Loading, NoDataFound, PageContainer } from './styles'
+import { BodyContainer, CardsInfoBody, ChartContainer, ImageContainer, Loading, NoDataFound, PageContainer } from './styles'
 import { LineChart } from 'react-native-chart-kit';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import CardInfoBody from '@/components/application/Cards/CardInfoBody';
@@ -71,7 +70,7 @@ export default function MyBodyPage() {
                 {loadingPage ? (
                     <Loading size="large" color={Colors.color.cyan} />
                 ) : (
-                    <View>
+                    <BodyContainer>
                         {bodyData.length > 0 ? (
                             <View>
                                 <ChartContainer theme={colorTheme}>
@@ -94,7 +93,7 @@ export default function MyBodyPage() {
                             <NoDataFound>{t('No data found')}</NoDataFound>
                         )}
                         <ButtonComponent title={t('Update body data')} onPress={() => router.navigate('body/add-body-data')} color={Colors.color.blue} />
-                    </View>
+                    </BodyContainer>
                 )}
             </ScrollView>
         </PageContainer>
