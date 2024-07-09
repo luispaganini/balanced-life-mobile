@@ -32,8 +32,7 @@ export default function SnackPage() {
             setPieChartData(getDataPieChart([
                 { nameKey: t("Carbohydrates"), population: snack.carbohydrates, color: Colors.color.orange },
                 { nameKey: t("Protein"), population: snack.protein, color: Colors.color.red },
-                { nameKey: t("Fat"), population: snack.fat, color: Colors.color.green },
-                { nameKey: t("Others"), population: snack.others, color: Colors.color.blue },
+                { nameKey: t("Colesterol"), population: snack.colesterol, color: Colors.color.green },
             ], theme))
         } catch (error) {
             console.error(error);
@@ -63,7 +62,7 @@ export default function SnackPage() {
                         data={snackStore.data?.snacks || []}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({ item }) =>
-                            <CardSnack id={item.id} title={item.title} description={item.description} />}
+                            <CardSnack idMeal={item.idMeal} idTypeSnack={item.id} title={item.title} description={item.totalCalories.toString()} />}
                         ListEmptyComponent={() => <NoDataComponent onPress={loadData} />}
                         onRefresh={loadData}
                         refreshing={snackStore.loading}

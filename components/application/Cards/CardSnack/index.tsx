@@ -5,7 +5,8 @@ import { useColorScheme } from '@/hooks/useColorScheme'
 import { router } from 'expo-router'
 
 type CardSnackProps = {
-    id: number
+    idMeal: number
+    idTypeSnack: number
     title: string
     description: string
 }
@@ -13,12 +14,12 @@ type CardSnackProps = {
 export default function CardSnack(props: CardSnackProps) {
     const colorScheme = useColorScheme()
     return (
-        <CardContainer themed={colorScheme} onPress={() => router.navigate(`/snack/${props.id}`)}>
+        <CardContainer themed={colorScheme} onPress={() => router.navigate(`/snack/${props.idMeal}/${props.idTypeSnack}`)}>
             <CardContent>
                 <CardChildren>
                     <CardTitle>{props.title}</CardTitle>
                 </CardChildren>
-                <CardDescription>{props.description}</CardDescription>
+                <CardDescription>{props.description} Kcal</CardDescription>
             </CardContent>
         </CardContainer>
     )

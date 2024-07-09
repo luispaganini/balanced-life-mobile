@@ -19,7 +19,7 @@ export default function BodyLayout() {
       }}
     >
       <Stack.Screen name='index' options={{ title: t("Snacks") }} />
-      <Stack.Screen name='[id]' options={{ title: t("Snacks") }} />
+      <Stack.Screen name='[idMeal]/[idTypeSnack]' options={{ title: t("Snacks") }} />
     </Stack>
   );
 }

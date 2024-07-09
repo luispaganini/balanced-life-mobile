@@ -1,5 +1,5 @@
 import { View, Text, Dimensions, ScrollView, TextInput } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useLocalSearchParams } from 'expo-router'
 import { ThemedText } from '@/components/ThemedText'
 import { AddItemContainer, ButtonText, IconAdd, InfoContainer, NotesContainer, NotesInputContainer, PageContainer, SnackInfoContainer, SubTitleText, TitleText } from './styles'
@@ -11,18 +11,36 @@ import { PieChart } from 'react-native-chart-kit'
 import { Colors } from '@/constants/Colors'
 import ItemSnackComponent from '@/components/application/Lists/ItemSnackComponent'
 import { ButtonComponentContainer } from '@/components/application/Forms/ButtonComponent/styles'
+import { getSnackDetailsAsync } from '@/services/snack/snack'
+import { ISnackDetailsInterface } from '@/interfaces/Snack/ISnackDetailsInterface'
 
 export default function SnackDetailsPage() {
-    const { id } = useLocalSearchParams()
+    const { idMeal, idTypeSnack } = useLocalSearchParams()
     const screenWidth = Dimensions.get("window").width;
     const theme = useColorScheme();
+    const [snacks, setSnacks] = React.useState<ISnackDetailsInterface>()
     const { t } = useTranslation()
     const [pieChartData, setPieChartData] = React.useState(getDataPieChart([
         { nameKey: t("Carbohydrates"), population: 150, color: Colors.color.orange },
         { nameKey: t("Protein"), population: 200, color: Colors.color.red },
         { nameKey: t("Fat"), population: 80, color: Colors.color.green },
-        { nameKey: t("Others"), population: 500, color: Colors.color.blue },
     ], theme))
+
+    useEffect(() => {
+        loadData();
+    }, [])
+
+    const loadData = async () => {
+        // snackStore.setLoading(true);
+        try {
+            const snacksDetails = await getSnackDetailsAsync(parseInt(idMeal as string), parseInt(idTypeSnack as string));
+            setSnacks(snacksDetails);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            // snackStore.setLoading(false);
+        }
+    }
 
     return (
         <PageContainer>
@@ -43,30 +61,17 @@ export default function SnackDetailsPage() {
                     <View>
                         <SubTitleText type='subtitle'>{t("Dinner")}:</SubTitleText>
                         <SnackInfoContainer>
-                            <ItemSnackComponent
-                                id={1}
-                                quantity={100}
-                                unitMeasurement="g"
-                                name="Arroz"
-                                onPressEdit={() => { }}
-                                onPressDelete={() => { }}
-                            />
-                            <ItemSnackComponent
-                                id={2}
-                                quantity={100}
-                                unitMeasurement="g"
-                                name="Feijão"
-                                onPressEdit={() => { }}
-                                onPressDelete={() => { }}
-                            />
-                            <ItemSnackComponent
-                                id={3}
-                                quantity={100}
-                                unitMeasurement="g"
-                                name="Carne"
-                                onPressEdit={() => { }}
-                                onPressDelete={() => { }}
+                            {snacks?.snacks?.map((item, index) => (
+                                <ItemSnackComponent
+                                    id={item.id}
+                                    quantity={item.quantity}
+                                    unitMeasurement={item.unitMeasurement.name}
+                                    name={item.food.name}
+                                    onPressEdit={() => { }}
+                                    onPressDelete={() => { }}
+                                    key={index}
                                 />
+                            ))}
 
                         </SnackInfoContainer>
                     </View>
