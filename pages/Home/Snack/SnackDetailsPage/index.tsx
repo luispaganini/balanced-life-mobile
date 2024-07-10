@@ -20,11 +20,7 @@ export default function SnackDetailsPage() {
     const theme = useColorScheme();
     const [snacks, setSnacks] = React.useState<ISnackDetailsInterface>()
     const { t } = useTranslation()
-    const [pieChartData, setPieChartData] = React.useState(getDataPieChart([
-        { nameKey: t("Carbohydrates"), population: 150, color: Colors.color.orange },
-        { nameKey: t("Protein"), population: 200, color: Colors.color.red },
-        { nameKey: t("Fat"), population: 80, color: Colors.color.green },
-    ], theme))
+    const [pieChartData, setPieChartData] = React.useState(getDataPieChart([], theme))
 
     useEffect(() => {
         loadData();
@@ -35,6 +31,12 @@ export default function SnackDetailsPage() {
         try {
             const snacksDetails = await getSnackDetailsAsync(parseInt(idMeal as string), parseInt(idTypeSnack as string));
             setSnacks(snacksDetails);
+            setPieChartData(getDataPieChart([
+                { nameKey: t("Carbohydrates"), population: snacksDetails.carbohydrates, color: Colors.color.orange },
+                { nameKey: t("Protein"), population: snacksDetails.protein, color: Colors.color.red },
+                { nameKey: t("Colesterol"), population: snacksDetails.colesterol, color: Colors.color.green },
+                { nameKey: t("Fat"), population: snacksDetails.fat, color: Colors.color.blue },
+            ], theme))
         } catch (error) {
             console.error(error);
         } finally {
@@ -56,7 +58,7 @@ export default function SnackDetailsPage() {
                         paddingLeft={"0"}
                     />
                 }
-                <TitleText type='title'>{500} Kcal</TitleText>
+                <TitleText type='title'>{snacks?.calories} Kcal</TitleText>
                 <InfoContainer>
                     <View>
                         <SubTitleText type='subtitle'>{t("Dinner")}:</SubTitleText>

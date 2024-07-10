@@ -1,5 +1,12 @@
 export interface ISnackDetailsInterface {
     id: number
+    carbohydrates: number,
+	calories: number,
+	colesterol: number,
+	fat: number,
+	protein: number,
+	others: number,
+	totalCalories: number,
     idUser: number
     appointment: string
     observation: string
