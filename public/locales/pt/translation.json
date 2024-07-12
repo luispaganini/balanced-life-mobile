@@ -1,4 +1,5 @@
 {
+    "Add custom food": "Adicionar alimento personalizado",
     "Add new item": "Adicionar novo item",
     "Add water": "Adicionar água",
     "Age": "Idade",
@@ -26,6 +27,7 @@
     "E-mail is required": "E-mail é obrigatório",
     "Fat": "Gordura",
     "Female": "Feminino",
+    "Food": "Alimento",
     "Gender": "Sexo",
     "Gender is required": "Sexo é obrigatório",
     "Goal": "Meta",
@@ -45,6 +47,7 @@
     "Neighborhood": "Bairro",
     "Next": "Próximo",
     "Number": "Número",
+    "Nutritional Information": "Informações Nutricionais",
     "No data found": "Nenhum dado encontrado",
     "Notes": "Observações",
     "Nutritionist": "Nutricionista",

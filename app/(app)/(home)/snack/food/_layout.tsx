@@ -4,7 +4,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import useTokenStore from '@/store/TokenStore';
 import { useTranslation } from 'react-i18next';
 
-export default function MealLayout() {
+export default function FoodLayout() {
   const colorScheme = useColorScheme();
   const { t } = useTranslation();
   const { accessToken, refreshToken } = useTokenStore();
@@ -16,11 +16,11 @@ export default function MealLayout() {
     <Stack
       screenOptions={{
         headerTitleAlign: 'center',
+        headerShown: false
       }}
     >
-      <Stack.Screen name='index' options={{ title: t("Snacks") }} />
-      <Stack.Screen name='[idMeal]/[idTypeSnack]' options={{ title: t("Snacks") }} />
-      <Stack.Screen name='food' options={{ title: t("Food") }} />
+      <Stack.Screen name='[idMeal]/[idTypeSnack]/search-food' options={{ title: t("Food")}} />
+      <Stack.Screen name='[idMeal]/[idTypeSnack]/[idFood]' options={{ title: t("Food")}} />
     </Stack>
   );
 }

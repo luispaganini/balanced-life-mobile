@@ -12,6 +12,7 @@ import NoDataComponent from '@/components/application/Lists/NoDataComponent';
 import { getSnackAsync } from '@/services/snack/snack';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useTranslation } from 'react-i18next';
+import LoadingPageComponent from '@/components/application/Lists/LoadingPageComponent';
 
 export default function SnackPage() {
     const screenWidth = Dimensions.get("window").width;
@@ -43,35 +44,37 @@ export default function SnackPage() {
 
     return (
         <PageContainer>
-            {snackStore.data ? (
+            {snackStore.loading ? <LoadingPageComponent /> : (
                 <SnackContainer>
-                    {pieChartData.length > 0 &&
-                        <PieChart
-                            data={pieChartData}
-                            width={screenWidth}
-                            height={150}
-                            chartConfig={chartConfig}
-                            accessor={"population"}
-                            backgroundColor={"transparent"}
-                            paddingLeft={"0"}
-                        />
-                    }
-                    <TitleText type='title'>{snackStore.data.totalCalories} Kcal</TitleText>
-                    <DatePickerComponent onChange={snackStore.setDate} value={snackStore.date} />
-                    <FlatList
-                        data={snackStore.data?.snacks || []}
-                        keyExtractor={(item) => item.id.toString()}
-                        renderItem={({ item }) =>
-                            <CardSnack idMeal={item.idMeal} idTypeSnack={item.id} title={item.title} description={item.totalCalories.toString()} />}
-                        ListEmptyComponent={() => <NoDataComponent onPress={loadData} />}
-                        onRefresh={loadData}
-                        refreshing={snackStore.loading}
-                    />
+                    {snackStore.data ? (
+                        <SnackContainer>
+                            {pieChartData.length > 0 &&
+                                <PieChart
+                                    data={pieChartData}
+                                    width={screenWidth}
+                                    height={150}
+                                    chartConfig={chartConfig}
+                                    accessor={"population"}
+                                    backgroundColor={"transparent"}
+                                    paddingLeft={"0"}
+                                />
+                            }
+                            <TitleText type='title'>{snackStore.data.totalCalories} Kcal</TitleText>
+                            <DatePickerComponent onChange={snackStore.setDate} value={snackStore.date} />
+                            <FlatList
+                                data={snackStore.data?.snacks || []}
+                                keyExtractor={(item) => item.id.toString()}
+                                renderItem={({ item }) =>
+                                    <CardSnack idMeal={item.idMeal} idTypeSnack={item.id} title={item.title} description={item.totalCalories.toString()} />}
+                                ListEmptyComponent={() => <NoDataComponent onPress={loadData} />}
+                                onRefresh={loadData}
+                                refreshing={snackStore.loading}
+                            />
+                        </SnackContainer>
+                    ) : (
+                        <NoDataComponent onPress={loadData} />
+                    )}
                 </SnackContainer>
-            ) : (
-                <View>
-
-                </View>
             )}
 
         </PageContainer >

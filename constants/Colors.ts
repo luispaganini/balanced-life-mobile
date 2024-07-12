@@ -43,7 +43,8 @@ export const Colors = {
     lightPurple: "#BFB5FD",
     lightBlue: "#98D0F0",
     darkBlue: "#000930",
-    orange: "#FF8A00"
+    orange: "#FF8A00",
+    grey: '#9BA1A6',
   },
 };
 
