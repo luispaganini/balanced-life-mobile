@@ -12,7 +12,7 @@ export default function TabLayout() {
   const { t } = useTranslation();
   const { accessToken, refreshToken } = useTokenStore();
   if (!accessToken || !refreshToken) {
-    return <Redirect href={"/login-one"}/>
+    return <Redirect href={"/login-one"} />
   }
 
   return (
@@ -33,7 +33,7 @@ export default function TabLayout() {
           headerTitleAlign: 'center'
         }}
       />
-            <Tabs.Screen
+      <Tabs.Screen
         name="(water)"
         options={{
           title: t('Water'),

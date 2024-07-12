@@ -16,3 +16,7 @@ export const NutritionalInformationContainer = styled(ThemedView)`
     flex: 1;
     padding: 20px;
 `;
+
+export const NutritionalInformationDataContainer = styled(ThemedView)`
+    padding: 10px 20px 20px 20px;
+`;

@@ -10,7 +10,6 @@ export const InputWithTagContainer = styled.View<{ theme: ColorSchemeName}>`
         .dark.border};
     border-width: 1px;
     border-radius: 5px;
-    margin-bottom: 20px;
     color: ${Colors.color.black};
     background-color: ${Colors.color.white};
     justify-content: space-between;

@@ -1,5 +1,6 @@
 {
     "Add custom food": "Adicionar alimento personalizado",
+    "Add food": "Adicionar alimento",
     "Add new item": "Adicionar novo item",
     "Add water": "Adicionar água",
     "Age": "Idade",
@@ -57,6 +58,7 @@
     "Password must contain at least 8 characters, including a letter and a number": "Senha deve conter pelo menos 8 caracteres, incluindo uma letra e um número",
     "Passwords do not match": "Senhas não conferem",
     "Protein": "Proteínas",
+    "Quantity": "Quantidade",
     "Refresh": "Atualizar",
     "Schedule Appointment": "Agendar Consulta",
     "Snacks": "Refeições",
