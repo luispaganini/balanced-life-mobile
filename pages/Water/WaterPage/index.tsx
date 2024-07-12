@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from 'react-native'
+import { Text, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { PieChart } from 'react-native-gifted-charts'
 import { AddWaterContainer, ContainerPage, EditIcon, GoalContainer, PercentContainer, PieContainer } from './styles';
@@ -27,9 +27,13 @@ export default function WaterPage() {
     }, [])
 
     useEffect(() => {
-        const percentage = (waterStore.currentWater / waterStore.goalWater) * 100;
-        waterStore.setConsumedWaterPercent(percentage > 100 ? 100 : percentage);
-    }, [waterStore.currentWater]);
+        if (waterStore.goalWater == 0)
+            waterStore.setConsumedWaterPercent(100)
+        else if (waterStore.currentWater && waterStore.goalWater) {
+            const percentage = (waterStore.currentWater / waterStore.goalWater) * 100;
+            waterStore.setConsumedWaterPercent(percentage > 100 ? 100 : percentage);
+        }
+    }, [waterStore.currentWater, waterStore.goalWater]);
 
     const pieData = [
         { value: waterStore.consumedWaterPercent, color: Colors.color.blue },
@@ -57,7 +61,7 @@ export default function WaterPage() {
                         donut
                         innerRadius={80}
                         data={pieData}
-                        centerLabelComponent={() => <Text style={{ fontSize: 30 }}>{waterStore.consumedWaterPercent.toFixed(2)}%</Text>}
+                        centerLabelComponent={() => <Text style={{ fontSize: 30 }}>{waterStore.consumedWaterPercent ? waterStore.consumedWaterPercent.toFixed(2) : 0}%</Text>}
                     />
                 </PieContainer>
                 <PercentContainer>
