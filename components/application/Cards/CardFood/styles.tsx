@@ -26,4 +26,5 @@ export const CardFoodText = styled.Text`
     flex-wrap: wrap;
     flex-shrink: 1;
     font-weight: 500;
+    padding-right: 10px;
 `;
