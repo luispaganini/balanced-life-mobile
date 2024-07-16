@@ -5,12 +5,17 @@ import ButtonComponent from '../ButtonComponent'
 import { Colors } from '@/constants/Colors'
 import { useTranslation } from 'react-i18next'
 
-export default function AddFoodComponent() {
+type AddFoodComponentProps = {
+    onPress: () => void,
+    quantity: string,
+    setQuantity: (quantity: string) => void
+}
+
+export default function AddFoodComponent(props: AddFoodComponentProps) {
     const { t } = useTranslation()
-    const [quantity, setQuantity] = React.useState('')
     return (
         <AddFoodContainer>
-            <InputWithTagComponent colorTag={Colors.color.red} onChangeText={setQuantity} placeholder={t('Quantity')} tagText='g' value={quantity} />
+            <InputWithTagComponent colorTag={Colors.color.red} onChangeText={props.setQuantity} placeholder={t('Quantity')} tagText='g' value={props.quantity} />
             <ButtonComponent color={Colors.color.blue} onPress={() => { }} title={t('Add food')} />
         </AddFoodContainer>
     )

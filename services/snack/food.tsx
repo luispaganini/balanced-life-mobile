@@ -10,3 +10,12 @@ export async function findFoodBySearch(search: string, page: number): Promise<Ar
     
     return response.data;
 }
+
+export async function getFoodById(id: number): Promise<IFoodInterface> {
+    const response = await api.get(`/food/${id}`);
+
+    if (response.status != 200)
+        throw new Error(response.data.message);
+    
+    return response.data;
+}

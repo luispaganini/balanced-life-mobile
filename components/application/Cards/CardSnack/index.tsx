@@ -13,6 +13,7 @@ type CardSnackProps = {
 
 export default function CardSnack(props: CardSnackProps) {
     const colorScheme = useColorScheme()
+    console.log(props.idMeal)
     return (
         <CardContainer themed={colorScheme} onPress={() => router.navigate(`/snack/${props.idMeal}/${props.idTypeSnack}`)}>
             <CardContent>
