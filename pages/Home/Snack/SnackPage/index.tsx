@@ -51,7 +51,7 @@ export default function SnackPage() {
                             {pieChartData.length > 0 &&
                                 <PieChart
                                     data={pieChartData}
-                                    width={screenWidth}
+                                    width={screenWidth - 40}
                                     height={150}
                                     chartConfig={chartConfig}
                                     accessor={"population"}

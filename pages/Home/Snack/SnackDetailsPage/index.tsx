@@ -11,15 +11,16 @@ import { PieChart } from 'react-native-chart-kit'
 import { Colors } from '@/constants/Colors'
 import ItemSnackComponent from '@/components/application/Lists/ItemSnackComponent'
 import { ButtonComponentContainer } from '@/components/application/Forms/ButtonComponent/styles'
-import { getSnackDetailsAsync } from '@/services/snack/snack'
+import { deleteSnack, getSnackDetailsAsync } from '@/services/snack/snack'
 import { ISnackDetailsInterface } from '@/interfaces/Snack/ISnackDetailsInterface'
 import LoadingPageComponent from '@/components/application/Lists/LoadingPageComponent'
+import { useSnackStore } from '@/store/SnackStore'
 
 export default function SnackDetailsPage() {
     const { idMeal, idTypeSnack } = useLocalSearchParams()
     const screenWidth = Dimensions.get("window").width;
     const theme = useColorScheme();
-    const [snacks, setSnacks] = React.useState<ISnackDetailsInterface>()
+    const snackStore = useSnackStore()
     const { t } = useTranslation()
     const [pieChartData, setPieChartData] = React.useState(getDataPieChart([], theme))
     const [loading, setLoading] = React.useState(false)
@@ -32,7 +33,7 @@ export default function SnackDetailsPage() {
         setLoading(true);
         try {
             const snacksDetails = await getSnackDetailsAsync(parseInt(idMeal as string), parseInt(idTypeSnack as string));
-            setSnacks(snacksDetails);
+            snackStore.setSnackDetails(snacksDetails);
             setPieChartData(getDataPieChart([
                 { nameKey: t("Carbohydrates"), population: snacksDetails.carbohydrates, color: Colors.color.orange },
                 { nameKey: t("Protein"), population: snacksDetails.protein, color: Colors.color.red },
@@ -46,6 +47,15 @@ export default function SnackDetailsPage() {
         }
     }
 
+    const deleteSnackFunction = async (idSnack: number) => {
+        try {
+            await deleteSnack(idSnack);
+            snackStore.deleteSnackFromDetails(idSnack);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     return (
         <PageContainer>
             {loading ? <LoadingPageComponent /> : (
@@ -53,7 +63,7 @@ export default function SnackDetailsPage() {
                     {pieChartData.length > 0 &&
                         <PieChart
                             data={pieChartData}
-                            width={screenWidth}
+                            width={screenWidth - 40}
                             height={150}
                             chartConfig={chartConfig}
                             accessor={"population"}
@@ -61,19 +71,27 @@ export default function SnackDetailsPage() {
                             paddingLeft={"0"}
                         />
                     }
-                    <TitleText type='title'>{snacks?.calories} Kcal</TitleText>
+                    <TitleText type='title'>{snackStore.snackDetails?.calories} Kcal</TitleText>
                     <InfoContainer>
                         <View>
                             <SubTitleText type='subtitle'>{t("Dinner")}:</SubTitleText>
                             <SnackInfoContainer>
-                                {snacks?.snacks?.map((item, index) => (
+                                {snackStore.snackDetails?.snacks?.map((item, index) => (
                                     <ItemSnackComponent
                                         id={item.id}
                                         quantity={item.quantity}
                                         unitMeasurement={item.unitMeasurement.name}
                                         name={item.food.name}
-                                        onPressEdit={() => { }}
-                                        onPressDelete={() => { }}
+                                        onPressEdit={() =>
+                                            router.push({
+                                                pathname: `/snack/food/${idMeal}/${idTypeSnack}/${item.food.id}`,
+                                                params: {
+                                                    idSnack: item.id,
+                                                    quantitySnack: item.quantity.toString(),
+                                                    idUnitMeasurement: item.unitMeasurement.id
+                                                }
+                                            })}
+                                        onPressDelete={() => deleteSnackFunction(item.id)}
                                         key={index}
                                     />
                                 ))}

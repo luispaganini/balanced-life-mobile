@@ -16,7 +16,7 @@ export default function AddFoodComponent(props: AddFoodComponentProps) {
     return (
         <AddFoodContainer>
             <InputWithTagComponent colorTag={Colors.color.red} onChangeText={props.setQuantity} placeholder={t('Quantity')} tagText='g' value={props.quantity} />
-            <ButtonComponent color={Colors.color.blue} onPress={() => { }} title={t('Add food')} />
+            <ButtonComponent color={Colors.color.blue} onPress={props.onPress} title={t('Add food')} />
         </AddFoodContainer>
     )
 }

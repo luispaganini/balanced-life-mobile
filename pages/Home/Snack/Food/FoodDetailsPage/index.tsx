@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { useLocalSearchParams } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 import { NutritionalInformationContainer, NutritionalInformationDataContainer, PageContainer, TitleText } from './styles'
 import { ThemedText } from '@/components/ThemedText'
 import { useTranslation } from 'react-i18next'
@@ -10,13 +10,20 @@ import IFoodInterface from '@/interfaces/Snack/Food/IFoodInterface'
 import { InfoAboutFoodContainer, ScrollViewContainer } from '@/components/application/Forms/AddFoodComponent/styles'
 import IFoodNutritionInfo from '@/interfaces/Snack/Food/IFoodNutritionInfo'
 import { calculateNutritionalValues } from '@/utils/functionsFood'
+import { setSnack, updateSnack } from '@/services/snack/snack'
+import { useSnackStore } from '@/store/SnackStore'
 
 export default function FoodDetailsPage() {
     const { idMeal, idTypeSnack, idFood } = useLocalSearchParams()
+
+    //If the method is update
+    const { idSnack, idUnitMeasurement, quantitySnack } = useLocalSearchParams()
+
     const { t } = useTranslation()
     const [food, setFood] = useState<IFoodInterface>()
-    const [quantity, setQuantity] = useState('100')
+    const [quantity, setQuantity] = useState(quantitySnack ? quantitySnack as string : '100')
     const [adjustedNutritionalInfo, setAdjustedNutritionalInfo] = useState<IFoodNutritionInfo[]>([])
+    const snackStore = useSnackStore()
 
     useEffect(() => {
         loadData()
@@ -38,8 +45,41 @@ export default function FoodDetailsPage() {
         }
     }
 
-    const addSnack = () => {
-        console.log('Add snack')
+    const addSnack = async () => {
+        try {
+            const snack = await setSnack({
+                appointment: snackStore.date,
+                idFood: parseInt(idFood as string),
+                idMeal: parseInt(idMeal as string),
+                idTypeSnack: parseInt(idTypeSnack as string),
+                quantity: parseFloat(quantity),
+                idUnitMeasurement: 10004
+            })
+
+            snackStore.addSnackToDetails(snack)
+            router.dismissAll()
+            router.push(`/snack/${idMeal}/${idTypeSnack}`)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const update = async () => {
+        try {
+            const snack = await updateSnack({
+                appointment: snackStore.date,
+                idFood: parseInt(idFood as string),
+                idMeal: parseInt(idMeal as string),
+                idTypeSnack: parseInt(idTypeSnack as string),
+                quantity: parseFloat(quantity),
+                idUnitMeasurement: parseInt(idUnitMeasurement as string) ?? 0
+            }, parseInt(idSnack as string))
+
+            snackStore.updateSnackInDetails(snack)
+            router.back()
+        } catch (error) {
+            console.error(error)
+        }
     }
     
 
@@ -63,7 +103,7 @@ export default function FoodDetailsPage() {
                             </NutritionalInformationDataContainer>
                         </NutritionalInformationContainer>
                     </ScrollViewContainer>
-                    <AddFoodComponent onPress={() => {}} quantity={quantity} setQuantity={setQuantity}/>
+                    <AddFoodComponent onPress={() => {idSnack ? update() : addSnack()}} quantity={quantity} setQuantity={setQuantity}/>
                 </PageContainer>
             )}
         </PageContainer>

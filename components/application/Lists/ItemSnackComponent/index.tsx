@@ -18,7 +18,7 @@ export default function ItemSnackComponent(props: ItemSnackComponentProps) {
     const theme = useColorScheme();
     return (
         <ItemContainer>
-            <TextItem numberOfLines={2} ellipsizeMode='tail'>{props.quantity}{props.unitMeasurement} {props.name}</TextItem>
+            <TextItem numberOfLines={2} ellipsizeMode='tail'>• {props.quantity}{props.unitMeasurement} {props.name}</TextItem>
             <IconsContainer>
                 <TouchableOpacity onPress={props.onPressEdit}>
                     <EditIcon name="pencil-sharp" size={24} color={theme == 'light' ? Colors.light.text : Colors.dark.text} />
