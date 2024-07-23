@@ -15,6 +15,7 @@ import { deleteSnack, getSnackDetailsAsync } from '@/services/snack/snack'
 import { ISnackDetailsInterface } from '@/interfaces/Snack/ISnackDetailsInterface'
 import LoadingPageComponent from '@/components/application/Lists/LoadingPageComponent'
 import { useSnackStore } from '@/store/SnackStore'
+import StatusMeal from '@/enums/StatusMeal'
 
 export default function SnackDetailsPage() {
     const { idMeal, idTypeSnack } = useLocalSearchParams()
@@ -109,15 +110,19 @@ export default function SnackDetailsPage() {
 
                     <NotesContainer>
                         <ThemedText>{t('Notes')}:</ThemedText>
-                        <NotesInputContainer theme={theme} multiline={true} />
+                        <NotesInputContainer theme={theme} multiline={true} editable={snackStore.snackDetails?.status == StatusMeal.NotAwnsered}/>
                     </NotesContainer>
 
-                    <ButtonComponentContainer color={Colors.color.green}>
-                        <ButtonText>{t('Completed Snack')}</ButtonText>
-                    </ButtonComponentContainer>
-                    <ButtonComponentContainer color={Colors.color.red}>
-                        <ButtonText>{t('Snack not finished')}</ButtonText>
-                    </ButtonComponentContainer>
+                    {snackStore.snackDetails?.status == StatusMeal.NotAwnsered && (
+                    <View>
+                        <ButtonComponentContainer color={Colors.color.green}>
+                            <ButtonText>{t('Completed Snack')}</ButtonText>
+                        </ButtonComponentContainer>
+                        <ButtonComponentContainer color={Colors.color.red}>
+                            <ButtonText>{t('Snack not finished')}</ButtonText>
+                        </ButtonComponentContainer>
+                    </View>
+                    )}
                 </ScrollView>
             )}
         </PageContainer>
