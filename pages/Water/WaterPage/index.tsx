@@ -20,6 +20,11 @@ export default function WaterPage() {
     const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
+        if (waterStore.goalWater == 0) 
+            waterStore.setConsumedWaterPercent(100)
+        else if ((waterStore.currentWater - waterStore.goalWater) <= 0) 
+            waterStore.setConsumedWaterPercent(0);
+
         if (formatDate(new Date(waterStore.waterDay)) !== formatDate(new Date())) {
             waterStore.setCurrentWater(0);
             waterStore.setWaterDay(new Date());
@@ -27,9 +32,7 @@ export default function WaterPage() {
     }, [])
 
     useEffect(() => {
-        if (waterStore.goalWater == 0)
-            waterStore.setConsumedWaterPercent(100)
-        else if (waterStore.currentWater && waterStore.goalWater) {
+        if (waterStore.currentWater && waterStore.goalWater) {
             const percentage = (waterStore.currentWater / waterStore.goalWater) * 100;
             waterStore.setConsumedWaterPercent(percentage > 100 ? 100 : percentage);
         }

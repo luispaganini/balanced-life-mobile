@@ -3,9 +3,9 @@ import { MenuContainer, PageContainer } from './styles'
 import CardRedirect from '@/components/application/Cards/CardRedirect'
 import { useTranslation } from 'react-i18next'
 import { Colors } from '@/constants/Colors';
-import { setupTokenRefresh } from '@/services/login/login';
 import { Button } from 'react-native-paper';
 import useTokenStore from '@/store/TokenStore';
+import { setupTokenRefresh } from '@/services/login/refreshToken';
 
 export default function HomePage() {
     const { t } = useTranslation();
