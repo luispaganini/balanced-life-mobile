@@ -48,7 +48,7 @@ export default function SnackPage() {
                 <SnackContainer>
                     {snackStore.data ? (
                         <SnackContainer>
-                            {pieChartData.length > 0 &&
+                            {(pieChartData.length > 0 && snackStore.data.totalCalories > 0)&&
                                 <PieChart
                                     data={pieChartData}
                                     width={screenWidth - 40}

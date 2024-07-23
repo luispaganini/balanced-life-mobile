@@ -51,6 +51,7 @@ export default function SnackDetailsPage() {
         try {
             await deleteSnack(idSnack);
             snackStore.deleteSnackFromDetails(idSnack);
+            loadData();
         } catch (error) {
             console.error(error);
         }
@@ -60,7 +61,7 @@ export default function SnackDetailsPage() {
         <PageContainer>
             {loading ? <LoadingPageComponent /> : (
                 <ScrollView>
-                    {pieChartData.length > 0 &&
+                    {(pieChartData.length > 0 && (snackStore.snackDetails && snackStore.snackDetails?.calories > 0)) &&
                         <PieChart
                             data={pieChartData}
                             width={screenWidth - 40}

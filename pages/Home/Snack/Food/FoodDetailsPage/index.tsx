@@ -76,7 +76,7 @@ export default function FoodDetailsPage() {
             }, parseInt(idSnack as string))
 
             snackStore.updateSnackInDetails(snack)
-            router.back()
+            router.push(`/snack/${idMeal}/${idTypeSnack}`)
         } catch (error) {
             console.error(error)
         }
