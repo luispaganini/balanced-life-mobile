@@ -11,6 +11,7 @@ import useWaterStore from '@/store/WaterStore';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import WaterEditModal from '@/components/application/Modals/WaterEditModal';
+import { formatDate } from '@/utils/functionsApp';
 
 export default function WaterPage() {
     const { t } = useTranslation();
@@ -79,7 +80,3 @@ export default function WaterPage() {
         </ContainerPage>
     );
 };
-
-function formatDate(date: Date): string {
-    return date.toISOString().split('T')[0];
-}

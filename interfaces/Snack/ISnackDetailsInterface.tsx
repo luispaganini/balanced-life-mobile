@@ -1,3 +1,5 @@
+import StatusMeal from "@/enums/StatusMeal"
+
 export interface ISnackDetailsInterface {
     id: number
     carbohydrates: number,
@@ -10,7 +12,7 @@ export interface ISnackDetailsInterface {
     idUser: number
     appointment: string
     observation: string
-    status: number
+    status: StatusMeal
     typeSnack: TypeSnack
     snacks: Snack[]
 }

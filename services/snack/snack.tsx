@@ -2,6 +2,7 @@ import ISnackInterface from "@/interfaces/Snack/ISnackInterface";
 import api from "../api";
 import { ISnackDetailsInterface, Snack } from "@/interfaces/Snack/ISnackDetailsInterface";
 import ISnackFullInterface from "@/interfaces/Snack/ISnackFullInterface";
+import StatusMeal from "@/enums/StatusMeal";
 
 export async function getSnackAsync(date: Date): Promise<ISnackInterface> {
     const response = await api.get('/snacks/', { params: { date: date } });
@@ -44,4 +45,14 @@ export async function deleteSnack(id: number) {
 
     if (response.status != 200)
         throw new Error(response.data.message);
+}
+
+export async function sendSnack(status: StatusMeal, observation: string, idMeal: number) {
+    const response = await api.put(`/meal/status/${idMeal}`, { 
+        status,
+        observation 
+    });
+
+    if (response.status != 200)
+        throw new Error();
 }

@@ -11,11 +11,12 @@ import { PieChart } from 'react-native-chart-kit'
 import { Colors } from '@/constants/Colors'
 import ItemSnackComponent from '@/components/application/Lists/ItemSnackComponent'
 import { ButtonComponentContainer } from '@/components/application/Forms/ButtonComponent/styles'
-import { deleteSnack, getSnackDetailsAsync } from '@/services/snack/snack'
+import { deleteSnack, getSnackDetailsAsync, sendSnack } from '@/services/snack/snack'
 import { ISnackDetailsInterface } from '@/interfaces/Snack/ISnackDetailsInterface'
 import LoadingPageComponent from '@/components/application/Lists/LoadingPageComponent'
 import { useSnackStore } from '@/store/SnackStore'
 import StatusMeal from '@/enums/StatusMeal'
+import { formatDate } from '@/utils/functionsApp'
 
 export default function SnackDetailsPage() {
     const { idMeal, idTypeSnack } = useLocalSearchParams()
@@ -58,6 +59,15 @@ export default function SnackDetailsPage() {
         }
     }
 
+    const sendMeal = async (status: StatusMeal) => {
+        try {
+            await sendSnack(status, snackStore.snackDetails?.observation as string, parseInt(idMeal as string));
+            loadData();
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     return (
         <PageContainer>
             {loading ? <LoadingPageComponent /> : (
@@ -84,6 +94,7 @@ export default function SnackDetailsPage() {
                                         quantity={item.quantity}
                                         unitMeasurement={item.unitMeasurement.name}
                                         name={item.food.name}
+                                        status={snackStore.snackDetails?.status as StatusMeal}
                                         onPressEdit={() =>
                                             router.push({
                                                 pathname: `/snack/food/${idMeal}/${idTypeSnack}/${item.food.id}`,
@@ -101,24 +112,32 @@ export default function SnackDetailsPage() {
                             </SnackInfoContainer>
                         </View>
                     </InfoContainer>
-                    <ButtonComponentContainer color={Colors.color.blue} onPress={() => router.navigate(`/snack/food/${idMeal}/${idTypeSnack}/search-food`)}>
-                        <AddItemContainer>
-                            <IconAdd name="add-circle-outline" size={26} color={Colors.color.white} />
-                            <ButtonText>{t('Add new item')}</ButtonText>
-                        </AddItemContainer>
-                    </ButtonComponentContainer>
+                    {snackStore.snackDetails?.status == StatusMeal.NotAwnsered &&
+                        <ButtonComponentContainer color={Colors.color.blue} onPress={() => router.navigate(`/snack/food/${idMeal}/${idTypeSnack}/search-food`)}>
+                            <AddItemContainer>
+                                <IconAdd name="add-circle-outline" size={26} color={Colors.color.white} />
+                                <ButtonText>{t('Add new item')}</ButtonText>
+                            </AddItemContainer>
+                        </ButtonComponentContainer>
+                    }
 
                     <NotesContainer>
                         <ThemedText>{t('Notes')}:</ThemedText>
-                        <NotesInputContainer theme={theme} multiline={true} editable={snackStore.snackDetails?.status == StatusMeal.NotAwnsered}/>
+                        <NotesInputContainer 
+                            theme={theme} 
+                            multiline={true} 
+                            editable={snackStore.snackDetails?.status == StatusMeal.NotAwnsered}
+                            value={snackStore.snackDetails?.observation}
+                            onChangeText={(text) => snackStore.setObservation(text)}
+                        />
                     </NotesContainer>
 
-                    {snackStore.snackDetails?.status == StatusMeal.NotAwnsered && (
+                    {(snackStore.snackDetails?.status == StatusMeal.NotAwnsered && formatDate(snackStore.date) == formatDate(new Date)) && (
                     <View>
-                        <ButtonComponentContainer color={Colors.color.green}>
+                        <ButtonComponentContainer color={Colors.color.green} onPress={() => sendMeal(StatusMeal.Finished)}>
                             <ButtonText>{t('Completed Snack')}</ButtonText>
                         </ButtonComponentContainer>
-                        <ButtonComponentContainer color={Colors.color.red}>
+                        <ButtonComponentContainer color={Colors.color.red} onPress={() => sendMeal(StatusMeal.NotFullyFinished)}>
                             <ButtonText>{t('Snack not finished')}</ButtonText>
                         </ButtonComponentContainer>
                     </View>

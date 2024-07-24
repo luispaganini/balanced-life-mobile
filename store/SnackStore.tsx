@@ -11,6 +11,7 @@ type SnackState = {
     setData: (data: ISnackInterface) => void;
     setSnackDetails: (snackDetails: ISnackDetailsInterface) => void;
     setLoading: (loading: boolean) => void;
+    setObservation: (observation: string) => void;
     addSnackToDetails: (snack: Snack) => void;
     updateSnackInDetails: (updatedSnack: Snack) => void;
     deleteSnackFromDetails: (snackId: number) => void;
@@ -62,6 +63,19 @@ export const useSnackStore = create<SnackState>((set) => ({
                     snackDetails: {
                         ...state.snackDetails,
                         snacks: updatedSnacks,
+                    },
+                };
+            }
+            return { snackDetails: state.snackDetails };
+        });
+    },
+    setObservation: (observation: string) => {
+        set((state) => {
+            if (state.snackDetails) {
+                return {
+                    snackDetails: {
+                        ...state.snackDetails,
+                        observation,
                     },
                 };
             }
