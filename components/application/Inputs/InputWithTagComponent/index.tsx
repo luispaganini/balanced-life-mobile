@@ -9,6 +9,7 @@ type InputWithTagComponentProps = {
     placeholder: string;
     colorTag: string;
     tagText: string;
+    editable?: boolean;
 }
 
 export default function InputWithTagComponent(props: InputWithTagComponentProps) {
@@ -23,6 +24,7 @@ export default function InputWithTagComponent(props: InputWithTagComponentProps)
                 }}
                 value={props.value}
                 keyboardType='numeric'
+                editable={props.editable}
             />
             <TextContainer color={props.colorTag}>{props.tagText}</TextContainer>
         </InputWithTagContainer>

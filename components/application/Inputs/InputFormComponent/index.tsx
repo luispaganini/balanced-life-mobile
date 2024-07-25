@@ -34,7 +34,6 @@ export default function InputFormComponent(props: InputFormProps) {
                     <TextInputComponentWithMask
                         type={props.typeMask}
                         placeholder={props.placeholder}
-                        placeholderTextColor={`black`}
                         onChangeText={props.onChangeText}
                         value={props.value}
                         theme={colorTheme}
@@ -49,7 +48,6 @@ export default function InputFormComponent(props: InputFormProps) {
                     {props.title && <TitleInput>{t(props.placeholder)}</TitleInput>}
                     <TextInputComponent
                         placeholder={props.placeholder}
-                        placeholderTextColor={`black`}
                         onChangeText={props.onChangeText}
                         value={props.value}
                         theme={colorTheme}

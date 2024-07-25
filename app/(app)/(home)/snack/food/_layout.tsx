@@ -21,6 +21,7 @@ export default function FoodLayout() {
     >
       <Stack.Screen name='[idMeal]/[idTypeSnack]/search-food' options={{ title: t("Food")}} />
       <Stack.Screen name='[idMeal]/[idTypeSnack]/[idFood]' options={{ title: t("Food")}} />
+      <Stack.Screen name='add' options={{ title: t("Add Food")}} />
     </Stack>
   );
 }

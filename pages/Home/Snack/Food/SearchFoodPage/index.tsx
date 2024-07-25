@@ -103,7 +103,7 @@ export default function SearchFoodPage() {
                     />
                 </ListFoodContainer>
             </ContentPage>
-            <ButtonComponent color={Colors.color.green} onPress={() => { }} title='Add custom food' />
+            <ButtonComponent color={Colors.color.green} onPress={() => router.push('snack/food/add')} title='Add custom food' />
         </SearchFoodContainer>
     )
 }
