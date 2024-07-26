@@ -9,24 +9,15 @@ import ButtonComponent from '@/components/application/Forms/ButtonComponent'
 import { router } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { getReferenceValuesFood } from '@/utils/functionsFood'
-import { UnitMeasurement } from '@/interfaces/Snack/Food/IFoodNutritionInfo'
 import InputWithTagComponent from '@/components/application/Inputs/InputWithTagComponent'
-import { ThemedText } from '@/components/ThemedText'
-
-interface NutritionalComposition {
-    id: number
-    item: string
-    unitMeasurement: UnitMeasurement
-}
-
-interface FormData {
-    name: string
-    [key: string]: string
-}
+import IFoodInterface from '@/interfaces/Snack/Food/IFoodInterface'
+import { createFood } from '@/services/snack/food'
+import { FormData, INutritionalComposition } from '@/interfaces/Snack/Food/INutritionalComposition'
+import LoadingPageComponent from '@/components/application/Lists/LoadingPageComponent'
 
 export default function AddFoodPage() {
-    const [loading, setLoading] = useState(false)
-    const [referenceValues, setReferenceValues] = useState<NutritionalComposition[]>([])
+    const [loading, setLoading] = useState(true)
+    const [referenceValues, setReferenceValues] = useState<INutritionalComposition[]>([])
     const { t } = useTranslation()
     const { control, handleSubmit, formState: { errors }, setValue } = useForm<FormData>({
         defaultValues: {
@@ -39,6 +30,7 @@ export default function AddFoodPage() {
         async function fetchReferenceValues() {
             const values: any = await getReferenceValuesFood()
             setReferenceValues(values)
+            setLoading(false)
         }
 
         fetchReferenceValues()
@@ -51,7 +43,8 @@ export default function AddFoodPage() {
         const totalQuantity = parseFloat(data.quantity)
         Keyboard.dismiss()
         try {
-            const foodData = {
+            const foodData: IFoodInterface = {
+                id: undefined,
                 name: data.name,
                 idFoodGroup: undefined,
                 referenceTable: "usuário",
@@ -61,6 +54,7 @@ export default function AddFoodPage() {
                     const adjustedQuantity = convertTo100g(quantity, totalQuantity)
 
                     return {
+                        id: undefined,
                         unitMeasurement: {
                             id: item.unitMeasurement.id,
                             name: item.unitMeasurement.name,
@@ -73,15 +67,14 @@ export default function AddFoodPage() {
                     }
                 })
             }
-            console.log(foodData)
-            // Enviar foodData para a API
-            // const response = await createFood(foodData)
-            // if (response) {
-            //     router.navigate("/some-route")
-            // }
+            const response = await createFood(foodData)
+            if (response) {
+                Alert.alert(t("Add food"), t("Food created successfully"))
+                router.back()
+            }
         } catch (error) {
             console.log(error)
-            Alert.alert(t("Create Food"), t("An error occurred"))
+            Alert.alert(t("Add food"), t("An error occurred, verify if all fields are filled and if not exists a food with the same name"))
         } finally {
             setLoading(false)
         }
@@ -89,6 +82,10 @@ export default function AddFoodPage() {
 
     return (
         <SafeAreaViewComponent>
+            {loading ? (
+                <LoadingPageComponent />
+            ) : (
+
             <ContainerPage>
                 <ScrollView>
                     <Controller
@@ -155,6 +152,7 @@ export default function AddFoodPage() {
                     </ButtonsContainer>
                 </ScrollView>
             </ContainerPage>
+            )}
         </SafeAreaViewComponent>
     )
 }

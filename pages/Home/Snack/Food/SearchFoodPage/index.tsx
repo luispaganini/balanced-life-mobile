@@ -92,8 +92,8 @@ export default function SearchFoodPage() {
                 <ListFoodContainer>
                     <FlatList
                         data={foods}
-                        renderItem={({ item }) => <CardFood id={item.id} name={item.name} table={item.referenceTable} onPress={foodDetailsRedirect} />}
-                        keyExtractor={item => item.id.toString()}
+                        renderItem={({ item }) => <CardFood id={item.id as number} name={item.name} table={item.referenceTable} onPress={foodDetailsRedirect} />}
+                        keyExtractor={item => (item.id as number).toString()}
                         onEndReached={loadMoreData}
                         onEndReachedThreshold={0.2}
                         ListFooterComponent={renderFooter}

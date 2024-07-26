@@ -70,8 +70,6 @@ export async function getReferenceValuesFood() {
         };
     });
 
-    console.log(updatedArray)
-
     return updatedArray;
 }
 

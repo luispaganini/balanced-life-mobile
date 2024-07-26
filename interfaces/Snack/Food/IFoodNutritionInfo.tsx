@@ -1,5 +1,5 @@
 export default interface IFoodNutritionInfo {
-    id: number
+    id: number | undefined
     unitMeasurement: UnitMeasurement
     quantity: number
     nutritionalComposition: NutritionalComposition

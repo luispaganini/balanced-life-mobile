@@ -1,9 +1,9 @@
 import IFoodNutritionInfo from "./IFoodNutritionInfo";
 
 export default interface IFoodInterface {
-    id: number,
+    id: number | undefined,
     name: string,
-    idFoodGroup: number,
+    idFoodGroup: number | undefined,
     referenceTable: string,
     brand: string,
     foodNutritionInfo: IFoodNutritionInfo[]

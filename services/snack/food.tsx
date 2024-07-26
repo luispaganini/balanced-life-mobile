@@ -39,3 +39,12 @@ export async function getNutritionalComposition(): Promise<Array<NutritionalComp
     
     return response.data;
 }
+
+export async function createFood(food: IFoodInterface): Promise<IFoodInterface> {
+    const response = await api.post(`/food`, food);
+
+    if (response.status != 201)
+        throw new Error(response.data.message);
+    
+    return response.data;
+}
