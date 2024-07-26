@@ -1,6 +1,7 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Ionicons } from "@expo/vector-icons";
+import { IconButton } from "react-native-paper";
 import styled from "styled-components/native";
 
 export const ItemContainer = styled(ThemedView)`
@@ -21,7 +22,11 @@ export const IconsContainer = styled(ThemedView)`
     align-items: center;
 `
 
-export const EditIcon = styled(Ionicons)`
-    margin-right: 10px;
-    margin-left: 10px;
+export const IconButtonComponent = styled(IconButton)`
+    margin-right: 0px;
+    margin-left: 0px;
+`
+
+export const AgeText = styled(ThemedText)`
+    font-size: 12px;
 `

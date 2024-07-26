@@ -1,7 +1,7 @@
 export default interface IUserInterface {
     id: number | null | undefined
     name: string | null | undefined
-    birth: string | null | undefined
+    birth: Date | null | undefined
     password: string | undefined
     email: string | null | undefined
     urlImage: string | null | undefined

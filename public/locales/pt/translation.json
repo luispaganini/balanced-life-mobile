@@ -43,6 +43,7 @@
     "Invalid height": "Altura inválida",
     "is required": "é obrigatório",
     "Loading More": "Carregando Mais",
+    "Log out": "Sair",
     "Male": "Masculino",
     "Meals": "Refeições",
     "Missing": "Faltam",
@@ -61,6 +62,7 @@
     "Password is required": "Senha é obrigatória",
     "Password must contain at least 8 characters, including a letter and a number": "Senha deve conter pelo menos 8 caracteres, incluindo uma letra e um número",
     "Passwords do not match": "Senhas não conferem",
+    "Profile": "Perfil",
     "Protein": "Proteínas",
     "Quantity": "Quantidade",
     "Reference Table": "Tabela de Referência",
@@ -76,5 +78,6 @@
     "Water goal": "Meta de água",
     "Weight": "Peso",
     "Weight is required": "Peso é obrigatório",
-    "Weight in kilograms": "Peso em kg"
+    "Weight in kilograms": "Peso em kg",
+    "years": "anos"
 }

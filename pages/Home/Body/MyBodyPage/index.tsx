@@ -86,7 +86,7 @@ export default function MyBodyPage() {
                                     <CardInfoBody title={t('Weight')} description={weight.toFixed(2) + ' kg'} />
                                     <CardInfoBody title={t('Height')} description={height.toFixed(2) + ' m'} />
                                     <CardInfoBody title={t('BMI')} description={calculateBMI(weight, height) + ' kg/m²'} />
-                                    <CardInfoBody title={t('Age')} description={calculateAge(new Date(user.birth as string)) + ' anos'} />
+                                    <CardInfoBody title={t('Age')} description={calculateAge(new Date(user.birth as Date)) + ' '+ t('years')} />
                                 </CardsInfoBody>
                             </View>
                         ) : (

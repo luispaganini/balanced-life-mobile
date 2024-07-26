@@ -3,8 +3,9 @@ import React from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
-import { EditIcon, IconsContainer, ItemContainer, TextItem } from './styles';
+import { IconButtonComponent, IconsContainer, ItemContainer, TextItem } from './styles';
 import StatusMeal from '@/enums/StatusMeal';
+import { IconButton } from 'react-native-paper';
 
 type ItemSnackComponentProps = {
     id: number;
@@ -23,12 +24,8 @@ export default function ItemSnackComponent(props: ItemSnackComponentProps) {
             <TextItem numberOfLines={2} ellipsizeMode='tail'>• {props.quantity}{props.unitMeasurement} {props.name}</TextItem>
             {props.status == StatusMeal.NotAwnsered &&
                 <IconsContainer>
-                    <TouchableOpacity onPress={props.onPressEdit}>
-                        <EditIcon name="pencil-sharp" size={24} color={theme == 'light' ? Colors.light.text : Colors.dark.text} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={props.onPressDelete}>
-                        <Ionicons name="trash-outline" size={24} color={theme == 'light' ? Colors.light.text : Colors.dark.text} />
-                    </TouchableOpacity>
+                    <IconButtonComponent onPress={props.onPressEdit} size={24} iconColor={theme == 'light' ? Colors.light.text : Colors.dark.text} icon='pencil' />
+                    <IconButtonComponent onPress={props.onPressDelete} size={24} iconColor={theme == 'light' ? Colors.light.text : Colors.dark.text} icon='trash-can'/>
                 </IconsContainer>
             }
         </ItemContainer>

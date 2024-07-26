@@ -2,6 +2,9 @@ import axios from 'axios';
 import appConfig from '../app.json';
 import useTokenStore from '@/store/TokenStore';
 import { setupTokenRefresh } from './login/refreshToken';
+import { Alert } from 'react-native';
+import { router } from 'expo-router';
+import * as Network from 'expo-network';
 
 const api = axios.create({
     baseURL: appConfig.application.uris.api,
@@ -22,9 +25,36 @@ api.interceptors.response.use(response => response, async (error) => {
         const { accessToken } = useTokenStore.getState();
         axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
         originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
-        return api(originalRequest); 
+        return api(originalRequest);
     }
     return Promise.reject(error);
 });
+
+api.interceptors.request.use(
+    async (config) => {
+        const networkState = await Network.getNetworkStateAsync();
+        const { clearTokens } = useTokenStore.getState();
+        if (!networkState.isConnected) {
+            Alert.alert(
+                'Sem Conexão',
+                'Você está sem conexão com a internet. Você será redirecionado para a página de login.',
+                [
+                    {
+                        text: 'OK',
+                        onPress: () => clearTokens(),
+                    },
+                ]
+            );
+
+            throw new axios.Cancel('Sem conexão com a internet');
+        }
+
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    }
+);
+
 
 export default api;

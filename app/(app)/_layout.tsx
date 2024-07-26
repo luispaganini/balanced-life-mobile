@@ -45,6 +45,18 @@ export default function TabLayout() {
           headerTitleAlign: 'center'
         }}
       />
+      <Tabs.Screen
+        name="(profile)"
+        options={{
+          title: t('Profile'),
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
+          ),
+          headerShown: false,
+          headerTitle: t('Profile'),
+          headerTitleAlign: 'center'
+        }}
+      />
     </Tabs>
   );
 }
