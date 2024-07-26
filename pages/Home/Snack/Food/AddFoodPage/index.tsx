@@ -61,7 +61,10 @@ export default function AddFoodPage() {
                     const adjustedQuantity = convertTo100g(quantity, totalQuantity)
 
                     return {
-                        unitMeasurement: item.unitMeasurement.name,
+                        unitMeasurement: {
+                            id: item.unitMeasurement.id,
+                            name: item.unitMeasurement.name,
+                        },
                         quantity: adjustedQuantity,
                         nutritionalComposition: {
                             id: item.id,
@@ -118,7 +121,7 @@ export default function AddFoodPage() {
                                     colorTag='red'
                                     tagText={'g'}
                                 />
-                                {errors.quantity && <ErrorText style={{color: 'red'}}>{errors.quantity.message}</ErrorText>}
+                                {errors.quantity && <ErrorText>{errors.quantity.message}</ErrorText>}
                             </View>
                         )}
                         name="quantity"
@@ -141,7 +144,7 @@ export default function AddFoodPage() {
                                         colorTag='red'
                                         tagText={item.unitMeasurement.name}
                                     />
-                                    {errors[`composition_${item.id}`] && <ErrorText style={{color: 'red'}}>{errors[`composition_${item.id}`]?.message}</ErrorText>}
+                                    {errors[`composition_${item.id}`] && <ErrorText>{errors[`composition_${item.id}`]?.message}</ErrorText>}
                                 </View>
                             )}
                             name={`composition_${item.id}`}
