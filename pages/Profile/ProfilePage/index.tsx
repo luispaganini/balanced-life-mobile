@@ -10,10 +10,14 @@ import IUserInterface from '@/interfaces/User/IUserInterface'
 import { useTranslation } from 'react-i18next'
 import ProfileInfoComponent from '@/components/application/Lists/ProfileInfoComponent'
 import { Colors } from '@/constants/Colors'
+import useTokenStore from '@/store/TokenStore'
+import { formatDate, formatToBr } from '@/utils/functionsApp'
+import { router } from 'expo-router'
 
 export default function ProfilePage() {
     const { user } = useUserStore() as { user: IUserInterface };
     const colorScheme = useColorScheme()
+    const { clearTokens } = useTokenStore();
     const widthPage = Dimensions.get('window').width;
     const { t } = useTranslation();
     return (
@@ -28,20 +32,19 @@ export default function ProfilePage() {
                             <AgeText>{t('Age')}: {calculateAge(new Date(user.birth as Date)) + ' ' + t('years')}</AgeText>
                         </UserInfoContainer>
                     </ProfileInfoContent>
-                    <IconButton icon="pencil" onPress={() => { }} size={30} />
+                    <IconButton icon="pencil" onPress={() => router.navigate('/edit-page')} size={30} />
                 </ProfileInfoContainer>
                 <DividerContent theme={colorScheme} />
                 <InfoExtraUserContainer>
                     <InfoExtraUserItems>
                         <ProfileInfoComponent title={'E-mail'} description={user.email as string} />
                         <ProfileInfoComponent title={t('Number')} description={user.phoneNumber as string} />
-                        <ProfileInfoComponent title={t('City')} description={user.location?.city.name as string} />
-                        <ProfileInfoComponent title={t('State')} description={user.location?.state.name as string} />
-                        <ProfileInfoComponent title={t('Country')} description={user.location?.state.country as string} />
+                        <ProfileInfoComponent title={t('Gender')} description={user.gender as string} />
+                        <ProfileInfoComponent title={t('Birthdate')} description={formatToBr(user.birth as Date)} />
                     </InfoExtraUserItems>
-                    <IconButton icon="pencil" onPress={() => { }} size={30} />
+                    <IconButton icon="pencil" onPress={() => router.navigate('/edit-extra-page')} size={30} />
                 </InfoExtraUserContainer>
-                <ButtonLogOut>
+                <ButtonLogOut onPress={() => clearTokens()}>
                     <Icon source="logout" size={30} color={Colors.color.red} />
                     <LogoutText>{t('Log out')}</LogoutText>
                 </ButtonLogOut>

@@ -10,13 +10,29 @@ export default function TabProfileLayout() {
   const { t } = useTranslation();
   const { accessToken, refreshToken } = useTokenStore();
   if (!accessToken || !refreshToken) {
-    return <Redirect href={"/login-one"}/>
+    return <Redirect href={"/login-one"} />
   }
 
   return (
-    <Stack screenOptions={{headerShown: false, headerTitleAlign: 'center'}}>
+    <Stack screenOptions={{ headerShown: false, headerTitleAlign: 'center' }}>
       <Stack.Screen
         name="index"
+        options={{
+          title: t('Profile'),
+          headerShown: true,
+          headerTitle: t('Profile')
+        }}
+      />
+      <Stack.Screen
+        name="edit-page"
+        options={{
+          title: t('Profile'),
+          headerShown: true,
+          headerTitle: t('Profile')
+        }}
+      />
+      <Stack.Screen
+        name="edit-extra-page"
         options={{
           title: t('Profile'),
           headerShown: true,

@@ -1,4 +1,4 @@
-import { View, Text, Keyboard, ScrollView, Button, Alert } from 'react-native'
+import { Keyboard, ScrollView, Alert } from 'react-native'
 import React from 'react'
 import { SafeAreaViewComponent } from '@/styles/pages'
 import { router } from 'expo-router'
@@ -14,7 +14,7 @@ import GenderRadioComponent from '@/components/application/Forms/GenderRadioComp
 import { UserRole } from '@/enums/UserRole'
 import { createAccount } from '@/services/login/login'
 import IUserInterface from '@/interfaces/User/IUserInterface'
-import { AxiosError } from 'axios'
+import { formatDate } from '@/utils/functionsApp'
 
 type FormData = {
     name: string,
@@ -39,7 +39,7 @@ export default function CreateAccountOne() {
             cpf: data.cpf,
             password: data.password,
             phoneNumber: data.phoneNumber,
-            birth: data.birthDate,
+            birth: new Date(data.birthDate),
             gender: data.gender,
             idUserRole: UserRole.CLIENT,
             isCompleteProfile: false,
@@ -87,7 +87,7 @@ export default function CreateAccountOne() {
             password: "",
             confirmPassword: "",
             phoneNumber: user?.phoneNumber ? user.phoneNumber : "",
-            birthDate: user?.birth ? user.birth : "",
+            birthDate: user?.birth ? formatDate(user.birth) : "",
             gender: user?.gender ? user.gender : "",
         },
     })
