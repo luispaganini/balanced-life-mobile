@@ -23,15 +23,19 @@ export default function SearchFoodPage() {
 
     useEffect(() => {
         foodStore.setLoading(false);
-        if (searchQuery !== '')
-            loadData();
+        if (searchQuery !== '') {
+            const delayDebounceFn = setTimeout(() => {
+                loadData();
+            }, 100);
+            return () => clearTimeout(delayDebounceFn);
+        }
         else {
             setFoods([]);
             foodStore.noDataFound = false;
         }
-        
+
     }, [searchQuery]);
-    
+
     const loadData = async () => {
         try {
             setFoods([]);

@@ -1,6 +1,5 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { Colors } from "@/constants/Colors";
 import { Dimensions } from "react-native";
 import styled from "styled-components/native";
 
@@ -11,10 +10,17 @@ export const ContainerPage = styled(ThemedView)`
     justify-content: space-between;
 `;
 
+export const TitleItem = styled(ThemedText)`
+    align-self: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: bold;
+`;
+
 export const ImageContainer = styled.View`
     align-items: center;
     justify-content: center;
-    margin-top: 20px;
+    margin-top: 40px;
 `;
 
 export const ImageItem = styled.Image`
@@ -22,31 +28,24 @@ export const ImageItem = styled.Image`
     height: ${screenWidth/2}px;
 `;
 
-export const Title = styled(ThemedText)`
-    align-self: center;
-    margin-bottom: 20px;
-`;
-
-export const ButtonComponent = styled.TouchableOpacity<{color: string}>`
-    background-color: ${(props) => props.color};
-    padding: 10px;
-    border-radius: 5px;
+export const InputContainer = styled.View`
     align-items: center;
     justify-content: center;
-    margin-top: 10px;
-    width: 70%;
-    align-self: center;
+    flex: 1;
+    padding-left: 20px;
+    padding-right: 20px;
 `;
 
-export const TextComponent = styled.Text`
-    color: ${Colors.color.white};
-    font-size: 20px;
-`;
-
-export const ForgotPassword = styled.TouchableOpacity`
-    width: 90%;
-    flex-direction: row;
+export const ButtonContainer = styled.View`
+    margin-top: 20px;
+    width: 100%;
     align-self: center;
-    margin-top: 5px;
     justify-content: flex-end;
+    padding-bottom: 40px;
+`;
+
+export const SendCodeButton = styled.TouchableOpacity`
+    flex-direction: row;
+    align-self: flex-end;
+    margin-top: 10px;
 `;

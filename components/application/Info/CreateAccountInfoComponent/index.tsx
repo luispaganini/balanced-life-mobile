@@ -3,13 +3,15 @@ import React from 'react'
 import { ThemedView } from '@/components/ThemedView'
 import { AskForCreateAccount, ContainerPage, RedirectLink } from './styles'
 import { router } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 
 export default function CreateAccountInfoComponent() {
+    const { t } = useTranslation();
     return (
         <ContainerPage>
-            <AskForCreateAccount>Ainda não tem uma conta?</AskForCreateAccount>
+            <AskForCreateAccount>{t('Not have an account yet?')}</AskForCreateAccount>
             <TouchableOpacity onPress={() => router.navigate('(create)/create-one')}>
-                <RedirectLink>Criar uma conta</RedirectLink>
+                <RedirectLink>{t('Create an account')}</RedirectLink>
             </TouchableOpacity>
         </ContainerPage>
     )

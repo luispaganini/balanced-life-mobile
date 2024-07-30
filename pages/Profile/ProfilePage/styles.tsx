@@ -33,6 +33,11 @@ export const NameText = styled(ThemedText)`
     flex-shrink: 1;
 `;
 
+export const ChangePasswordText = styled(ThemedText)`
+    font-size: 16px;
+    color: ${Colors.color.red};
+`;
+
 export const DividerContent = styled(Divider)<{ theme: ColorSchemeName }>`
     margin-top: 20px;
     margin-bottom: 20px;

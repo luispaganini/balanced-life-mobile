@@ -13,7 +13,7 @@ type ButtonComponentProps = {
 export default function ButtonComponent(props: ButtonComponentProps) {
     const { t } = useTranslation();
     return (
-        <ButtonComponentContainer onPress={props.onPress} color={props.color}>
+        <ButtonComponentContainer onPress={props.onPress} color={props.color} disabled={props.loading}>
             {props.loading ?
                 <ActivityIndicator size="small" color="#fff" />
                 :

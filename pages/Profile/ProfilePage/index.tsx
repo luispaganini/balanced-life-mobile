@@ -1,6 +1,6 @@
-import { Dimensions, ScrollView, View } from 'react-native'
+import { Dimensions, ScrollView, Touchable, TouchableOpacity, View } from 'react-native'
 import React from 'react'
-import { ButtonLogOut, DividerContent, InfoExtraUserContainer, InfoExtraUserItems, LogoutText, NameText, PageContainer, ProfileInfoContainer, ProfileInfoContent, UserInfoContainer } from './styles'
+import { ButtonLogOut, ChangePasswordText, DividerContent, InfoExtraUserContainer, InfoExtraUserItems, LogoutText, NameText, PageContainer, ProfileInfoContainer, ProfileInfoContent, UserInfoContainer } from './styles'
 import useUserStore from '@/store/UserStore'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { Divider, Icon, IconButton } from 'react-native-paper'
@@ -13,6 +13,7 @@ import { Colors } from '@/constants/Colors'
 import useTokenStore from '@/store/TokenStore'
 import { formatDate, formatToBr } from '@/utils/functionsApp'
 import { router } from 'expo-router'
+import { ThemedText } from '@/components/ThemedText'
 
 export default function ProfilePage() {
     const { user } = useUserStore() as { user: IUserInterface };
@@ -23,13 +24,15 @@ export default function ProfilePage() {
     return (
         <PageContainer>
             <ScrollView>
-
                 <ProfileInfoContainer>
                     <ProfileInfoContent>
                         <Icon size={widthPage / 4} source="account-circle-outline" color={Colors[colorScheme ?? 'light'].border} />
                         <UserInfoContainer>
                             <NameText numberOfLines={2} ellipsizeMode='tail'>{user?.name}</NameText>
                             <AgeText>{t('Age')}: {calculateAge(new Date(user.birth as Date)) + ' ' + t('years')}</AgeText>
+                        <TouchableOpacity onPress={() => router.navigate('/change-password-page')}>
+                            <ChangePasswordText>{t('Change password')}</ChangePasswordText>
+                        </TouchableOpacity>
                         </UserInfoContainer>
                     </ProfileInfoContent>
                     <IconButton icon="pencil" onPress={() => router.navigate('/edit-page')} size={30} />

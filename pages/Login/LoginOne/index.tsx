@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { SafeAreaViewComponent } from '@/styles/pages'
 import { ActivityIndicator, Alert, Keyboard, View } from 'react-native'
 import { ButtonComponent, ContainerPage, ImageContainer, ImageItem, TextComponent, Title } from './styles'
-import { Controller, set, useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import InputFormComponent from '@/components/application/Inputs/InputFormComponent'
 import CreateAccountInfoComponent from '@/components/application/Info/CreateAccountInfoComponent'
 import { useTranslation } from 'react-i18next'
@@ -14,6 +14,7 @@ export default function LoginOne() {
     const { t } = useTranslation();
     const { setUser } = useUserStore();
     const [loading, setLoading] = React.useState(false)
+
     const onSubmit = async (data: {cpf: string}) => {
         Keyboard.dismiss()
         setLoading(true);

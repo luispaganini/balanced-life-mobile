@@ -39,6 +39,14 @@ export default function TabProfileLayout() {
           headerTitle: t('Profile')
         }}
       />
+      <Stack.Screen
+        name="change-password-page"
+        options={{
+          title: t('Profile'),
+          headerShown: true,
+          headerTitle: t('Profile')
+        }}
+      />
     </Stack>
   );
 }

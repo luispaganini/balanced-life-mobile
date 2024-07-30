@@ -16,6 +16,7 @@ export default function _layout() {
         <Stack.Screen name="login-one" options={{ headerShown: false }} />
         <Stack.Screen name="login-two" options={{ headerShown: false }} />
         <Stack.Screen name="(create)/create-one" options={{ headerShown: false }} />
+        <Stack.Screen name="(forget)/pin-code" options={{ headerShown: false }} />
       </Stack>
     );
 }
