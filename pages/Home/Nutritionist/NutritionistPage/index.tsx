@@ -7,12 +7,11 @@ import { ImageContainer, InfoContainer, PageContainer } from './styles'
 import ProfileInfoComponent from '@/components/application/Lists/ProfileInfoComponent'
 import { useTranslation } from 'react-i18next'
 import { formatToBr } from '@/utils/functionsApp'
-import useUserStore from '@/store/UserStore'
-import IUserInterface from '@/interfaces/User/IUserInterface'
+import { useNutritionistStore } from '@/store/NutritionistStore'
 
 export default function NutritionistPage() {
     const colorScheme = useColorScheme();
-    const { user } = useUserStore() as { user: IUserInterface };
+    const { nutritionistSelected } = useNutritionistStore();
     const { t } = useTranslation()
     const widthPage = Dimensions.get('window').width;
     return (
@@ -21,10 +20,11 @@ export default function NutritionistPage() {
                 <Icon size={widthPage / 3} source="account-circle-outline" color={Colors[colorScheme ?? 'light'].border} />
             </ImageContainer>
             <InfoContainer>
-                <ProfileInfoComponent title={'E-mail'} description={user.email as string} />
-                <ProfileInfoComponent title={t('Number')} description={user.phoneNumber as string} />
-                <ProfileInfoComponent title={t('Gender')} description={user.gender as string} />
-                <ProfileInfoComponent title={t('Birthdate')} description={formatToBr(user.birth as Date)} />
+                <ProfileInfoComponent title={t('Name')} description={nutritionistSelected.nutritionist.name as string} />
+                <ProfileInfoComponent title={'E-mail'} description={nutritionistSelected.nutritionist.email as string} />
+                <ProfileInfoComponent title={t('Number')} description={nutritionistSelected.nutritionist.phoneNumber as string} />
+                <ProfileInfoComponent title={t('Gender')} description={nutritionistSelected.nutritionist.gender as string} />
+                <ProfileInfoComponent title={t('Birthdate')} description={formatToBr(nutritionistSelected.nutritionist.birth as Date)} />
             </InfoContainer>
         </PageContainer>
     )

@@ -25,3 +25,9 @@ export async function verifyPasswordCode(verificationCode: string) {
 
     return response
 }
+
+export async function getNutritionistList() {
+    const response = await api.get(`/user/nutritionists`)
+
+    return response
+}

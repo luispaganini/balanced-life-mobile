@@ -4,25 +4,28 @@ import { CheckCard, DataCard, InfoCard, PageContainer } from './styles'
 import { Icon } from 'react-native-paper'
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import { router } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import INutritionistListInterface from '@/interfaces/User/INutritionistListInterface';
 
 type CardNutritionistProps = {
-    name: string;
+    nutri: INutritionistListInterface
+    onPress: (item: INutritionistListInterface) => void;
 }
 
 export default function CardNutritionist(props: CardNutritionistProps) {
     const colorScheme = useColorScheme();
     const widthPage = Dimensions.get('window').width;
+    const { t } = useTranslation();
     return (
-        <PageContainer theme={colorScheme} onPress={() => router.navigate('nutritionist/1')}>
+        <PageContainer theme={colorScheme} onPress={() => props.onPress(props.nutri)}>
             <Icon size={widthPage / 4} source="account-circle-outline" color={Colors.color.black} />
             <DataCard>
                 <InfoCard>
-                    <Text>Nome: </Text>
-                    <Text>{props.name}</Text>
+                    <Text>{t('Name')}: </Text>
+                    <Text>{props.nutri.nutritionist.name}</Text>
                 </InfoCard>
                 <CheckCard>
-                    <Text>Meu nutricionista</Text>
+                    <Text>{t('My Nutritionist')}</Text>
                     <Icon source="check" size={20} color={Colors.color.green} />
                 </CheckCard>
 
