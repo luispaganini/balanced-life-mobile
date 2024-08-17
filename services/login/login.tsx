@@ -11,13 +11,10 @@ export async function loginVerifyCPF(cpf: string): Promise<IUserInterface> {
 
 }
 
-export async function login(cpf: string, password: string): Promise<ITokenInterface> {
+export async function login(cpf: string, password: string) {
     const response = await api.post('/login', { cpf, password })
 
-    if (response.status !== 200)
-        throw new Error(response.data.message)
-
-    return response.data
+    return response
 }
 
 export async function createAccount(user: IUserInterface): Promise<IUserInterface> {

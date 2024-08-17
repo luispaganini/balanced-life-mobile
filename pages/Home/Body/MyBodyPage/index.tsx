@@ -92,7 +92,7 @@ export default function MyBodyPage() {
                         ) : (
                             <NoDataFound>{t('No data found')}</NoDataFound>
                         )}
-                        <ButtonComponent title={t('Update body data')} onPress={() => router.navigate('body/add-body-data')} color={Colors.color.blue} />
+                        <ButtonComponent title={t('Update body data')} onPress={() => router.navigate('/body/add-body-data')} color={Colors.color.blue} />
                     </BodyContainer>
                 )}
             </ScrollView>

@@ -1,14 +1,8 @@
+import ILinkPatientInterface from "./ILinkPatientInterface"
 import IUserInterface from "./IUserInterface"
 
 export default interface INutritionistListInterface {
-    link: Link
+    link: ILinkPatientInterface
     nutritionist: IUserInterface
 }
 
-export interface Link {
-    id: number
-    idNutritionist: number
-    idPatient: number
-    isCurrentNutritionist: boolean
-    linkStatus: number
-}

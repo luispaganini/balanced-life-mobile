@@ -24,15 +24,16 @@ export default function LoginTwo() {
         try {
             const response = await login(data.cpf, data.password);
 
-            if (response) {
-                setAccessToken(response.accessToken)
-                setRefreshToken(response.refreshToken)
+            if (response.status === 200) {
+                setAccessToken(response.data.accessToken)
+                setRefreshToken(response.data.refreshToken)
                 router.navigate("/")
-            } else {
-                Alert.alert("Login", t("Invalid CPF or password"))
             }
-        } catch (error) {
-            console.log(error)
+        } catch (error: any) {
+            if (error.response.status === 401)
+                Alert.alert("Login", t("Invalid CPF or password"))
+            else
+                Alert.alert("Login", t("Error on login"))
         } finally {
             setLoading(false)
         }

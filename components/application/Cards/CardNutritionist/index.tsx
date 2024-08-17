@@ -24,10 +24,12 @@ export default function CardNutritionist(props: CardNutritionistProps) {
                     <Text>{t('Name')}: </Text>
                     <Text>{props.nutri.nutritionist.name}</Text>
                 </InfoCard>
-                <CheckCard>
-                    <Text>{t('My Nutritionist')}</Text>
-                    <Icon source="check" size={20} color={Colors.color.green} />
-                </CheckCard>
+                {props.nutri.link.isCurrentNutritionist &&
+                    <CheckCard>
+                        <Text>{t('My Nutritionist')}</Text>
+                        <Icon source="check" size={20} color={Colors.color.green} />
+                    </CheckCard>
+                }
 
             </DataCard>
         </PageContainer>
