@@ -96,7 +96,7 @@ export default function NutritionistPage() {
                                 </TouchableOpacity>
                             }
                             {nutritionistSelected.nutritionist.whatsapp &&
-                                <TouchableOpacity onPress={() => redirectLink(`https://wa.me/${(nutritionistSelected.nutritionist.whatsapp as string).replace(/\D/g, '')}`)}>
+                                <TouchableOpacity onPress={() => redirectLink(`https://wa.me/+55${(nutritionistSelected.nutritionist.whatsapp as string).replace(/\D/g, '')}`)}>
                                     <Icon size={widthPage / 10} source="whatsapp" color={Colors[colorScheme ?? 'light'].border} />
                                 </TouchableOpacity>
                             }

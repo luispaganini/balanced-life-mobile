@@ -1,50 +1,103 @@
-# Welcome to your Expo app 👋
+# Projeto React Native com Expo
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Este projeto é uma aplicação mobile desenvolvida com React Native e Expo, oferecendo um ambiente simplificado para desenvolvimento e teste de aplicações nativas.
 
-## Get started
+## Requisitos
 
-1. Install dependencies
+Antes de começar, certifique-se de ter o seguinte instalado em seu sistema:
+
+- [Node.js](https://nodejs.org/en/) (versão 14 ou superior)
+- [npm](https://www.npmjs.com/) ou [yarn](https://yarnpkg.com/)
+- [Expo CLI](https://docs.expo.dev/get-started/installation/) instalada globalmente:
+  
+  ```bash
+  npm install -g expo-cli
+  ```
+
+- Aplicativo Expo Go instalado no seu dispositivo móvel (disponível na [App Store](https://apps.apple.com/app/apple-store/id982107779) ou [Google Play](https://play.google.com/store/apps/details?id=host.exp.exponent)).
+
+## Instalação
+
+1. Clone este repositório para sua máquina local:
+
+   ```bash
+   git clone https://github.com/seu-usuario/seu-projeto.git
+   ```
+
+2. Acesse o diretório do projeto:
+
+   ```bash
+   cd seu-projeto
+   ```
+
+3. Instale as dependências do projeto:
+
+   Usando `npm`:
 
    ```bash
    npm install
    ```
 
-2. Start the app
+   Ou usando `yarn`:
 
    ```bash
-    npx expo start
+   yarn install
    ```
 
-In the output, you'll find options to open the app in a
+## Configuração do endpoint API
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Vá até o arquivo app.json e insira o endpoint da API no seguinte campo:
+   ```bash
+   "application": {
+      "uris": {
+         "api": "https://sua-api.com"
+      }
+   }
+  ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Get a fresh project
+## Executar a Aplicação
 
-When you're ready, run:
+1. Para rodar o projeto em modo de desenvolvimento, utilize o seguinte comando:
 
-```bash
-npm run reset-project
-```
+   Usando `npm`:
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+   ```bash
+   npm start
+   ```
 
-## Learn more
+   Ou usando `yarn`:
 
-To learn more about developing your project with Expo, look at the following resources:
+   ```bash
+   yarn start
+   ```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+2. Após executar o comando acima, o Expo CLI abrirá uma interface no navegador com um QR code. Escaneie o QR code usando o aplicativo **Expo Go** no seu dispositivo móvel.
 
-## Join the community
+3. A aplicação será carregada no seu dispositivo, e todas as alterações feitas no código serão refletidas instantaneamente.
 
-Join our community of developers creating universal apps.
+## Build para Produção
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+1. Para gerar uma build nativa do aplicativo, você pode utilizar os serviços da Expo para construir um APK ou IPA:
+
+   ```bash
+   expo build:android
+   ```
+
+   ou
+
+   ```bash
+   expo build:ios
+   ```
+
+   Isso gerará a build que pode ser instalada diretamente nos dispositivos ou submetida às lojas de aplicativos.
+
+
+## Scripts Disponíveis
+
+- `start`: Inicia o projeto em modo de desenvolvimento.
+- `android`: Executa o projeto em um emulador Android ou dispositivo físico.
+- `ios`: Executa o projeto em um emulador iOS ou dispositivo físico.
+- `build:android`: Gera o APK para Android.
+- `build:ios`: Gera o IPA para iOS.
+

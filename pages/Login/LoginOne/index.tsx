@@ -23,9 +23,13 @@ export default function LoginOne() {
     
             if (response && response.isCompleteProfile) {
                 setUser(response)
-                router.navigate("login-two")
-            } else
-                router.navigate("(create)/create-one")
+                router.navigate("/login-two")
+            } else {
+                if (response) 
+                    setUser(response)
+                
+                router.navigate("/(create)/create-one")
+            }
         } catch (error) {
             console.log(error)
             Alert.alert("Login", t("Invalid CPF"))

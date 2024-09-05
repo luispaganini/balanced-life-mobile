@@ -37,8 +37,10 @@ export default function MyBodyPage() {
         try {
             const response = await getLastFourBodyData(user.id as number);
             setBodyData(response);
-            setHeight(response[response.length - 1].height);
-            setWeight(response[response.length - 1].weight);
+            if (response.length > 0) {
+                setHeight(response[response.length - 1].height);
+                setWeight(response[response.length - 1].weight);
+            }
         } catch (error) {
             console.error(error);
         } finally {
