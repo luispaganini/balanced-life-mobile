@@ -60,16 +60,10 @@ Vá até o arquivo app.json e insira o endpoint da API no seguinte campo:
 
 1. Para rodar o projeto em modo de desenvolvimento, utilize o seguinte comando:
 
-   Usando `npm`:
+   Usando `npx`:
 
    ```bash
-   npm start
-   ```
-
-   Ou usando `yarn`:
-
-   ```bash
-   yarn start
+   npx expo start
    ```
 
 2. Após executar o comando acima, o Expo CLI abrirá uma interface no navegador com um QR code. Escaneie o QR code usando o aplicativo **Expo Go** no seu dispositivo móvel.
