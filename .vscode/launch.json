@@ -1,0 +1,20 @@
+{
+    "configurations": [
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Launch Expo App",
+        "program": "${workspaceFolder}/${input:entryFile}",
+        "cwd": "${workspaceFolder}",
+        "runtimeExecutable": "npx",
+        "runtimeArgs": ["expo", "start"]
+      }
+    ],
+    "inputs": [
+      {
+        "type": "promptString",
+        "id": "entryFile",
+        "description": "Path to the entry file of your Expo app"
+      }
+    ]
+}

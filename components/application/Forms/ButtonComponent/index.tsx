@@ -8,12 +8,13 @@ type ButtonComponentProps = {
     title: string
     color: string
     loading?: boolean
+    testID?: string
 }
 
 export default function ButtonComponent(props: ButtonComponentProps) {
     const { t } = useTranslation();
     return (
-        <ButtonComponentContainer onPress={props.onPress} color={props.color} disabled={props.loading}>
+        <ButtonComponentContainer onPress={props.onPress} color={props.color} disabled={props.loading} testID={props.testID}>
             {props.loading ?
                 <ActivityIndicator size="small" color="#fff" />
                 :
