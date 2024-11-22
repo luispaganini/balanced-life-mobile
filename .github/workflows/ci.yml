@@ -21,14 +21,10 @@ jobs:
         with:
           node-version: '20' # Use a versão do Node.js necessária para seu projeto
 
-      # Passo 3: Instalar Expo CLI globalmente
-      - name: Install Expo CLI
-        run: npm install --global expo-cli
-
-      # Passo 4: Instalar dependências do projeto
+      # Passo 3: Instalar dependências do projeto
       - name: Install dependencies
         run: npm install
 
-      # Passo 5: Rodar testes
+      # Passo 4: Rodar testes
       - name: Run tests
         run: npm test -- --watchAll=false  # Rodar testes no modo não interativo
