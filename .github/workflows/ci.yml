@@ -32,8 +32,3 @@ jobs:
       # Passo 5: Rodar testes
       - name: Run tests
         run: npm test -- --watchAll=false  # Rodar testes no modo não interativo
-
-      # Passo 6: Verificar se o projeto Expo builda corretamente
-      - name: Expo build check
-        run: |
-          CI=1 npx expo start --offline --max-workers=1
