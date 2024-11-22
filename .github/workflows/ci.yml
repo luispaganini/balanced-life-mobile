@@ -31,7 +31,7 @@ jobs:
 
       # Passo 5: Rodar testes
       - name: Run tests
-        run: npm test
+        run: npm test -- --watchAll=false
 
       # Passo 6: Verificar se o projeto Expo builda corretamente
       - name: Expo build check
