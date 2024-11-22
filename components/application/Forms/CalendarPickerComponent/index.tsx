@@ -10,9 +10,10 @@ type CalendarPickerComponentProps = {
     value: string;
     onChange: (date: string) => void;
     errors: FieldError | undefined;
+    placeholder: string;
     maximumDate?: Date;
     title?: boolean;
-    placeholder: string;
+    testID?: string;
 }
 
 export default function CalendarPickerComponent(props: CalendarPickerComponentProps) {
@@ -20,11 +21,16 @@ export default function CalendarPickerComponent(props: CalendarPickerComponentPr
     const { t } = useTranslation();
     const [show, setShow] = React.useState(false);
     return (
-        <View>
+        <View testID={props.testID}>
             <InputContainer>
                 {props.title && <TitleInput>{t(props.placeholder)}</TitleInput>}
-                <CalendarPickerComponentContainer onPress={() => setShow(!show)} theme={colorTheme}>
-                    <Text>{props.value ? new Date(props.value).toLocaleDateString('pt-BR') : t(props.placeholder)}</Text>
+                <CalendarPickerComponentContainer onPress={() => setShow(!show)} theme={colorTheme} testID='calendar-picker-component'>
+                    <Text testID='calendar-picker-text'>
+                        {props.value ?
+                            new Date(props.value).toLocaleDateString('pt-BR') 
+                        : 
+                            t(props.placeholder)}
+                    </Text>
                 </CalendarPickerComponentContainer>
                 {props.errors && <ErrorText>{t(props.errors.message ?? "This is required")}</ErrorText>}
             </InputContainer>

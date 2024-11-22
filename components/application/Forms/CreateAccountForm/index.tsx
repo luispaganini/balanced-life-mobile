@@ -10,13 +10,13 @@ import { FormField } from '../FormField';
 import { validationRules } from '@/validations/validationRules';
 import { ButtonsContainer } from '@/pages/Profile/ChangePasswordPage/styles';
 import ButtonComponent from '../ButtonComponent';
-import { router } from 'expo-router';
+import { Href, router } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { useCreateAccount } from '@/hooks/useCreateAccount';
 import IFormCreateAccountValues from '@/interfaces/App/Form/IFormCreateAccountValues';
 
 type CreateAccountFormProps = {
-    navigate: (route: string) => void
+    navigate: <T extends string | object>(href: Href<T>) => void
     testID: string
 }
 
@@ -113,6 +113,7 @@ export default function CreateAccountForm(props: CreateAccountFormProps) {
                         maximumDate={new Date}
                         title
                         placeholder={t("Birthdate")}
+                        testID="birthdate-input"
                     />
                 )}
                 name="birthDate"
@@ -128,7 +129,7 @@ export default function CreateAccountForm(props: CreateAccountFormProps) {
                 name="gender"
             />
             <ButtonsContainer>
-                <ButtonComponent onPress={handleSubmit(onSubmit)} title="Create Account" color={Colors.color.green} loading={loading} />
+                <ButtonComponent onPress={handleSubmit(onSubmit)} title="Create Account" color={Colors.color.green} loading={loading} testID='create-account-button'/>
                 <ButtonComponent onPress={() => router.back()} title="Back" color={Colors.color.blue} />
             </ButtonsContainer>
         </View>

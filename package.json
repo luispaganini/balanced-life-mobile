@@ -12,7 +12,11 @@
     "lint": "expo lint"
   },
   "jest": {
-    "preset": "jest-expo"
+    "preset": "jest-expo",
+    "setupFilesAfterEnv": ["<rootDir>/__mocks__/jest.setup.ts"],
+    "moduleNameMapper": {
+        "^react-i18next$": "<rootDir>/__mocks__/react-i18next.ts"
+    }
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.0",
