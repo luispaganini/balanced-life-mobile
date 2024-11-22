@@ -1,0 +1,38 @@
+name: CI - React Native Expo
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # Passo 1: Fazer o checkout do código
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Passo 2: Configurar Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20' # Use a versão do Node.js necessária para seu projeto
+
+      # Passo 3: Instalar Expo CLI globalmente
+      - name: Install Expo CLI
+        run: npm install --global expo-cli
+
+      # Passo 4: Instalar dependências do projeto
+      - name: Install dependencies
+        run: npm install
+
+      # Passo 5: Rodar testes
+      - name: Run tests
+        run: npm test
+
+      # Passo 6: Verificar se o projeto Expo builda corretamente
+      - name: Expo build check
+        run: npx expo start --offline --max-workers=1 --non-interactive
