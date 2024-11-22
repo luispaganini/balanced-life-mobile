@@ -3,7 +3,7 @@ name: CI - React Native Expo
 on:
   pull_request:
     branches:
-      - main
+      - master
 
 jobs:
   test:
