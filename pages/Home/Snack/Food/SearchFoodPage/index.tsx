@@ -79,7 +79,6 @@ export default function SearchFoodPage() {
 
     const foodDetailsRedirect = (idFood: number) => router.navigate(`/snack/food/${idMeal}/${idTypeSnack}/${idFood}`)
 
-
     return (
         <SearchFoodContainer>
             <ContentPage>
@@ -107,7 +106,7 @@ export default function SearchFoodPage() {
                     />
                 </ListFoodContainer>
             </ContentPage>
-            <ButtonComponent color={Colors.color.green} onPress={() => router.push('snack/food/add')} title='Add custom food' />
+            <ButtonComponent color={Colors.color.green} onPress={() => router.push({ pathname: "/snack/food/add" })} title='Add custom food' />
         </SearchFoodContainer>
     )
 }

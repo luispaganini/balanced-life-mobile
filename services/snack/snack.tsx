@@ -4,8 +4,8 @@ import { ISnackDetailsInterface, Snack } from "@/interfaces/Snack/ISnackDetailsI
 import ISnackFullInterface from "@/interfaces/Snack/ISnackFullInterface";
 import StatusMeal from "@/enums/StatusMeal";
 
-export async function getSnackAsync(date: Date): Promise<ISnackInterface> {
-    const response = await api.get('/snacks/', { params: { date: date } });
+export async function getMealsAsync(date: Date): Promise<ISnackInterface> {
+    const response = await api.get('/meals/', { params: { date: date, createDefaultMeals: true } });
 
     if (response.status != 200)
         throw new Error(response.data.message);
@@ -13,8 +13,8 @@ export async function getSnackAsync(date: Date): Promise<ISnackInterface> {
     return response.data;
 }
 
-export async function getSnackDetailsAsync(idMeal: number, idTypeSnack: number): Promise<ISnackDetailsInterface> {
-    const response = await api.get(`/meal/${idMeal}/type-snack/${idTypeSnack}`);
+export async function getSnackDetailsAsync(idMeal: number): Promise<ISnackDetailsInterface> {
+    const response = await api.get(`/meal/${idMeal}`);
 
     if (response.status != 200)
         throw new Error(response.data.message);

@@ -10,7 +10,7 @@ export async function findFoodBySearch(search: string, page: number): Promise<Ar
     if (response.status != 200)
         throw new Error(response.data.message);
     
-    return response.data;
+    return response.data.foods;
 }
 
 export async function getFoodById(id: number): Promise<IFoodInterface> {

@@ -34,13 +34,12 @@ export default function SnackDetailsPage() {
     const loadData = async () => {
         setLoading(true);
         try {
-            const snacksDetails = await getSnackDetailsAsync(parseInt(idMeal as string), parseInt(idTypeSnack as string));
+            const snacksDetails = await getSnackDetailsAsync(parseInt(idMeal as string));
             snackStore.setSnackDetails(snacksDetails);
             setPieChartData(getDataPieChart([
-                { nameKey: t("Carbohydrates"), population: snacksDetails.carbohydrates, color: Colors.color.orange },
+                { nameKey: t("Carbohydrates"), population: snacksDetails.carbohydrates, color: Colors.color.blue },
                 { nameKey: t("Protein"), population: snacksDetails.protein, color: Colors.color.red },
-                { nameKey: t("Colesterol"), population: snacksDetails.colesterol, color: Colors.color.green },
-                { nameKey: t("Fat"), population: snacksDetails.fat, color: Colors.color.blue },
+                { nameKey: t("Fat"), population: snacksDetails.fat, color: Colors.color.green },
             ], theme))
         } catch (error) {
             console.error(error);
@@ -97,8 +96,11 @@ export default function SnackDetailsPage() {
                                         status={snackStore.snackDetails?.status as StatusMeal}
                                         onPressEdit={() =>
                                             router.push({
-                                                pathname: `/snack/food/${idMeal}/${idTypeSnack}/${item.food.id}`,
+                                                pathname: `/snack/food/[idMeal]/[idTypeSnack]/[idFood]`,
                                                 params: {
+                                                    idMeal: Array.isArray(idMeal) ? idMeal[0] : idMeal,
+                                                    idTypeSnack: Array.isArray(idTypeSnack) ? idTypeSnack[0] : idTypeSnack,
+                                                    idFood: item.food.id.toString(),
                                                     idSnack: item.id,
                                                     quantitySnack: item.quantity.toString(),
                                                     idUnitMeasurement: item.unitMeasurement.id
