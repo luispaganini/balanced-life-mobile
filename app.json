@@ -20,7 +20,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "br.com.beven"
+      "package": "br.com.beven",
+      "versionCode": 2
     },
     "web": {
       "bundler": "metro",
