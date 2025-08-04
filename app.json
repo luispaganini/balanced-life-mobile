@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "balanced-life-mobile",
-    "slug": "balanced-life-mobile",
-    "version": "1.0.1",
+    "name": "beven",
+    "slug": "beven",
+    "version": "0.1.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -19,7 +19,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "br.com.beven"
     },
     "web": {
       "bundler": "metro",
@@ -27,10 +28,19 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "2cde4d3b-cedf-48de-9214-453bea215322"
+      }
     }
   },
   "application": {
