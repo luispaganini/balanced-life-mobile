@@ -59,4 +59,22 @@ export const DarkTheme: Theme = {
     border: Colors.dark.border,
     notification: 'rgb(255, 69, 58)',
   },
+  fonts: {
+    regular: {
+      fontFamily: "",
+      fontWeight: "bold"
+    },
+    medium: {
+      fontFamily: "",
+      fontWeight: "bold"
+    },
+    bold: {
+      fontFamily: "",
+      fontWeight: "bold"
+    },
+    heavy: {
+      fontFamily: "",
+      fontWeight: "bold"
+    }
+  }
 };

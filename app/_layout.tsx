@@ -9,6 +9,7 @@ import { I18nextProvider } from 'react-i18next';
 import { Colors, DarkTheme } from '@/constants/Colors';
 import i18n from '@/translation/i18n';
 import { PaperProvider } from 'react-native-paper';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -30,21 +31,23 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <PaperProvider>
-        <I18nextProvider i18n={i18n}>
-          <Stack
-            initialRouteName='(login)'
-            screenOptions={{
-              headerShown: false,
-            }}
-          >
-              <Stack.Screen name="(app)" options={{ headerShown: false }} />
-              <Stack.Screen name="(login)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-        </I18nextProvider>
-      </PaperProvider>
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <PaperProvider>
+          <I18nextProvider i18n={i18n}>
+            <Stack
+              initialRouteName='(login)'
+              screenOptions={{
+                headerShown: false,
+              }}
+            >
+                <Stack.Screen name="(app)" options={{ headerShown: false }} />
+                <Stack.Screen name="(login)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+          </I18nextProvider>
+        </PaperProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

@@ -1,25 +1,21 @@
-import { View, Text, ScrollView, FlatList } from 'react-native'
+import { View, Text, Platform } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router, useLocalSearchParams } from 'expo-router'
-import { NutritionalInformationContainer, NutritionalInformationDataContainer, PageContainer, TitleText } from './styles'
+import { KeyboardAvoidingViewStyled, NutritionalInformationContainer, NutritionalInformationDataContainer, TitleText, ScrollViewContainer, InfoAboutFoodContainer } from './styles'
 import { ThemedText } from '@/components/ThemedText'
 import { useTranslation } from 'react-i18next'
 import AddFoodComponent from '@/components/application/Forms/AddFoodComponent'
 import { getFoodById } from '@/services/snack/food'
 import IFoodInterface from '@/interfaces/Snack/Food/IFoodInterface'
-import { InfoAboutFoodContainer, ScrollViewContainer } from '@/components/application/Forms/AddFoodComponent/styles'
 import IFoodNutritionInfo from '@/interfaces/Snack/Food/IFoodNutritionInfo'
 import { calculateNutritionalValues } from '@/utils/functionsFood'
 import { setSnack, updateSnack } from '@/services/snack/snack'
 import { useSnackStore } from '@/store/SnackStore'
 
 export default function FoodDetailsPage() {
-    const { idMeal, idTypeSnack, idFood } = useLocalSearchParams()
-
-    //If the method is update
-    const { idSnack, idUnitMeasurement, quantitySnack } = useLocalSearchParams()
-
+    const { idMeal, idTypeSnack, idFood, idSnack, idUnitMeasurement, quantitySnack } = useLocalSearchParams()
     const { t } = useTranslation()
+
     const [food, setFood] = useState<IFoodInterface>()
     const [quantity, setQuantity] = useState(quantitySnack ? quantitySnack as string : '100')
     const [adjustedNutritionalInfo, setAdjustedNutritionalInfo] = useState<IFoodNutritionInfo[]>([])
@@ -38,8 +34,8 @@ export default function FoodDetailsPage() {
 
     const loadData = async () => {
         try {
-            const food = await getFoodById(parseInt(idFood as string))
-            setFood(food)
+            const foodData = await getFoodById(parseInt(idFood as string))
+            setFood(foodData)
         } catch (error) {
             console.error(error)
         }
@@ -47,7 +43,7 @@ export default function FoodDetailsPage() {
 
     const addSnack = async () => {
         try {
-            const snack = await setSnack({
+            const newSnack = await setSnack({
                 appointment: snackStore.date,
                 idFood: parseInt(idFood as string),
                 idMeal: parseInt(idMeal as string),
@@ -55,8 +51,7 @@ export default function FoodDetailsPage() {
                 quantity: parseFloat(quantity),
                 idUnitMeasurement: 10004
             })
-
-            snackStore.addSnackToDetails(snack)
+            snackStore.addSnackToDetails(newSnack)
             router.dismissAll()
             router.push(`/snack/${idMeal}/${idTypeSnack}`)
         } catch (error) {
@@ -66,7 +61,7 @@ export default function FoodDetailsPage() {
 
     const update = async () => {
         try {
-            const snack = await updateSnack({
+            const updatedSnack = await updateSnack({
                 appointment: snackStore.date,
                 idFood: parseInt(idFood as string),
                 idMeal: parseInt(idMeal as string),
@@ -74,23 +69,22 @@ export default function FoodDetailsPage() {
                 quantity: parseFloat(quantity),
                 idUnitMeasurement: parseInt(idUnitMeasurement as string) ?? 0
             }, parseInt(idSnack as string))
-
-            snackStore.updateSnackInDetails(snack)
+            snackStore.updateSnackInDetails(updatedSnack)
             router.dismissAll()
             router.replace(`/snack/${idMeal}/${idTypeSnack}`)
         } catch (error) {
             console.error(error)
         }
     }
-    
 
     return (
-        <PageContainer>
-            {food && (
-                <PageContainer>
+        <KeyboardAvoidingViewStyled
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+            {food ? (
+                <>
                     <ScrollViewContainer>
                         <TitleText type='title'>{food.name}</TitleText>
-
                         <NutritionalInformationContainer>
                             <InfoAboutFoodContainer>
                                 {food.brand && <ThemedText type='defaultSemiBold'>{t('Brand')}: <ThemedText>{food.brand}</ThemedText></ThemedText>}
@@ -104,9 +98,18 @@ export default function FoodDetailsPage() {
                             </NutritionalInformationDataContainer>
                         </NutritionalInformationContainer>
                     </ScrollViewContainer>
-                    <AddFoodComponent onPress={() => {idSnack ? update() : addSnack()}} quantity={quantity} setQuantity={setQuantity}/>
-                </PageContainer>
+                    <AddFoodComponent 
+                        onPress={idSnack ? update : addSnack} 
+                        quantity={quantity} 
+                        setQuantity={setQuantity}
+                        isUpdate={!!idSnack}
+                    />
+                </>
+            ) : (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Text>Loading...</Text>
+                </View>
             )}
-        </PageContainer>
+        </KeyboardAvoidingViewStyled>
     )
 }
