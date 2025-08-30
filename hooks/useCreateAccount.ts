@@ -4,7 +4,8 @@ import { UserRole } from '@/enums/UserRole';
 import { Alert } from 'react-native';
 import { TFunction } from 'i18next';
 import IUserInterface from '@/interfaces/User/IUserInterface';
-import { createAccountService } from '@/services/login/login';
+import { createAccount } from '@/services/login/login';
+import { AxiosError } from 'axios';
 
 export const useCreateAccount = () => {
     const [loading, setLoading] = useState(false);
@@ -23,13 +24,15 @@ export const useCreateAccount = () => {
         };
 
         try {
-            const response = await createAccountService(userData);
-            if (response.status === 201) {
+            const response = await createAccount(userData);
+            if (response?.status === 201) {
                 setUser(response.data);
-                router.navigate("/login-two");
+                router.navigate("/(login)/login-two");
             }
-        } catch (error) {
-            Alert.alert(t("Create Account"), t("CPF or E-mail already registered"));
+        } catch (error: AxiosError | any) {
+            console.error(error);
+            const message = error?.response?.data?.message ?? "Unknown error";
+            Alert.alert(t("Create Account"), t(message));
         } finally {
             setLoading(false);
         }

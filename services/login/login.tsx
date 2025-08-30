@@ -1,4 +1,3 @@
-import ITokenInterface from '@/interfaces/Login/ITokenInterface'
 import api from '../api'
 import IUserInterface from '@/interfaces/User/IUserInterface'
 
@@ -17,10 +16,7 @@ export async function login(cpf: string, password: string) {
     return response
 }
 
-export async function createAccount(user: IUserInterface): Promise<IUserInterface> {
+export async function createAccount(user: IUserInterface) {
     const response = await api.post('/user', user)
-    if (response.status !== 201)
-        return response.data.message
-
-    return response.data
+    return response
 }

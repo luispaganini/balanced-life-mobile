@@ -29,10 +29,10 @@ export default function ProfilePage() {
                         <Icon size={widthPage / 4} source="account-circle-outline" color={Colors[colorScheme ?? 'light'].border} />
                         <UserInfoContainer>
                             <NameText numberOfLines={2} ellipsizeMode='tail'>{user?.name}</NameText>
-                            <AgeText>{t('Age')}: {calculateAge(new Date(user.birth as Date)) + ' ' + t('years')}</AgeText>
-                        <TouchableOpacity onPress={() => router.navigate('/change-password-page')}>
-                            <ChangePasswordText>{t('Change password')}</ChangePasswordText>
-                        </TouchableOpacity>
+                            <AgeText>{t('Age')}: {user?.birth ? calculateAge(new Date(user.birth as Date)) : ''} {t('years')}</AgeText>
+                            <TouchableOpacity onPress={() => router.navigate('/change-password-page')}>
+                                <ChangePasswordText>{t('Change password')}</ChangePasswordText>
+                            </TouchableOpacity>
                         </UserInfoContainer>
                     </ProfileInfoContent>
                     <IconButton icon="pencil" onPress={() => router.navigate('/edit-page')} size={30} />
@@ -40,10 +40,10 @@ export default function ProfilePage() {
                 <DividerContent theme={colorScheme} />
                 <InfoExtraUserContainer>
                     <InfoExtraUserItems>
-                        <ProfileInfoComponent title={'E-mail'} description={user.email as string} />
-                        <ProfileInfoComponent title={t('Number')} description={user.phoneNumber as string} />
-                        <ProfileInfoComponent title={t('Gender')} description={user.gender as string} />
-                        <ProfileInfoComponent title={t('Birthdate')} description={formatToBr(user.birth as Date)} />
+                        <ProfileInfoComponent title={'E-mail'} description={user?.email ?? ''} />
+                        <ProfileInfoComponent title={t('Number')} description={user?.phoneNumber ?? ''} />
+                        <ProfileInfoComponent title={t('Gender')} description={user?.gender ?? ''} />
+                        <ProfileInfoComponent title={t('Birthdate')} description={user?.birth ? formatToBr(user.birth as Date) : ''} />
                     </InfoExtraUserItems>
                     <IconButton icon="pencil" onPress={() => router.navigate('/edit-extra-page')} size={30} />
                 </InfoExtraUserContainer>

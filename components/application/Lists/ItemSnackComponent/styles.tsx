@@ -9,6 +9,8 @@ export const ItemContainer = styled(ThemedView)`
     flex-direction: row;
     justify-content: space-between;
     padding-top: 10px;
+    display: flex;
+    align-items: center;
 `
 
 export const TextItem = styled(ThemedText)`

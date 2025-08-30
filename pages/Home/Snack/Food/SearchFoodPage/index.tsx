@@ -26,7 +26,7 @@ export default function SearchFoodPage() {
         if (searchQuery !== '') {
             const delayDebounceFn = setTimeout(() => {
                 loadData();
-            }, 100);
+            }, 300);
             return () => clearTimeout(delayDebounceFn);
         }
         else {

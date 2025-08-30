@@ -1,103 +1,88 @@
-import { Dimensions, ScrollView, View } from 'react-native'
-import React, { useEffect } from 'react'
-import { BodyContainer, CardsInfoBody, ChartContainer, ImageContainer, Loading, NoDataFound, PageContainer } from './styles'
+import { Dimensions, ScrollView, View } from 'react-native';
+import React, { useMemo } from 'react';
 import { LineChart } from 'react-native-chart-kit';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import CardInfoBody from '@/components/application/Cards/CardInfoBody';
 import { useTranslation } from 'react-i18next';
+import { router } from 'expo-router';
+
+import { useColorScheme } from '@/hooks/useColorScheme';
+import useUserStore from '@/store/UserStore';
+
+import { BodyContainer, CardsInfoBody, ChartContainer, ImageContainer, Loading, NoDataFound, PageContainer } from './styles';
+import CardInfoBody from '@/components/application/Cards/CardInfoBody';
 import ButtonComponent from '@/components/application/Forms/ButtonComponent';
 import { Colors } from '@/constants/Colors';
-import useUserStore from '@/store/UserStore';
-import IUserInterface from '@/interfaces/User/IUserInterface';
-import { calculateAge, calculateBMI } from '@/utils/functionsUser';
-import { router } from 'expo-router';
-import { IBodyDataInterface } from '@/interfaces/Body/IBodyDataInterface';
-import { getLastFourBodyData } from '@/services/body/body';
 import { chartConfig } from '@/constants/charts/chartConfig';
+import { calculateAge, calculateBMI } from '@/utils/functionsUser';
+import { useBodyData } from '@/hooks/body/MyBodyPage/useBodyData';
 
 const screenWidth = Dimensions.get("window").width;
+const images = {
+  light: require('@/assets/images/fullbody-light.png'),
+  dark: require('@/assets/images/fullbody.png'),
+};
 
 export default function MyBodyPage() {
-    const colorTheme = useColorScheme();
-    const { user } = useUserStore() as { user: IUserInterface };
-    const { t } = useTranslation();
-    const [loadingPage, setLoadingPage] = React.useState(true);
-    const [height, setHeight] = React.useState(0);
-    const [weight, setWeight] = React.useState(0);
-    const [bodyData, setBodyData] = React.useState([] as IBodyDataInterface[]);
+  const colorTheme = useColorScheme();
+  const { user } = useUserStore();
+  const { t } = useTranslation();
 
-    useEffect(() => {
-        const fetchData = async () => await getBodyData();
+  const { bodyData, isLoading } = useBodyData(user?.id ?? undefined);
 
-        fetchData();
-    }, []);
+  const latestData = useMemo(() => {
+    if (!bodyData || bodyData.length === 0) return null;
+    return bodyData[bodyData.length - 1];
+  }, [bodyData]);
 
-    const getBodyData = async () => {
-        setLoadingPage(true);
-        try {
-            const response = await getLastFourBodyData(user.id as number);
-            setBodyData(response);
-            if (response.length > 0) {
-                setHeight(response[response.length - 1].height);
-                setWeight(response[response.length - 1].weight);
-            }
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoadingPage(false);
-        }
-    }
+  const chartData = useMemo(() => ({
+    labels: bodyData.length > 0
+      ? bodyData.map(item => new Date(item.datetime as Date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }))
+      : [""],
+    datasets: [
+      {
+        data: bodyData.length > 0 ? bodyData.map(item => item.weight) : [0],
+        color: (opacity = 1) => `rgba(50, 65, 244, ${opacity})`,
+      }
+    ],
+    legend: [t('Weight')]
+  }), [bodyData, t]); 
 
-    const sortedBodyData = bodyData.sort((a, b) => new Date(a.datetime as Date).getTime() - new Date(b.datetime as Date).getTime());
-
-    const data = {
-        labels: sortedBodyData.length ? bodyData.map(item => new Date(item.datetime as Date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' })) : [""],
-        datasets: [
-            {
-                data: sortedBodyData.length ? bodyData.map(item => item.weight) : [0],
-                color: (opacity = 1) => `rgba(50, 65, 244, ${opacity})`,
-            }
-        ],
-        legend: [t('Weight')]
-    };
-
-    const images = {
-        light: require('@/assets/images/fullbody-light.png'),
-        dark: require('@/assets/images/fullbody.png'),
-    };
+  if (isLoading) {
     return (
-        <PageContainer>
-            <ScrollView>
-                <ImageContainer source={images[colorTheme == 'light' ? 'light' : 'dark']} />
-                {loadingPage ? (
-                    <Loading size="large" color={Colors.color.cyan} />
-                ) : (
-                    <BodyContainer>
-                        {bodyData.length > 0 ? (
-                            <View>
-                                <ChartContainer theme={colorTheme}>
-                                    <LineChart
-                                        data={data}
-                                        width={screenWidth / 1.1}
-                                        height={180}
-                                        chartConfig={chartConfig}
-                                        transparent={true}
-                                    />
-                                </ChartContainer>
-                                <CardsInfoBody>
-                                    <CardInfoBody title={t('Weight')} description={weight.toFixed(2) + ' kg'} />
-                                    <CardInfoBody title={t('Height')} description={height.toFixed(2) + ' m'} />
-                                    <CardInfoBody title={t('BMI')} description={calculateBMI(weight, height) + ' kg/m²'} />
-                                    <CardInfoBody title={t('Age')} description={calculateAge(new Date(user.birth as Date)) + ' '+ t('years')} />
-                                </CardsInfoBody>
-                            </View>
-                        ) : (
-                            <NoDataFound>{t('No data found')}</NoDataFound>
-                        )}
-                        <ButtonComponent title={t('Update body data')} onPress={() => router.navigate('/body/add-body-data')} color={Colors.color.blue} />
-                    </BodyContainer>
-                )}
-            </ScrollView>
-        </PageContainer>
-    )
+      <PageContainer>
+        <Loading size="large" color={Colors.color.cyan} />
+      </PageContainer>
+    );
+  }
+
+  return (
+    <PageContainer>
+      <ScrollView>
+        <ImageContainer source={images[colorTheme ?? 'light']} />
+        <BodyContainer>
+          {bodyData.length > 0 && latestData ? (
+            <View>
+              <ChartContainer theme={colorTheme}>
+                <LineChart
+                  data={chartData}
+                  width={screenWidth / 1.1}
+                  height={180}
+                  chartConfig={chartConfig}
+                  transparent={true}
+                />
+              </ChartContainer>
+              <CardsInfoBody>
+                <CardInfoBody title={t('Weight')} description={`${latestData.weight.toFixed(2)} kg`} />
+                <CardInfoBody title={t('Height')} description={`${latestData.height.toFixed(2)} m`} />
+                <CardInfoBody title={t('BMI')} description={`${calculateBMI(latestData.weight, latestData.height)} kg/m²`} />
+                <CardInfoBody title={t('Age')} description={`${calculateAge(new Date(user!.birth as Date))} ${t('years')}`} />
+              </CardsInfoBody>
+            </View>
+          ) : (
+            <NoDataFound>{t('No data found')}</NoDataFound>
+          )}
+          <ButtonComponent title={t('Update body data')} onPress={() => router.navigate('/body/add-body-data')} color={Colors.color.blue} />
+        </BodyContainer>
+      </ScrollView>
+    </PageContainer>
+  );
 }
