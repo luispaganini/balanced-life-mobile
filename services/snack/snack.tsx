@@ -5,7 +5,7 @@ import ISnackFullInterface from "@/interfaces/Snack/ISnackFullInterface";
 import StatusMeal from "@/enums/StatusMeal";
 
 export async function getSnackAsync(date: Date): Promise<ISnackInterface> {
-    const response = await api.get('/snacks/', { params: { date: date } });
+    const response = await api.get('/meals', { params: { date: date } });
 
     if (response.status != 200)
         throw new Error(response.data.message);

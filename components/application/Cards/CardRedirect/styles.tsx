@@ -1,32 +1,40 @@
-import { Dimensions } from "react-native";
+import { Colors } from "@/constants/Colors";
+import { ColorSchemeName, Dimensions } from "react-native";
 import styled from "styled-components/native";
 
 const width = Dimensions.get('window').width;
-const height = Dimensions.get('window').height;
-export const CardRedirectContainer = styled.TouchableOpacity<{ color: string}>`
-    width: ${width / 2.3}px;
-    background-color: ${props => props.color};
-    border-radius: 10px;
-    justify-content: space-around;
+
+export const CardRedirectContainer = styled.TouchableOpacity<{ theme: ColorSchemeName }>`
+    width: ${width / 2.35}px;
+    background-color: ${props => props.theme === 'light' ? Colors.light.card : Colors.dark.card};
+    border-radius: 12px;
+    border-width: 1px;
+    border-color: ${props => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
+    padding: 20px 10px;
     align-items: center;
+    justify-content: center;
     margin-top: 15px;
-    shadow-color: #000000;
+    min-height: 120px;
+    shadow-color: #000;
     shadow-offset: 0px 2px;
-    shadow-opacity: 0.8;
-    shadow-radius: 10px;
-    elevation: 10;
+    shadow-opacity: 0.05;
+    shadow-radius: 4px;
+    elevation: 2;
 `;
 
-export const ImageContainer = styled.Image`
-    width: 80%;
-    height: ${height / 4}px;
+export const IconCircle = styled.View<{ bgColor: string }>`
+    width: 50px;
+    height: 50px;
+    border-radius: 25px;
+    background-color: ${props => props.bgColor}26; /* 15% opacity */
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
 `;
 
-export const TextContainer = styled.Text`
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
+export const TextContainer = styled.Text<{ theme: ColorSchemeName }>`
+    color: ${props => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
+    font-size: 15px;
+    font-weight: 600;
     text-align: center;
-    padding-bottom: 10px;
 `;
-

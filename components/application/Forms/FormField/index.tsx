@@ -19,7 +19,7 @@ export const FormField = <T extends object>({ control, name, rules, placeholder,
                 placeholder={placeholder}
                 onBlur={onBlur}
                 onChangeText={onChange}
-                value={value}
+                value={value || ""}
                 errors={error}
                 {...inputProps}
             />

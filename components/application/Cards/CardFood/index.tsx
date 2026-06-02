@@ -1,7 +1,7 @@
-import { Text } from 'react-native'
 import React from 'react'
-import { CardFoodContainer, CardFoodText, TableInfo } from './styles'
+import { CardFoodContainer, TableInfo } from './styles'
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { ThemedText } from '@/components/ThemedText';
 
 type CardFoodProps = {
     id: number;
@@ -14,9 +14,13 @@ export default function CardFood(props: CardFoodProps) {
     const theme = useColorScheme();
     return (
         <CardFoodContainer theme={theme} onPress={() => props.onPress(props.id)}>
-            <CardFoodText>{props.name}</CardFoodText>
+            <ThemedText style={{ flexWrap: 'wrap', flexShrink: 1, fontWeight: '500', paddingRight: 10 }}>
+                {props.name}
+            </ThemedText>
             <TableInfo>
-                <Text>{props.table}</Text>
+                <ThemedText style={{ fontSize: 12, fontWeight: '600', opacity: 0.8 }}>
+                    {props.table}
+                </ThemedText>
             </TableInfo>
         </CardFoodContainer>
     )

@@ -35,7 +35,7 @@ export const NameText = styled(ThemedText)`
 
 export const ChangePasswordText = styled(ThemedText)`
     font-size: 16px;
-    color: ${Colors.color.red};
+    color: #00B38C;
 `;
 
 export const DividerContent = styled(Divider)<{ theme: ColorSchemeName }>`

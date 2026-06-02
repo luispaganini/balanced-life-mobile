@@ -47,7 +47,7 @@ export default function AddBodyDataPage() {
                 [
                     {
                         text: "OK",
-                        onPress: () => router.push('/body/')
+                        onPress: () => router.push('/body')
                     }
                 ]
             );

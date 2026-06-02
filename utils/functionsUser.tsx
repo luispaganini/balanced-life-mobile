@@ -1,9 +1,13 @@
-export function calculateAge(birthDate: Date): string {
+export function calculateAge(birthDate: Date | string | null | undefined): string {
+    if (!birthDate) return '';
+    const dateObj = typeof birthDate === 'string' ? new Date(birthDate) : birthDate;
+    if (isNaN(dateObj.getTime())) return '';
+    
     const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const month = today.getMonth() - birthDate.getMonth();
+    let age = today.getFullYear() - dateObj.getFullYear();
+    const month = today.getMonth() - dateObj.getMonth();
   
-    if (month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) {
+    if (month < 0 || (month === 0 && today.getDate() < dateObj.getDate())) {
       age--;
     }
   

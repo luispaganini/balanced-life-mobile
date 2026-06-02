@@ -1,12 +1,14 @@
-import ISnackListInterface from "./ISnackListInterface";
+import IMealInterface from "./IMealInterface";
 
 export default interface ISnackInterface {
-    date: Date;
+    date: string | Date;
+    nameUser?: string;
     carbohydrates: number;
     calories: number;
+    fat: number;
     colesterol: number;
     protein: number;
     others: number;
     totalCalories: number;
-    snacks: ISnackListInterface[];
+    meals: IMealInterface[];
 }

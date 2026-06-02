@@ -97,11 +97,14 @@ export default function SnackDetailsPage() {
                                         status={snackStore.snackDetails?.status as StatusMeal}
                                         onPressEdit={() =>
                                             router.push({
-                                                pathname: `/snack/food/${idMeal}/${idTypeSnack}/${item.food.id}`,
+                                                pathname: "/snack/food/[idMeal]/[idTypeSnack]/[idFood]",
                                                 params: {
-                                                    idSnack: item.id,
+                                                    idMeal: idMeal as string,
+                                                    idTypeSnack: idTypeSnack as string,
+                                                    idFood: item.food.id.toString(),
+                                                    idSnack: item.id.toString(),
                                                     quantitySnack: item.quantity.toString(),
-                                                    idUnitMeasurement: item.unitMeasurement.id
+                                                    idUnitMeasurement: item.unitMeasurement.id.toString()
                                                 }
                                             })}
                                         onPressDelete={() => deleteSnackFunction(item.id)}

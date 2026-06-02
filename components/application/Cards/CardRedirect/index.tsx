@@ -1,22 +1,33 @@
-import { View, Text, Image, ImageSourcePropType } from 'react-native'
+import { View } from 'react-native'
 import React from 'react'
-import { CardRedirectContainer, ImageContainer, TextContainer } from './styles'
-import { Href, router } from 'expo-router'
+import { CardRedirectContainer, IconCircle, TextContainer } from './styles'
+import { router } from 'expo-router'
+import { Ionicons } from '@expo/vector-icons'
+import { useColorScheme } from '@/hooks/useColorScheme'
 
 type CardRedirectProps = {
     title: string
-    img: ImageSourcePropType
-    route: Href<string>
-    color: string,
+    iconName: keyof typeof Ionicons.glyphMap
+    route: any
+    color: string
     onPress?: () => void
 }
 
 export default function CardRedirect(props: CardRedirectProps) {
+    const theme = useColorScheme();
+
     return (
         <View>
-            <CardRedirectContainer color={props.color} onPress={props.onPress ? props.onPress : () => router.navigate(props.route)}>
-                <ImageContainer source={props.img} resizeMode='contain'/>
-                <TextContainer numberOfLines={1} ellipsizeMode='tail'>{props.title}</TextContainer>
+            <CardRedirectContainer 
+                theme={theme} 
+                onPress={props.onPress ? props.onPress : () => router.navigate(props.route)}
+            >
+                <IconCircle bgColor={props.color}>
+                    <Ionicons name={props.iconName} size={26} color={props.color} />
+                </IconCircle>
+                <TextContainer theme={theme} numberOfLines={1} ellipsizeMode='tail'>
+                    {props.title}
+                </TextContainer>
             </CardRedirectContainer>
         </View>
     )

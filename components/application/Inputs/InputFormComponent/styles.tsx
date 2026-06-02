@@ -16,22 +16,22 @@ export const TitleInput = styled(ThemedText)`
     padding-left: 5px;
 `;
 
-export const TextInputComponent = styled.TextInput<{ theme: ColorSchemeName}>`
-    border-color: ${(props) => props.theme == "light" ? Colors.light.border : Colors.dark.border};
+export const TextInputComponent = styled.TextInput<{ theme: ColorSchemeName; isFocused: boolean }>`
+    border-color: ${(props) => props.isFocused ? '#00B38C' : (props.theme == "light" ? '#D1D5DB' : '#4B5563')};
     border-width: 1px;
-    border-radius: 5px;
-    color: ${Colors.color.black};
-    background-color: ${Colors.color.white};
-    padding: 10px;
+    border-radius: 12px;
+    color: ${(props) => props.theme == "light" ? Colors.color.black : Colors.dark.text};
+    background-color: ${(props) => props.theme == "light" ? '#FFFFFF' : '#111827'};
+    padding: 12px;
 `;
 
-export const TextInputComponentWithMask = styled(TextInputMask)<{ theme: ColorSchemeName}>`
-    border-color: ${(props) => props.theme == "light" ? Colors.light.border : Colors.dark.border};
+export const TextInputComponentWithMask = styled(TextInputMask)<{ theme: ColorSchemeName; isFocused: boolean }>`
+    border-color: ${(props) => props.isFocused ? '#00B38C' : (props.theme == "light" ? '#D1D5DB' : '#4B5563')};
     border-width: 1px;
-    border-radius: 5px;
-    color: ${Colors.color.black};
-    background-color: ${Colors.color.white};
-    padding: 10px;
+    border-radius: 12px;
+    color: ${(props) => props.theme == "light" ? Colors.color.black : Colors.dark.text};
+    background-color: ${(props) => props.theme == "light" ? '#FFFFFF' : '#111827'};
+    padding: 12px;
 `;
 
 export const ErrorText = styled(ThemedText)`

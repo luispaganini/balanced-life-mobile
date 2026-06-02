@@ -1,7 +1,7 @@
 import { Text, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { PieChart } from 'react-native-gifted-charts'
-import { AddWaterContainer, ContainerPage, EditIcon, GoalContainer, PercentContainer, PieContainer } from './styles';
+import { AddWaterContainer, ContainerPage, EditIcon, GoalContainer, PercentContainer, PieContainer, QuickAddContainer, QuickAddBtn, QuickAddBtnText } from './styles';
 import { ThemedText } from '@/components/ThemedText';
 import { useTranslation } from 'react-i18next';
 import InputWithTagComponent from '@/components/application/Inputs/InputWithTagComponent';
@@ -41,7 +41,7 @@ export default function WaterPage() {
 
     const pieData = [
         { value: waterStore.consumedWaterPercent, color: Colors.color.blue },
-        { value: (100 - waterStore.consumedWaterPercent), color: 'lightgray' },
+        { value: (100 - waterStore.consumedWaterPercent), color: colorTheme === 'dark' ? '#1F2937' : '#e5e7eb' },
     ];
 
     const addWater = () => {
@@ -50,6 +50,11 @@ export default function WaterPage() {
             setTextAddWater('');
         }
     }
+
+    const handleQuickAdd = (amount: number) => {
+        waterStore.setCurrentWater(waterStore.currentWater + amount);
+    }
+
     return (
         <ContainerPage>
             <WaterEditModal visible={modalVisible} setVisible={setModalVisible} onPress={waterStore.setGoalWater} />
@@ -65,7 +70,11 @@ export default function WaterPage() {
                         donut
                         innerRadius={80}
                         data={pieData}
-                        centerLabelComponent={() => <Text style={{ fontSize: 30 }}>{waterStore.consumedWaterPercent ? waterStore.consumedWaterPercent.toFixed(2) : 0}%</Text>}
+                        centerLabelComponent={() => (
+                            <ThemedText style={{ fontSize: 26, fontWeight: 'bold' }}>
+                                {waterStore.consumedWaterPercent ? waterStore.consumedWaterPercent.toFixed(1) : 0}%
+                            </ThemedText>
+                        )}
                     />
                 </PieContainer>
                 <PercentContainer>
@@ -74,6 +83,19 @@ export default function WaterPage() {
 
                 <AddWaterContainer>
                     <InputWithTagComponent colorTag='red' onChangeText={setTextAddWater} placeholder={t('Amount of water')} value={textAddWater} tagText='ml' />
+                    
+                    <QuickAddContainer>
+                        <QuickAddBtn onPress={() => handleQuickAdd(150)}>
+                            <QuickAddBtnText>+150ml</QuickAddBtnText>
+                        </QuickAddBtn>
+                        <QuickAddBtn onPress={() => handleQuickAdd(250)}>
+                            <QuickAddBtnText>+250ml</QuickAddBtnText>
+                        </QuickAddBtn>
+                        <QuickAddBtn onPress={() => handleQuickAdd(500)}>
+                            <QuickAddBtnText>+500ml</QuickAddBtnText>
+                        </QuickAddBtn>
+                    </QuickAddContainer>
+
                     <ButtonComponent onPress={addWater} title={t('Add water')} color={Colors.color.blue} />
                 </AddWaterContainer>
             </ScrollView>

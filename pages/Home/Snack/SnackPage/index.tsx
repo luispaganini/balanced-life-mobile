@@ -62,10 +62,10 @@ export default function SnackPage() {
                             <TitleText type='title'>{snackStore.data.totalCalories} Kcal</TitleText>
                             <DatePickerComponent onChange={snackStore.setDate} value={snackStore.date} />
                             <FlatList
-                                data={snackStore.data?.snacks || []}
+                                data={snackStore.data?.meals || []}
                                 keyExtractor={(item) => item.id.toString()}
                                 renderItem={({ item }) =>
-                                    <CardSnack idMeal={item.idMeal} idTypeSnack={item.id} title={item.title} description={item.totalCalories.toString()} />}
+                                    <CardSnack idMeal={item.id} idTypeSnack={item.typeSnack.id} title={item.typeSnack.name} description={item.totalCalories.toString()} />}
                                 ListEmptyComponent={() => <NoDataComponent onPress={loadData} />}
                                 onRefresh={loadData}
                                 refreshing={snackStore.loading}

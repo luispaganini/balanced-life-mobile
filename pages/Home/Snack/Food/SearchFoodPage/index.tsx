@@ -77,7 +77,14 @@ export default function SearchFoodPage() {
         return <LoadingMoreComponent />
     };
 
-    const foodDetailsRedirect = (idFood: number) => router.navigate(`/snack/food/${idMeal}/${idTypeSnack}/${idFood}`)
+    const foodDetailsRedirect = (idFood: number) => router.navigate({
+        pathname: "/snack/food/[idMeal]/[idTypeSnack]/[idFood]",
+        params: {
+            idMeal: idMeal as string,
+            idTypeSnack: idTypeSnack as string,
+            idFood: idFood.toString()
+        }
+    })
 
 
     return (
@@ -107,7 +114,7 @@ export default function SearchFoodPage() {
                     />
                 </ListFoodContainer>
             </ContentPage>
-            <ButtonComponent color={Colors.color.green} onPress={() => router.push('snack/food/add')} title='Add custom food' />
+            <ButtonComponent color={Colors.color.green} onPress={() => router.push('/snack/food/add')} title='Add custom food' />
         </SearchFoodContainer>
     )
 }

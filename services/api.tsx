@@ -19,7 +19,8 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(response => response, async (error) => {
     const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
+    const isAuthRequest = originalRequest.url?.includes('/login');
+    if (error.response.status === 401 && !isAuthRequest && !originalRequest._retry) {
         originalRequest._retry = true;
         await setupTokenRefresh();
         const { accessToken } = useTokenStore.getState();

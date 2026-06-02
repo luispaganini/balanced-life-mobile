@@ -16,5 +16,6 @@ export const RedirectLink = styled(ThemedText)`
     font-size: 16px;
     align-self: center;
     font-weight: bold;
+    color: #00B38C;
 `;
 

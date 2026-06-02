@@ -19,7 +19,7 @@ const useTokenStore = create<TokenStore>()(persist(
   }),
   {
     name: 'token-storage',
-    storage: createJSONStorage(() => AsyncStorage), 
+    storage: createJSONStorage(() => AsyncStorage),
   }
 )
 );

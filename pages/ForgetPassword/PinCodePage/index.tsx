@@ -24,7 +24,7 @@ export default function PinCodePage() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        let timer: NodeJS.Timeout;
+        let timer: ReturnType<typeof setTimeout>;
         if (counter > 0)
             timer = setTimeout(() => setCounter(counter - 1), 1000);
 
@@ -58,7 +58,7 @@ export default function PinCodePage() {
                     setAccessToken(response.data.accessToken)
                     setRefreshToken(response.data.refreshToken)
                     router.dismiss()
-                    router.replace('(forget)/new-password')
+                    router.replace('/new-password')
                 }
 
             } catch (error) {
@@ -89,8 +89,8 @@ export default function PinCodePage() {
                         Keyboard.dismiss();
                     }}
                     theme={{
-                        pinCodeContainerStyle: { borderColor: Colors[colorScheme ?? 'light'].border },
-                        pinCodeTextStyle: { color: Colors[colorScheme ?? 'light'].text },
+                        pinCodeContainerStyle: { borderColor: Colors[colorScheme === 'dark' ? 'dark' : 'light'].border },
+                        pinCodeTextStyle: { color: Colors[colorScheme === 'dark' ? 'dark' : 'light'].text },
                     }}
                 />
                 <SendCodeButton onPress={sendCode} disabled={counter > 0}>

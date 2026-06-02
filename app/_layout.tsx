@@ -1,4 +1,4 @@
-import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DefaultTheme, ThemeProvider } from 'expo-router/react-navigation';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -34,7 +34,7 @@ export default function RootLayout() {
       <PaperProvider>
         <I18nextProvider i18n={i18n}>
           <Stack
-            initialRouteName='(login)'
+            initialRouteName='(app)'
             screenOptions={{
               headerShown: false,
             }}

@@ -18,42 +18,42 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: Colors[colorScheme === 'dark' ? 'dark' : 'light'].tint,
         headerShown: false,
       }}>
       <Tabs.Screen
         name="(home)"
         options={{
-          title: 'Home',
+          title: t('Diário'),
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+            <TabBarIcon name={focused ? 'restaurant' : 'restaurant-outline'} color={color} />
           ),
           headerShown: false,
-          headerTitle: 'Home',
+          headerTitle: t('Diário'),
           headerTitleAlign: 'center'
         }}
       />
       <Tabs.Screen
         name="(water)"
         options={{
-          title: t('Water'),
+          title: t('Stats'),
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'water' : 'water-outline'} color={color} />
+            <TabBarIcon name={focused ? 'stats-chart' : 'stats-chart-outline'} color={color} />
           ),
           headerShown: false,
-          headerTitle: t('Water'),
+          headerTitle: t('Stats'),
           headerTitleAlign: 'center'
         }}
       />
       <Tabs.Screen
         name="(profile)"
         options={{
-          title: t('Profile'),
+          title: t('Perfil'),
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
           ),
           headerShown: false,
-          headerTitle: t('Profile'),
+          headerTitle: t('Perfil'),
           headerTitleAlign: 'center'
         }}
       />

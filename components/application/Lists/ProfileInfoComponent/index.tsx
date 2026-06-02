@@ -3,14 +3,14 @@ import { DescriptionText, PageContainer, TitleText } from './styles'
 
 type ProfileInfoComponentProps = {
     title: string
-    description: string
+    description?: string | null
 }
 
 export default function ProfileInfoComponent(props: ProfileInfoComponentProps) {
     return (
         <PageContainer>
             <TitleText>{props.title}:</TitleText>
-            <DescriptionText>{props.description}</DescriptionText>
+            <DescriptionText>{props.description || '-'}</DescriptionText>
         </PageContainer>
     )
 }

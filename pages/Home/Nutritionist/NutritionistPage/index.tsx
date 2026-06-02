@@ -3,7 +3,7 @@ import React from 'react'
 import { Icon } from 'react-native-paper'
 import { Colors } from '@/constants/Colors'
 import { useColorScheme } from '@/hooks/useColorScheme'
-import { ButtonsContainer, ImageContainer, InfoContainer, PageContainer, SocialMedia } from './styles'
+import { ButtonsContainer, ImageContainer, InfoContainer, PageContainer, SocialMedia, SocialCircle } from './styles'
 import ProfileInfoComponent from '@/components/application/Lists/ProfileInfoComponent'
 import { useTranslation } from 'react-i18next'
 import { formatToBr } from '@/utils/functionsApp'
@@ -75,7 +75,7 @@ export default function NutritionistPage() {
                 {loading ? <LoadingPageComponent /> : (
                     <View>
                         <ImageContainer>
-                            <Icon size={widthPage / 3} source="account-circle-outline" color={Colors[colorScheme ?? 'light'].border} />
+                            <Icon size={widthPage / 3} source="account-circle-outline" color={Colors[colorScheme === 'dark' ? 'dark' : 'light'].border} />
                         </ImageContainer>
                         <InfoContainer>
                             <ProfileInfoComponent title={t('Name')} description={nutritionistSelected.nutritionist.name as string} />
@@ -86,19 +86,19 @@ export default function NutritionistPage() {
                         </InfoContainer>
                         <SocialMedia>
                             {nutritionistSelected.nutritionist.facebook &&
-                                <TouchableOpacity onPress={() => redirectLink(nutritionistSelected.nutritionist.facebook as string)}>
-                                    <Icon size={widthPage / 10} source="facebook" color={Colors[colorScheme ?? 'light'].border} />
-                                </TouchableOpacity>
+                                <SocialCircle theme={colorScheme === 'dark' ? 'dark' : 'light'} onPress={() => redirectLink(nutritionistSelected.nutritionist.facebook as string)}>
+                                    <Icon size={widthPage / 12} source="facebook" color="#1877F2" />
+                                </SocialCircle>
                             }
                             {nutritionistSelected.nutritionist.instagram &&
-                                <TouchableOpacity onPress={() => redirectLink(nutritionistSelected.nutritionist.instagram as string)}>
-                                    <Icon size={widthPage / 10} source="instagram" color={Colors[colorScheme ?? 'light'].border} />
-                                </TouchableOpacity>
+                                <SocialCircle theme={colorScheme === 'dark' ? 'dark' : 'light'} onPress={() => redirectLink(nutritionistSelected.nutritionist.instagram as string)}>
+                                    <Icon size={widthPage / 12} source="instagram" color="#E1306C" />
+                                </SocialCircle>
                             }
                             {nutritionistSelected.nutritionist.whatsapp &&
-                                <TouchableOpacity onPress={() => redirectLink(`https://wa.me/+55${(nutritionistSelected.nutritionist.whatsapp as string).replace(/\D/g, '')}`)}>
-                                    <Icon size={widthPage / 10} source="whatsapp" color={Colors[colorScheme ?? 'light'].border} />
-                                </TouchableOpacity>
+                                <SocialCircle theme={colorScheme === 'dark' ? 'dark' : 'light'} onPress={() => redirectLink(`https://wa.me/+55${(nutritionistSelected.nutritionist.whatsapp as string).replace(/\D/g, '')}`)}>
+                                    <Icon size={widthPage / 12} source="whatsapp" color="#25D366" />
+                                </SocialCircle>
                             }
                         </SocialMedia>
                         <ButtonsContainer>

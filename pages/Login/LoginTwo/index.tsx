@@ -102,7 +102,7 @@ export default function LoginTwo() {
                         )}
                         name="password"
                     />
-                    <ForgotPassword onPress={() => router.navigate("/(forget)/pin-code")}>
+                    <ForgotPassword onPress={() => router.navigate("/pin-code")}>
                         <ThemedText type='defaultSemiBold'>{t('I forgot my password')}</ThemedText>
                     </ForgotPassword>
 

@@ -4,7 +4,7 @@ import { UserRole } from '@/enums/UserRole';
 import { Alert } from 'react-native';
 import { TFunction } from 'i18next';
 import IUserInterface from '@/interfaces/User/IUserInterface';
-import { createAccountService } from '@/services/login/login';
+import { createAccount } from '@/services/login/login';
 
 export const useCreateAccount = () => {
     const [loading, setLoading] = useState(false);
@@ -16,17 +16,24 @@ export const useCreateAccount = () => {
         ) => {
         setLoading(true);
         const userData = {
-            ...data,
-            birth: new Date(data.birthDate),
+            name: data.name,
+            email: data.email,
+            password: data.password,
+            cpf: undefined,
+            phoneNumber: undefined,
+            birth: undefined,
+            gender: undefined,
             idUserRole: UserRole.CLIENT,
-            isCompleteProfile: false,
-        };
+            isCompleteProfile: true,
+        } as IUserInterface;
 
         try {
-            const response = await createAccountService(userData);
-            if (response.status === 201) {
-                setUser(response.data);
-                router.navigate("/login-two");
+            const response = await createAccount(userData);
+            if (typeof response === 'object' && response !== null && 'id' in response) {
+                setUser(response);
+                router.navigate("/login-one");
+            } else {
+                throw new Error(typeof response === 'string' ? response : 'Erro ao criar conta');
             }
         } catch (error) {
             Alert.alert(t("Create Account"), t("CPF or E-mail already registered"));

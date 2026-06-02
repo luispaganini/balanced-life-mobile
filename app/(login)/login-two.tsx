@@ -1,9 +1,8 @@
-import { View, Text } from 'react-native'
 import React from 'react'
-import LoginTwo from '@/pages/Login/LoginTwo'
+import { Redirect } from 'expo-router'
 
 export default function loginTwoRoute() {
   return (
-    <LoginTwo />
+    <Redirect href="/login-one" />
   )
 }

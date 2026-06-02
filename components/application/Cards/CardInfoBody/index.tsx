@@ -13,10 +13,10 @@ export default function CardInfoBody(props: CardInfoBodyProps) {
     return (
         <CardContainer themed={colorScheme}>
             <CardContent>
-                <CardChildren>
-                    <CardTitle>{props.title}</CardTitle>
+                <CardChildren themed={colorScheme}>
+                    <CardTitle themed={colorScheme}>{props.title}</CardTitle>
                 </CardChildren>
-                <CardDescription>{props.description}</CardDescription>
+                <CardDescription themed={colorScheme}>{props.description}</CardDescription>
             </CardContent>
         </CardContainer>
     )

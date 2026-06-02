@@ -25,6 +25,7 @@ interface InputFormProps {
 export default function InputFormComponent(props: InputFormProps) {
     const colorTheme = useColorScheme();
     const { t } = useTranslation();
+    const [isFocused, setIsFocused] = React.useState(false);
 
     return (
         <TextInputContainer>
@@ -37,10 +38,16 @@ export default function InputFormComponent(props: InputFormProps) {
                         onChangeText={props.onChangeText}
                         value={props.value}
                         theme={colorTheme}
-                        onBlur={props.onBlur}
+                        isFocused={isFocused}
+                        onFocus={() => setIsFocused(true)}
+                        onBlur={() => {
+                            setIsFocused(false);
+                            props.onBlur();
+                        }}
                         editable={props.editable}
                         keyboardType={props.keyboardType}
                         options={props.options}
+                        placeholderTextColor={colorTheme === 'dark' ? '#9BA1A6' : '#687076'}
                     />
                 </View>
                 :
@@ -51,10 +58,16 @@ export default function InputFormComponent(props: InputFormProps) {
                         onChangeText={props.onChangeText}
                         value={props.value}
                         theme={colorTheme}
-                        onBlur={props.onBlur}
+                        isFocused={isFocused}
+                        onFocus={() => setIsFocused(true)}
+                        onBlur={() => {
+                            setIsFocused(false);
+                            props.onBlur();
+                        }}
                         editable={props.editable}
                         secureTextEntry={props.password}
                         keyboardType={props.keyboardType}
+                        placeholderTextColor={colorTheme === 'dark' ? '#9BA1A6' : '#687076'}
                     />
                 </View>
             }

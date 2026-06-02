@@ -4,12 +4,12 @@ import { ColorSchemeName, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 
 export const PageContainer = styled.TouchableOpacity<{ theme: ColorSchemeName}>`
-    border-radius: 10px;
-    padding: 10px;
+    border-radius: 12px;
+    padding: 12px;
     margin: 10px;
     flex-direction: row;
     align-items: center;
-    background-color: white;
+    background-color: ${({theme}) => theme === 'light' ? Colors.light.card : Colors.dark.card};
     border: 1px solid ${({theme}) => theme === 'light' ? Colors.light.border : Colors.dark.border};
 `;
 

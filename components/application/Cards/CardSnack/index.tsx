@@ -17,10 +17,10 @@ export default function CardSnack(props: CardSnackProps) {
     return (
         <CardContainer themed={colorScheme} onPress={() => router.navigate(`/snack/${props.idMeal}/${props.idTypeSnack}`)}>
             <CardContent>
-                <CardChildren>
-                    <CardTitle>{props.title}</CardTitle>
+                <CardChildren themed={colorScheme}>
+                    <CardTitle themed={colorScheme}>{props.title}</CardTitle>
                 </CardChildren>
-                <CardDescription>{props.description} Kcal</CardDescription>
+                <CardDescription themed={colorScheme}>{props.description} Kcal</CardDescription>
             </CardContent>
         </CardContainer>
     )
