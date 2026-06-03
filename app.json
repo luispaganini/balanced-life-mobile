@@ -19,7 +19,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.anonymous.balancedlifemobile"
     },
     "web": {
       "bundler": "metro",
@@ -32,10 +33,17 @@
       "expo-font",
       "expo-splash-screen",
       "expo-status-bar",
-      "expo-web-browser"
+      "expo-web-browser",
+      "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "7f4acb37-d4c2-4579-b32a-4c31b64ef2b4"
+      }
     }
   },
   "application": {

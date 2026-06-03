@@ -106,5 +106,16 @@
     "Weight": "Peso",
     "Weight is required": "Peso é obrigatório",
     "Weight in kilograms": "Peso em kg",
-    "years": "anos"
+    "years": "anos",
+    "Water Reminders": "Lembretes de Água",
+    "Enable Reminders": "Ativar Lembretes",
+    "Interval": "Intervalo",
+    "Start Time": "Início",
+    "End Time": "Fim",
+    "Reminders Description": "Receba alertas para beber água ao longo do dia.",
+    "ml": "ml",
+    "Confirm": "Confirmar",
+    "Cancel": "Cancelar",
+    "Yes": "Sim",
+    "Reset water description": "Deseja zerar a água consumida hoje?"
 }

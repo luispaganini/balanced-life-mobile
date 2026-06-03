@@ -20,6 +20,21 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
+    try {
+      const { GoogleSignin } = require('@react-native-google-signin/google-signin');
+      GoogleSignin.configure({
+        webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+      });
+    } catch (e) {
+      console.warn(
+        'Google Sign-In não disponível neste ambiente (Expo Go não suporta módulos nativos customizados). ' +
+        'Use um Development Build para autenticação real com Google.',
+        e,
+      );
+    }
+  }, []);
+
+  useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
     }

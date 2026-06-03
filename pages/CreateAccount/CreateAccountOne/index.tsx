@@ -8,9 +8,9 @@ import { t } from 'i18next'
 
 export default function CreateAccountOne() {
     return (
-        <SafeAreaViewComponent>
+        <SafeAreaViewComponent style={{ backgroundColor: '#111827' }}>
             <ContainerPage>
-                <ScrollView>
+                <ScrollView showsVerticalScrollIndicator={false}>
                     <ImageContainer testID='logo-image'>
                         <ImageItem source={require('@/assets/images/logo.png')} />
                     </ImageContainer>

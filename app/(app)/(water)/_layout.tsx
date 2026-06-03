@@ -10,16 +10,15 @@ export default function TabWaterLayout() {
   const { t } = useTranslation();
   const { accessToken, refreshToken } = useTokenStore();
   if (!accessToken || !refreshToken) {
-    return <Redirect href={"/login-one"}/>
+    return <Redirect href={"/login-one"} />
   }
 
   return (
-    <Stack screenOptions={{headerShown: false, headerTitleAlign: 'center'}}>
+    <Stack screenOptions={{ headerShown: false, headerTitleAlign: 'center' }}>
       <Stack.Screen
         name="index"
         options={{
           title: t('Water'),
-          headerShown: true,
           headerTitle: t('Water')
         }}
       />

@@ -1,7 +1,7 @@
 import React from 'react'
-import { CardFoodContainer, TableInfo } from './styles'
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { ThemedText } from '@/components/ThemedText';
+import { CardFoodContainer, FoodIconContainer, FoodTextColumn, FoodNameText, FoodDescText } from './styles'
+import { Ionicons } from '@expo/vector-icons'
+import { Colors } from '@/constants/Colors';
 
 type CardFoodProps = {
     id: number;
@@ -11,17 +11,18 @@ type CardFoodProps = {
 }
 
 export default function CardFood(props: CardFoodProps) {
-    const theme = useColorScheme();
     return (
-        <CardFoodContainer theme={theme} onPress={() => props.onPress(props.id)}>
-            <ThemedText style={{ flexWrap: 'wrap', flexShrink: 1, fontWeight: '500', paddingRight: 10 }}>
-                {props.name}
-            </ThemedText>
-            <TableInfo>
-                <ThemedText style={{ fontSize: 12, fontWeight: '600', opacity: 0.8 }}>
-                    {props.table}
-                </ThemedText>
-            </TableInfo>
+        <CardFoodContainer onPress={() => props.onPress(props.id)}>
+            <FoodIconContainer>
+                <Ionicons name="restaurant-outline" size={20} color={Colors.color.green} />
+            </FoodIconContainer>
+            
+            <FoodTextColumn>
+                <FoodNameText numberOfLines={1}>{props.name}</FoodNameText>
+                <FoodDescText>{props.table}</FoodDescText>
+            </FoodTextColumn>
+
+            <Ionicons name="chevron-forward" size={16} color={Colors.color.grey} style={{ marginLeft: 5 }} />
         </CardFoodContainer>
     )
 }

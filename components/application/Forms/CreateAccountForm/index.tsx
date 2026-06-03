@@ -1,25 +1,22 @@
-import { View, Text, Alert, Keyboard } from 'react-native'
+import { View, Alert } from 'react-native'
 import React from 'react'
 import { useTranslation } from 'react-i18next';
 import useUserStore from '@/store/UserStore';
+import useTokenStore from '@/store/TokenStore';
 import { useForm } from 'react-hook-form';
 import { FormField } from '../FormField';
 import { validationRules } from '@/validations/validationRules';
 import { ButtonsContainer } from '@/pages/Profile/ChangePasswordPage/styles';
 import ButtonComponent from '../ButtonComponent';
-import { Href, router } from 'expo-router';
+import { router } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { useCreateAccount } from '@/hooks/useCreateAccount';
 import IFormCreateAccountValues from '@/interfaces/App/Form/IFormCreateAccountValues';
-
-type CreateAccountFormProps = {
-    navigate: (href: any) => void
-    testID: string
-}
+import { signInWithGoogle } from '@/services/auth/googleAuth';
+import { googleLogin, loginVerifyCPF } from '@/services/login/login';
 
 import styled from 'styled-components/native';
 import { AntDesign } from '@expo/vector-icons';
-import { ThemedText } from '@/components/ThemedText';
 
 const DividerContainer = styled.View`
     flex-direction: row;
@@ -35,7 +32,7 @@ const DividerLine = styled.View`
     background-color: ${Colors.dark.border};
 `;
 
-const DividerText = styled(ThemedText)`
+const DividerText = styled.Text`
     margin-horizontal: 10px;
     font-size: 14px;
     color: ${Colors.color.grey};
@@ -43,56 +40,65 @@ const DividerText = styled(ThemedText)`
 
 const GoogleButton = styled.TouchableOpacity`
     flex-direction: row;
-    background-color: ${Colors.color.white};
+    background-color: ${Colors.dark.card};
     border-width: 1px;
-    border-color: #d1d5db;
+    border-color: ${Colors.dark.border};
     padding: 14px;
     border-radius: 12px;
     align-items: center;
     justify-content: center;
     width: 100%;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 `;
 
 const GoogleButtonText = styled.Text`
-    color: #374151;
+    color: ${Colors.dark.text};
     font-size: 16px;
     font-weight: bold;
     margin-left: 10px;
 `;
 
+type CreateAccountFormProps = {
+    navigate: (href: any) => void
+    testID: string
+}
+
 export default function CreateAccountForm(props: CreateAccountFormProps) {
     const { t } = useTranslation();
-    const { user, setUser } = useUserStore();
+    const { setUser } = useUserStore();
+    const { setAccessToken, setRefreshToken } = useTokenStore();
     const { loading, submitAccount } = useCreateAccount();
     const onSubmit = async (data: any) => await submitAccount(data, setUser, t);
 
-    const handleGoogleSignUp = () => {
-        Alert.alert(
-            t('Google Sign-Up'),
-            t('Deseja criar sua conta utilizando os seus dados do Google?'),
-            [
-                {
-                    text: t('Simular'),
-                    onPress: async () => {
+    const handleGoogleSignUp = async () => {
+        try {
+            const googleRes = await signInWithGoogle();
+            if (googleRes.success && googleRes.idToken) {
+                // Role ID 1 is Patient/User for mobile registrations
+                const response = await googleLogin(googleRes.idToken, 1);
+                if (response.status === 200) {
+                    setAccessToken(response.data.accessToken)
+                    setRefreshToken(response.data.refreshToken)
+                    
+                    if (googleRes.email) {
                         try {
-                            const mockData = {
-                                name: "Paciente Teste Google",
-                                email: "paciente.google@balancedlife.com",
-                                password: "password123",
-                            };
-                            await onSubmit(mockData);
-                        } catch (err) {
-                            Alert.alert(t('Error'), t('Failed to create account with Google'));
+                            const userResponse = await loginVerifyCPF(googleRes.email)
+                            if (userResponse) {
+                                setUser(userResponse)
+                            }
+                        } catch (userError) {
+                            console.log("Failed to fetch user profile for Google register email", userError)
                         }
                     }
-                },
-                {
-                    text: t('Cancelar'),
-                    style: 'cancel'
+                    router.navigate("/")
+                } else {
+                    Alert.alert(t('Google Sign-Up'), t('Failed to create account with Google'));
                 }
-            ]
-        );
+            }
+        } catch (error: any) {
+            console.error('Google Sign-Up failed:', error);
+            Alert.alert(t('Google Sign-Up'), t('Failed to create account with Google'));
+        }
     }
 
     const {
@@ -112,7 +118,7 @@ export default function CreateAccountForm(props: CreateAccountFormProps) {
     const password = watch('password');
     const rules = validationRules(t)
     return (
-        <View testID={props.testID}>
+        <View testID={props.testID} style={{ paddingHorizontal: 20 }}>
             <FormField
                 control={control}
                 name="name"

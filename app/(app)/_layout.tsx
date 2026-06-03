@@ -36,12 +36,36 @@ export default function TabLayout() {
       <Tabs.Screen
         name="(water)"
         options={{
-          title: t('Stats'),
+          title: t('Água'),
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'stats-chart' : 'stats-chart-outline'} color={color} />
+            <TabBarIcon name={focused ? 'water' : 'water-outline'} color={color} />
           ),
           headerShown: false,
-          headerTitle: t('Stats'),
+          headerTitle: t('Água'),
+          headerTitleAlign: 'center'
+        }}
+      />
+      <Tabs.Screen
+        name="body"
+        options={{
+          title: t('Corpo'),
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'body' : 'body-outline'} color={color} />
+          ),
+          headerShown: false,
+          headerTitle: t('Corpo'),
+          headerTitleAlign: 'center'
+        }}
+      />
+      <Tabs.Screen
+        name="nutritionist"
+        options={{
+          title: t('Nutricionista'),
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'nutrition' : 'nutrition-outline'} color={color} />
+          ),
+          headerShown: false,
+          headerTitle: t('Nutricionista'),
           headerTitleAlign: 'center'
         }}
       />

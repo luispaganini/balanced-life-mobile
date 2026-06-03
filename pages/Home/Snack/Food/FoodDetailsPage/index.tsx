@@ -1,25 +1,55 @@
-import { View, Text, ScrollView, FlatList } from 'react-native'
+import { View, ScrollView, TextInput, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { router, useLocalSearchParams } from 'expo-router'
-import { NutritionalInformationContainer, NutritionalInformationDataContainer, PageContainer, TitleText } from './styles'
-import { ThemedText } from '@/components/ThemedText'
+import { router, useLocalSearchParams, Stack } from 'expo-router'
+import { 
+    PageContainer, 
+    HeaderContainer, 
+    HeaderButton, 
+    HeaderTitle, 
+    ScrollContainer, 
+    FoodInfoCard, 
+    FoodTitleText, 
+    FoodMetaText, 
+    InputCard, 
+    InputLabel, 
+    InputRow, 
+    PortionInput, 
+    UnitTagContainer, 
+    UnitTagText, 
+    SectionTitle, 
+    MacrosRow, 
+    MacroCard, 
+    MacroLabelRow, 
+    MacroDot, 
+    MacroLabel, 
+    MacroValueText, 
+    MacroProgressLine, 
+    MacroProgressFill, 
+    NutrientTableCard, 
+    NutrientRow, 
+    NutrientName, 
+    NutrientValue, 
+    ActionButton, 
+    ActionButtonText,
+    BottomFixedPanel
+} from './styles'
+import { Colors } from '@/constants/Colors'
 import { useTranslation } from 'react-i18next'
-import AddFoodComponent from '@/components/application/Forms/AddFoodComponent'
 import { getFoodById } from '@/services/snack/food'
 import IFoodInterface from '@/interfaces/Snack/Food/IFoodInterface'
-import { InfoAboutFoodContainer, ScrollViewContainer } from '@/components/application/Forms/AddFoodComponent/styles'
 import IFoodNutritionInfo from '@/interfaces/Snack/Food/IFoodNutritionInfo'
 import { calculateNutritionalValues } from '@/utils/functionsFood'
 import { setSnack, updateSnack } from '@/services/snack/snack'
 import { useSnackStore } from '@/store/SnackStore'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Ionicons } from '@expo/vector-icons'
 
 export default function FoodDetailsPage() {
     const { idMeal, idTypeSnack, idFood } = useLocalSearchParams()
-
-    //If the method is update
     const { idSnack, idUnitMeasurement, quantitySnack } = useLocalSearchParams()
 
     const { t } = useTranslation()
+    const insets = useSafeAreaInsets()
     const [food, setFood] = useState<IFoodInterface>()
     const [quantity, setQuantity] = useState(quantitySnack ? quantitySnack as string : '100')
     const [adjustedNutritionalInfo, setAdjustedNutritionalInfo] = useState<IFoodNutritionInfo[]>([])
@@ -38,14 +68,14 @@ export default function FoodDetailsPage() {
 
     const loadData = async () => {
         try {
-            const food = await getFoodById(parseInt(idFood as string))
-            setFood(food)
+            const foodData = await getFoodById(parseInt(idFood as string))
+            setFood(foodData)
         } catch (error) {
             console.error(error)
         }
     }
 
-    const addSnack = async () => {
+    const handleAddSnack = async () => {
         try {
             const snack = await setSnack({
                 appointment: snackStore.date,
@@ -53,18 +83,17 @@ export default function FoodDetailsPage() {
                 idMeal: parseInt(idMeal as string),
                 idTypeSnack: parseInt(idTypeSnack as string),
                 quantity: parseFloat(quantity),
-                idUnitMeasurement: 10004
+                idUnitMeasurement: 10004 // default g
             })
 
             snackStore.addSnackToDetails(snack)
-            router.dismissAll()
-            router.push(`/snack/${idMeal}/${idTypeSnack}`)
+            router.dismiss(2)
         } catch (error) {
             console.error(error)
         }
     }
 
-    const update = async () => {
+    const handleUpdateSnack = async () => {
         try {
             const snack = await updateSnack({
                 appointment: snackStore.date,
@@ -76,37 +105,164 @@ export default function FoodDetailsPage() {
             }, parseInt(idSnack as string))
 
             snackStore.updateSnackInDetails(snack)
-            router.dismissAll()
-            router.replace(`/snack/${idMeal}/${idTypeSnack}`)
+            router.dismiss(1)
         } catch (error) {
             console.error(error)
         }
     }
-    
+
+    // Extract macros and energy
+    const energyItem = adjustedNutritionalInfo.find(
+        item => item.nutritionalComposition?.item?.toLowerCase() === "energia"
+    )
+    const carbItem = adjustedNutritionalInfo.find(
+        item => item.nutritionalComposition?.item?.toLowerCase() === "carboidrato total"
+    )
+    const proteinItem = adjustedNutritionalInfo.find(
+        item => item.nutritionalComposition?.item?.toLowerCase() === "proteína"
+    )
+    const fatItem = adjustedNutritionalInfo.find(
+        item => item.nutritionalComposition?.item?.toLowerCase() === "lipídios"
+    )
+
+    const calories = energyItem?.quantity ?? 0
+    const carbs = carbItem?.quantity ?? 0
+    const protein = proteinItem?.quantity ?? 0
+    const fat = fatItem?.quantity ?? 0
+
+    const protPercent = Math.min((protein / 50) * 100, 100)
+    const carbPercent = Math.min((carbs / 100) * 100, 100)
+    const fatPercent = Math.min((fat / 30) * 100, 100)
+
+    // Filter out the main macros to display micro-nutrients below
+    const otherNutrients = adjustedNutritionalInfo.filter(
+        item => {
+            const name = item.nutritionalComposition?.item?.toLowerCase()
+            return name !== "energia" && name !== "carboidrato total" && name !== "proteína" && name !== "lipídios"
+        }
+    )
+
+    if (!food) {
+        return (
+            <PageContainer style={{ paddingTop: insets.top, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color={Colors.color.green} />
+            </PageContainer>
+        )
+    }
 
     return (
-        <PageContainer>
-            {food && (
-                <PageContainer>
-                    <ScrollViewContainer>
-                        <TitleText type='title'>{food.name}</TitleText>
+        <PageContainer style={{ paddingTop: insets.top }}>
+            <Stack.Screen options={{ headerShown: false }} />
 
-                        <NutritionalInformationContainer>
-                            <InfoAboutFoodContainer>
-                                {food.brand && <ThemedText type='defaultSemiBold'>{t('Brand')}: <ThemedText>{food.brand}</ThemedText></ThemedText>}
-                                <ThemedText type='defaultSemiBold'>{t('Reference Table')}: {food.referenceTable}</ThemedText>
-                            </InfoAboutFoodContainer>
-                            <ThemedText type='subtitle'>{t('Nutritional Information')}:</ThemedText>
-                            <NutritionalInformationDataContainer>
-                                {adjustedNutritionalInfo.map((item, index) => (
-                                    <ThemedText key={index}>• {t(item.nutritionalComposition.item)}: {item.quantity.toFixed(2)} {item.unitMeasurement.name}</ThemedText>
-                                ))}
-                            </NutritionalInformationDataContainer>
-                        </NutritionalInformationContainer>
-                    </ScrollViewContainer>
-                    <AddFoodComponent onPress={() => {idSnack ? update() : addSnack()}} quantity={quantity} setQuantity={setQuantity}/>
-                </PageContainer>
-            )}
+            {/* Custom Header */}
+            <HeaderContainer>
+                <HeaderButton onPress={() => router.back()}>
+                    <Ionicons name="chevron-back" size={26} color={Colors.dark.text} />
+                </HeaderButton>
+                <HeaderTitle>{t("Informação Nutricional")}</HeaderTitle>
+                <View style={{ width: 36 }} />
+            </HeaderContainer>
+
+            <ScrollContainer showsVerticalScrollIndicator={false}>
+                {/* Food Meta Info */}
+                <FoodInfoCard>
+                    <FoodTitleText>{food.name}</FoodTitleText>
+                    {food.brand && <FoodMetaText>{t("Brand")}: {food.brand}</FoodMetaText>}
+                    <FoodMetaText>{t("Reference Table")}: {food.referenceTable}</FoodMetaText>
+                    <FoodMetaText style={{ marginTop: 6, fontWeight: '700', color: Colors.color.green, fontSize: 15 }}>
+                        {Math.round(calories)} kcal / {quantity || '0'}g
+                    </FoodMetaText>
+                </FoodInfoCard>
+
+                {/* Macros Row */}
+                <SectionTitle>{t("Macronutrientes")}</SectionTitle>
+                <MacrosRow>
+                    <MacroCard>
+                        <MacroLabelRow>
+                            <MacroDot color={Colors.color.blue} />
+                            <MacroLabel>{t("Proteína")}</MacroLabel>
+                        </MacroLabelRow>
+                        <MacroValueText>{protein.toFixed(1)}g</MacroValueText>
+                        <MacroProgressLine>
+                            <MacroProgressFill color={Colors.color.blue} width={protPercent} />
+                        </MacroProgressLine>
+                    </MacroCard>
+
+                    <MacroCard>
+                        <MacroLabelRow>
+                            <MacroDot color={Colors.color.green} />
+                            <MacroLabel>{t("Carb.")}</MacroLabel>
+                        </MacroLabelRow>
+                        <MacroValueText>{carbs.toFixed(1)}g</MacroValueText>
+                        <MacroProgressLine>
+                            <MacroProgressFill color={Colors.color.green} width={carbPercent} />
+                        </MacroProgressLine>
+                    </MacroCard>
+
+                    <MacroCard>
+                        <MacroLabelRow>
+                            <MacroDot color={Colors.color.orange} />
+                            <MacroLabel>{t("Gordura")}</MacroLabel>
+                        </MacroLabelRow>
+                        <MacroValueText>{fat.toFixed(1)}g</MacroValueText>
+                        <MacroProgressLine>
+                            <MacroProgressFill color={Colors.color.orange} width={fatPercent} />
+                        </MacroProgressLine>
+                    </MacroCard>
+                </MacrosRow>
+
+                {/* Detailed Table */}
+                {otherNutrients.length > 0 && (
+                    <>
+                        <SectionTitle>{t("Detalhes Nutricionais")}</SectionTitle>
+                        <NutrientTableCard>
+                            {otherNutrients.map((item, index) => {
+                                const itemName = item.nutritionalComposition?.item;
+                                return (
+                                    <NutrientRow 
+                                        key={index}
+                                        style={{ 
+                                            borderBottomWidth: index === otherNutrients.length - 1 ? 0 : 1,
+                                            borderBottomColor: Colors.dark.border 
+                                        }}
+                                    >
+                                        <NutrientName>{t(itemName)}</NutrientName>
+                                        <NutrientValue>
+                                            {item.quantity.toFixed(2)} {item.unitMeasurement?.name}
+                                        </NutrientValue>
+                                    </NutrientRow>
+                                )
+                            })}
+                        </NutrientTableCard>
+                    </>
+                )}
+            </ScrollContainer>
+
+            <BottomFixedPanel style={{ paddingBottom: insets.bottom > 0 ? insets.bottom : 15 }}>
+                {/* Portion Size Input */}
+                <InputCard>
+                    <InputLabel>{t("Quantidade Consumida")}</InputLabel>
+                    <InputRow>
+                        <PortionInput
+                            keyboardType="numeric"
+                            value={quantity}
+                            onChangeText={setQuantity}
+                            placeholder="100"
+                            placeholderTextColor={Colors.color.grey}
+                        />
+                        <UnitTagContainer>
+                            <UnitTagText>g</UnitTagText>
+                        </UnitTagContainer>
+                    </InputRow>
+                </InputCard>
+
+                {/* Save / Add Action Button */}
+                <ActionButton onPress={idSnack ? handleUpdateSnack : handleAddSnack}>
+                    <ActionButtonText>
+                        {idSnack ? t("Salvar Alterações") : t("Adicionar à Refeição")}
+                    </ActionButtonText>
+                </ActionButton>
+            </BottomFixedPanel>
         </PageContainer>
     )
 }

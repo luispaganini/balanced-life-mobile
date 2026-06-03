@@ -4,7 +4,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import useTokenStore from '@/store/TokenStore';
 import { useTranslation } from 'react-i18next';
 
-export default function NutritionistLayout() {
+export default function BodyLayout() {
   const colorScheme = useColorScheme();
   const { t } = useTranslation();
   const { accessToken, refreshToken } = useTokenStore();
@@ -18,8 +18,8 @@ export default function NutritionistLayout() {
         headerTitleAlign: 'center',
       }}
     >
-      <Stack.Screen name='index' options={{ title: t("Nutritionists") }} />
-      <Stack.Screen name='[id]' options={{ title: t("Nutritionist") }} />
+      <Stack.Screen name='index' options={{ title: t("Body Data"), headerShown: false }} />
+      <Stack.Screen name='add-body-data' options={{ title: t("Body Data"), headerShown: false }} />
     </Stack>
   );
 }

@@ -1,6 +1,5 @@
-import { Dimensions, ScrollView, View } from 'react-native'
+import { Dimensions, View } from 'react-native'
 import React, { useEffect } from 'react'
-import { BodyContainer, CardsInfoBody, ChartContainer, ImageContainer, Loading, NoDataFound, PageContainer } from './styles'
 import { LineChart } from 'react-native-chart-kit';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import CardInfoBody from '@/components/application/Cards/CardInfoBody';
@@ -13,12 +12,31 @@ import { calculateAge, calculateBMI } from '@/utils/functionsUser';
 import { router } from 'expo-router';
 import { IBodyDataInterface } from '@/interfaces/Body/IBodyDataInterface';
 import { getLastFourBodyData } from '@/services/body/body';
-import { chartConfig } from '@/constants/charts/chartConfig';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+
+import {
+    PageContainer,
+    HeaderContainer,
+    HeaderTitle,
+    ScrollContainer,
+    ImageCard,
+    InfoText,
+    ChartCard,
+    ChartTitle,
+    CardsInfoBody,
+    Loading,
+    NoDataFound,
+    BodyContainer,
+    ButtonWrapper
+} from './styles'
+
 
 const screenWidth = Dimensions.get("window").width;
 
 export default function MyBodyPage() {
     const colorTheme = useColorScheme();
+    const insets = useSafeAreaInsets();
     const { user } = useUserStore() as { user: IUserInterface };
     const { t } = useTranslation();
     const [loadingPage, setLoadingPage] = React.useState(true);
@@ -27,9 +45,7 @@ export default function MyBodyPage() {
     const [bodyData, setBodyData] = React.useState([] as IBodyDataInterface[]);
 
     useEffect(() => {
-        const fetchData = async () => await getBodyData();
-
-        fetchData();
+        getBodyData();
     }, []);
 
     const getBodyData = async () => {
@@ -48,56 +64,127 @@ export default function MyBodyPage() {
         }
     }
 
-    const sortedBodyData = bodyData.sort((a, b) => new Date(a.datetime as Date).getTime() - new Date(b.datetime as Date).getTime());
+    const sortedBodyData = [...bodyData].sort((a, b) => new Date(a.datetime as Date).getTime() - new Date(b.datetime as Date).getTime());
 
     const data = {
-        labels: sortedBodyData.length ? bodyData.map(item => new Date(item.datetime as Date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' })) : [""],
+        labels: sortedBodyData.length ? sortedBodyData.map(item => new Date(item.datetime as Date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })) : [""],
         datasets: [
             {
-                data: sortedBodyData.length ? bodyData.map(item => item.weight) : [0],
-                color: (opacity = 1) => `rgba(50, 65, 244, ${opacity})`,
+                data: sortedBodyData.length ? sortedBodyData.map(item => item.weight) : [0],
             }
-        ],
-        legend: [t('Weight')]
+        ]
     };
 
-    const images = {
-        light: require('@/assets/images/fullbody-light.png'),
-        dark: require('@/assets/images/fullbody.png'),
+    const isLight = colorTheme === 'light';
+    const cardBgColor = isLight ? Colors.light.card : Colors.dark.card;
+    const textColor = isLight ? Colors.light.text : Colors.dark.text;
+    const borderColor = isLight ? Colors.light.border : Colors.dark.border;
+
+    // Custom configuration to blend the chart into the card background
+    const customChartConfig = {
+        backgroundGradientFrom: cardBgColor,
+        backgroundGradientTo: cardBgColor,
+        decimalPlaces: 1,
+        color: (opacity = 1) => Colors.color.blue,
+        labelColor: (opacity = 1) => isLight ? '#4B5563' : '#9CA3AF',
+        style: {
+            borderRadius: 16,
+        },
+        propsForDots: {
+            r: "5",
+            strokeWidth: "2",
+            stroke: Colors.color.blue,
+        },
+        propsForBackgroundLines: {
+            stroke: borderColor,
+            strokeDasharray: '0', // Solid lines
+        },
     };
+
+
+
     return (
-        <PageContainer>
-            <ScrollView>
-                <ImageContainer source={images[colorTheme == 'light' ? 'light' : 'dark']} />
+        <PageContainer theme={colorTheme} style={{ paddingTop: insets.top }}>
+            {/* Custom Header */}
+            <HeaderContainer theme={colorTheme}>
+                <HeaderTitle theme={colorTheme}>{t('My Body')}</HeaderTitle>
+            </HeaderContainer>
+
+            <ScrollContainer showsVerticalScrollIndicator={false}>
+                {/* Creative Stats Summary Card */}
+                <ImageCard theme={colorTheme}>
+                    <Ionicons name="body-outline" size={42} color={Colors.color.blue} style={{ marginBottom: 10 }} />
+                    <InfoText theme={colorTheme}>
+                        {t('Acompanhe seus dados corporais e veja sua evolução ao longo do tempo.')}
+                    </InfoText>
+                </ImageCard>
+
                 {loadingPage ? (
-                    <Loading size="large" color={Colors.color.cyan} />
+                    <Loading size="large" color={Colors.color.green} />
                 ) : (
                     <BodyContainer>
                         {bodyData.length > 0 ? (
                             <View>
-                                <ChartContainer theme={colorTheme}>
+                                {/* Line Chart Card */}
+                                <ChartCard theme={colorTheme}>
+                                    <ChartTitle theme={colorTheme}>{t('Histórico de Peso')}</ChartTitle>
                                     <LineChart
                                         data={data}
-                                        width={screenWidth / 1.1}
+                                        width={screenWidth - 72}
                                         height={180}
-                                        chartConfig={chartConfig}
-                                        transparent={true}
+                                        chartConfig={customChartConfig}
+                                        transparent={false}
+                                        bezier
+                                        style={{
+                                            marginVertical: 8,
+                                            borderRadius: 16
+                                        }}
                                     />
-                                </ChartContainer>
+                                </ChartCard>
+
+                                {/* 2x2 Grid of Metrics Cards */}
                                 <CardsInfoBody>
-                                    <CardInfoBody title={t('Weight')} description={weight.toFixed(2) + ' kg'} />
-                                    <CardInfoBody title={t('Height')} description={height.toFixed(2) + ' m'} />
-                                    <CardInfoBody title={t('BMI')} description={calculateBMI(weight, height) + ' kg/m²'} />
-                                    <CardInfoBody title={t('Age')} description={calculateAge(new Date(user.birth as Date)) + ' '+ t('years')} />
+                                    <CardInfoBody
+                                        title={t('Weight')}
+                                        description={weight.toFixed(1) + ' kg'}
+                                        iconName="fitness-outline"
+                                        iconColor={Colors.color.blue}
+                                    />
+                                    <CardInfoBody
+                                        title={t('Height')}
+                                        description={height.toFixed(2) + ' m'}
+                                        iconName="resize-outline"
+                                        iconColor={Colors.color.purple}
+                                    />
+                                    <CardInfoBody
+                                        title={t('BMI')}
+                                        description={calculateBMI(weight, height) + ' kg/m²'}
+                                        iconName="speedometer-outline"
+                                        iconColor={Colors.color.orange}
+                                    />
+                                    <CardInfoBody
+                                        title={t('Age')}
+                                        description={calculateAge(new Date(user.birth as Date)) + ' ' + t('years')}
+                                        iconName="calendar-outline"
+                                        iconColor={Colors.color.green}
+                                    />
                                 </CardsInfoBody>
                             </View>
                         ) : (
-                            <NoDataFound>{t('No data found')}</NoDataFound>
+                            <NoDataFound theme={colorTheme}>{t('No data found')}</NoDataFound>
                         )}
-                        <ButtonComponent title={t('Update body data')} onPress={() => router.navigate('/body/add-body-data')} color={Colors.color.blue} />
+
+                        {/* Full Width Update Action Button */}
+                        <ButtonWrapper>
+                            <ButtonComponent
+                                title={t('Update body data')}
+                                onPress={() => router.push('/body/add-body-data')}
+                                color={Colors.color.green}
+                            />
+                        </ButtonWrapper>
                     </BodyContainer>
                 )}
-            </ScrollView>
+            </ScrollContainer>
         </PageContainer>
     )
 }

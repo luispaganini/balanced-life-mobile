@@ -8,16 +8,16 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { accessToken, refreshToken } = useTokenStore();
   if (!accessToken || !refreshToken) {
-    return <Redirect href={"/login-one"}/>
+    return <Redirect href={"/login-one"} />
   }
 
   return (
-    <Stack screenOptions={{headerShown: false, headerTitleAlign: 'center'}}>
+    <Stack screenOptions={{ headerShown: false, headerTitleAlign: 'center' }}>
       <Stack.Screen
         name="index"
         options={{
           title: 'Home',
-          headerShown: true,
+          headerShown: false,
           headerTitle: 'Home'
         }}
       />

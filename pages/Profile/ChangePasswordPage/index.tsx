@@ -1,16 +1,29 @@
-import { View, Text, Keyboard, ScrollView, Alert, SafeAreaView } from 'react-native'
+import { View, Keyboard, ScrollView, Alert } from 'react-native'
 import React from 'react'
 import { useTranslation } from 'react-i18next';
 import useUserStore from '@/store/UserStore';
 import { Controller, useForm } from 'react-hook-form';
 import IUserInterface from '@/interfaces/User/IUserInterface';
-import { ButtonsContainer, ImageContainer, ImageItem, PageContainer, TitleItem } from './styles';
+import { 
+    PageContainer, 
+    HeaderContainer, 
+    HeaderButton, 
+    HeaderTitle, 
+    FormWrapper, 
+    CardContainer, 
+    InputGroup,
+    InputLabel, 
+    ButtonsContainer 
+} from './styles';
 import InputFormComponent from '@/components/application/Inputs/InputFormComponent';
 import ButtonComponent from '@/components/application/Forms/ButtonComponent';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Colors } from '@/constants/Colors';
 import { patchUser } from '@/services/user/user';
 import LoadingPageComponent from '@/components/application/Lists/LoadingPageComponent';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import useTokenStore from '@/store/TokenStore';
 
 type FormData = {
     password: string;
@@ -20,7 +33,10 @@ type FormData = {
 export default function ChangePasswordPage() {
     const [loading, setLoading] = React.useState(false)
     const { t } = useTranslation();
-    const { user, setUser } = useUserStore() as { user: IUserInterface, setUser: (user: IUserInterface) => void };
+    const insets = useSafeAreaInsets();
+    const { userId: paramUserId } = useLocalSearchParams<{ userId?: string }>();
+    const isRecovery = !!paramUserId;
+    const { user, setUser } = useUserStore() as { user: IUserInterface | null, setUser: (user: IUserInterface) => void };
 
     const {
         control,
@@ -34,9 +50,12 @@ export default function ChangePasswordPage() {
         },
     })
     const password = watch('password');
+
     const onSubmit = async (data: FormData) => {
         setLoading(true)
         Keyboard.dismiss()
+        const targetUserId = isRecovery ? parseInt(paramUserId!) : (user?.id as number);
+        
         try {
             const response = await patchUser({
                 password: data.password,
@@ -59,86 +78,115 @@ export default function ChangePasswordPage() {
                 expirationLicence: undefined,
                 isCompleteProfile: undefined,
                 district: undefined
-            }, user.id as number)
+            }, targetUserId)
 
             if ('id' in response) {
-                setUser(response)
-                Alert.alert(t('Success'), t('Password updated successfully'))
-            } else
-                Alert.alert(t('Error'), response.message)
-
-            router.back()
+                if (isRecovery) {
+                    const { clearTokens } = useTokenStore.getState();
+                    clearTokens();
+                    Alert.alert(t('Sucesso'), t('Senha recuperada com sucesso!'))
+                    router.replace('/login-one')
+                } else {
+                    setUser(response)
+                    Alert.alert(t('Sucesso'), t('Senha atualizada com sucesso!'))
+                    router.back()
+                }
+            } else {
+                Alert.alert(t('Erro'), response.message || t('Falha ao atualizar senha.'))
+            }
         } catch (error) {
             console.error(error)
+            Alert.alert(t('Erro'), t('Falha ao salvar a nova senha.'))
         } finally {
             setLoading(false)
         }
     }
+
     return (
-        <PageContainer>
-            {loading ?
+        <PageContainer style={{ paddingTop: insets.top }}>
+            {/* Header */}
+            <HeaderContainer>
+                <HeaderButton onPress={() => router.back()}>
+                    <Ionicons name="chevron-back" size={26} color={Colors.dark.text} />
+                </HeaderButton>
+                <HeaderTitle>{isRecovery ? t('Recuperar Senha') : t('Alterar Senha')}</HeaderTitle>
+                <View style={{ width: 36 }} />
+            </HeaderContainer>
+
+            {loading ? (
                 <LoadingPageComponent />
-                : (
-                    <ScrollView>
-                        <ImageContainer>
-                            <ImageItem source={require('@/assets/images/logo.png')} />
-                        </ImageContainer>
-                        <TitleItem>{t('Update Password')}</TitleItem>
-                        <Controller
-                            control={control}
-                            rules={{
-                                required: t("Password is required"),
-                                pattern: {
-                                    value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
-                                    message: t("Password must contain at least 8 characters, including a letter and a number"),
-                                },
-                            }
-                            }
-                            render={({ field: { onChange, onBlur, value } }) => (
-                                <InputFormComponent
-                                    placeholder={t("Password")}
-                                    onBlur={onBlur}
-                                    onChangeText={onChange}
-                                    value={value}
-                                    errors={errors.password}
-                                    editable={true}
-                                    password={true}
-                                    title={true}
+            ) : (
+                <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+                    <FormWrapper>
+                        <CardContainer>
+                            <InputGroup>
+                                <InputLabel>{t('Nova Senha')}</InputLabel>
+                                <Controller
+                                    control={control}
+                                    rules={{
+                                        required: t("Senha é obrigatória"),
+                                        pattern: {
+                                            value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+                                            message: t("A senha deve conter pelo menos 8 caracteres, incluindo uma letra e um número"),
+                                        },
+                                    }}
+                                    render={({ field: { onChange, onBlur, value } }) => (
+                                        <InputFormComponent
+                                            placeholder={t("Senha")}
+                                            onBlur={onBlur}
+                                            onChangeText={onChange}
+                                            value={value}
+                                            errors={errors.password}
+                                            editable={true}
+                                            password={true}
+                                            title={false}
+                                        />
+                                    )}
+                                    name="password"
                                 />
-                            )}
-                            name="password"
-                        />
-                        <Controller
-                            control={control}
-                            rules={{
-                                required: t("Password is required"),
-                                validate: (value) =>
-                                    value === password || t("Passwords do not match"),
-                                pattern: {
-                                    value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
-                                    message: t("Password must contain at least 8 characters, including a letter and a number"),
-                                },
-                            }}
-                            render={({ field: { onChange, onBlur, value } }) => (
-                                <InputFormComponent
-                                    placeholder={t("Confirm Password")}
-                                    onBlur={onBlur}
-                                    onChangeText={onChange}
-                                    value={value}
-                                    errors={errors.confirmPassword}
-                                    editable={true}
-                                    password={true}
-                                    title={true}
+                            </InputGroup>
+
+                            <InputGroup style={{ marginBottom: 0 }}>
+                                <InputLabel>{t('Confirmar Nova Senha')}</InputLabel>
+                                <Controller
+                                    control={control}
+                                    rules={{
+                                        required: t("Confirmação de senha é obrigatória"),
+                                        validate: (value) =>
+                                            value === password || t("As senhas não coincidem"),
+                                        pattern: {
+                                            value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+                                            message: t("A senha deve conter pelo menos 8 caracteres, incluindo uma letra e um número"),
+                                        },
+                                    }}
+                                    render={({ field: { onChange, onBlur, value } }) => (
+                                        <InputFormComponent
+                                            placeholder={t("Confirmar Senha")}
+                                            onBlur={onBlur}
+                                            onChangeText={onChange}
+                                            value={value}
+                                            errors={errors.confirmPassword}
+                                            editable={true}
+                                            password={true}
+                                            title={false}
+                                        />
+                                    )}
+                                    name="confirmPassword"
                                 />
-                            )}
-                            name="confirmPassword"
-                        />
+                            </InputGroup>
+                        </CardContainer>
+
                         <ButtonsContainer>
-                            <ButtonComponent onPress={handleSubmit(onSubmit)} title="Update Password" color={Colors.color.green} loading={loading} />
-                            <ButtonComponent onPress={() => router.back()} title="Back" color={Colors.color.blue} />
+                            <ButtonComponent 
+                                onPress={handleSubmit(onSubmit)} 
+                                title={t("Salvar Nova Senha")} 
+                                color={Colors.color.green} 
+                                loading={loading} 
+                            />
                         </ButtonsContainer>
-                    </ScrollView>
-                )}
+                    </FormWrapper>
+                </ScrollView>
+            )}
         </PageContainer>
     )
 }

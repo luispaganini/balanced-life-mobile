@@ -354,3 +354,150 @@ export const CheckboxCircle = styled.View<{ checked: boolean; theme: ColorScheme
         : (props.theme === 'light' ? '#D1D5DB' : '#4B5563')
     };
 `;
+
+// Dropdown Components
+export const DropdownContainer = styled.View<{ theme: ColorSchemeName; topInset: number }>`
+    position: absolute;
+    right: 16px;
+    top: ${props => props.topInset + 60}px;
+    z-index: 1000;
+    width: 220px;
+    background-color: ${({ theme }) => theme === 'light' ? Colors.light.card : Colors.dark.card};
+    border-radius: 12px;
+    border-width: 1px;
+    border-color: ${({ theme }) => theme === 'light' ? Colors.light.border : Colors.dark.border};
+    padding: 6px;
+    shadow-color: #000;
+    shadow-offset: 0px 4px;
+    shadow-opacity: 0.15;
+    shadow-radius: 12px;
+    elevation: 5;
+`;
+
+export const DropdownItem = styled.TouchableOpacity`
+    flex-direction: row;
+    align-items: center;
+    padding: 12px;
+    border-radius: 8px;
+`;
+
+export const DropdownItemText = styled.Text<{ theme: ColorSchemeName }>`
+    font-size: 14px;
+    font-weight: 600;
+    color: ${({ theme }) => theme === 'light' ? Colors.light.text : Colors.dark.text};
+    margin-left: 10px;
+`;
+
+// Modal Components
+export const ModalOverlay = styled.View`
+    flex: 1;
+    background-color: rgba(0,0,0,0.5);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+`;
+
+export const ModalCard = styled.View<{ theme: ColorSchemeName }>`
+    width: 100%;
+    max-width: 360px;
+    background-color: ${({ theme }) => theme === 'light' ? Colors.light.card : Colors.dark.card};
+    border-radius: 16px;
+    border-width: 1px;
+    border-color: ${({ theme }) => theme === 'light' ? Colors.light.border : Colors.dark.border};
+    padding: 20px;
+    shadow-color: #000;
+    shadow-offset: 0px 4px;
+    shadow-opacity: 0.2;
+    shadow-radius: 12px;
+    elevation: 5;
+`;
+
+export const ModalTitle = styled.Text<{ theme: ColorSchemeName }>`
+    font-size: 18px;
+    font-weight: 700;
+    color: ${({ theme }) => theme === 'light' ? Colors.light.text : Colors.dark.text};
+    margin-bottom: 16px;
+    text-align: center;
+`;
+
+export const MealPillsContainer = styled.View`
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+`;
+
+export const MealPill = styled.TouchableOpacity<{ active: boolean }>`
+    padding: 8px 14px;
+    border-radius: 20px;
+    background-color: ${({ active }) => active ? Colors.color.green : 'rgba(155,161,166,0.1)'};
+    border-width: 1px;
+    border-color: ${({ active }) => active ? Colors.color.green : 'transparent'};
+`;
+
+export const MealPillText = styled.Text<{ active: boolean; theme: ColorSchemeName }>`
+    font-size: 13px;
+    font-weight: 600;
+    color: ${({ active, theme }) => 
+        active 
+            ? '#FFF' 
+            : (theme === 'light' ? Colors.light.text : Colors.dark.text)};
+`;
+
+export const CustomInputWrapper = styled.View`
+    margin-bottom: 16px;
+`;
+
+export const ModalTextInput = styled.TextInput<{ theme: ColorSchemeName }>`
+    width: 100%;
+    padding: 12px 16px;
+    background-color: ${({ theme }) => theme === 'light' ? 'rgba(0,0,0,0.02)' : 'rgba(255,255,255,0.03)'};
+    border-radius: 12px;
+    border-width: 1px;
+    border-color: ${({ theme }) => theme === 'light' ? Colors.light.border : Colors.dark.border};
+    color: ${({ theme }) => theme === 'light' ? Colors.light.text : Colors.dark.text};
+    font-size: 14px;
+    margin-top: 8px;
+`;
+
+export const TimePickerRow = styled.TouchableOpacity<{ theme: ColorSchemeName }>`
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background-color: ${({ theme }) => theme === 'light' ? 'rgba(0,0,0,0.02)' : 'rgba(255,255,255,0.03)'};
+    border-radius: 12px;
+    border-width: 1px;
+    border-color: ${({ theme }) => theme === 'light' ? Colors.light.border : Colors.dark.border};
+    margin-bottom: 20px;
+`;
+
+export const TimeLabel = styled.Text`
+    font-size: 14px;
+    color: ${Colors.color.grey};
+    font-weight: 500;
+`;
+
+export const TimeValue = styled.Text<{ theme: ColorSchemeName }>`
+    font-size: 14px;
+    font-weight: 600;
+    color: ${({ theme }) => theme === 'light' ? Colors.light.text : Colors.dark.text};
+`;
+
+export const ModalActionsRow = styled.View`
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 12px;
+`;
+
+export const ModalActionButton = styled.TouchableOpacity<{ isCancel?: boolean }>`
+    padding: 10px 18px;
+    border-radius: 8px;
+    background-color: ${({ isCancel }) => isCancel ? 'transparent' : Colors.color.green};
+`;
+
+export const ModalActionButtonText = styled.Text<{ isCancel?: boolean }>`
+    font-size: 14px;
+    font-weight: 600;
+    color: ${({ isCancel }) => isCancel ? Colors.color.grey : '#FFF'};
+`;

@@ -1,3 +1,13 @@
 {
-
+    "Water Reminders": "Water Reminders",
+    "Enable Reminders": "Enable Reminders",
+    "Interval": "Interval",
+    "Start Time": "Start Time",
+    "End Time": "End Time",
+    "Reminders Description": "Get periodic notifications to drink water throughout the day.",
+    "ml": "ml",
+    "Confirm": "Confirm",
+    "Cancel": "Cancel",
+    "Yes": "Yes",
+    "Reset water description": "Do you want to reset today's water intake?"
 }

@@ -20,7 +20,7 @@ export default function MealLayout() {
     >
       <Stack.Screen name='index' options={{ title: t("Snacks") }} />
       <Stack.Screen name='[idMeal]/[idTypeSnack]' options={{ title: t("Snacks") }} />
-      <Stack.Screen name='food' options={{ title: t("Food") }} />
+      <Stack.Screen name='food' options={{ title: t("Food"), headerShown: false }} />
     </Stack>
   );
 }

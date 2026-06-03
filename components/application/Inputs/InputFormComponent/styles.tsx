@@ -17,20 +17,20 @@ export const TitleInput = styled(ThemedText)`
 `;
 
 export const TextInputComponent = styled.TextInput<{ theme: ColorSchemeName; isFocused: boolean }>`
-    border-color: ${(props) => props.isFocused ? '#00B38C' : (props.theme == "light" ? '#D1D5DB' : '#4B5563')};
+    border-color: ${(props) => props.isFocused ? '#00B38C' : (props.theme === "light" ? Colors.light.border : Colors.dark.border)};
     border-width: 1px;
     border-radius: 12px;
-    color: ${(props) => props.theme == "light" ? Colors.color.black : Colors.dark.text};
-    background-color: ${(props) => props.theme == "light" ? '#FFFFFF' : '#111827'};
+    color: ${(props) => props.theme === "light" ? Colors.color.black : Colors.dark.text};
+    background-color: ${(props) => props.theme === "light" ? '#FFFFFF' : Colors.dark.card};
     padding: 12px;
 `;
 
 export const TextInputComponentWithMask = styled(TextInputMask)<{ theme: ColorSchemeName; isFocused: boolean }>`
-    border-color: ${(props) => props.isFocused ? '#00B38C' : (props.theme == "light" ? '#D1D5DB' : '#4B5563')};
+    border-color: ${(props) => props.isFocused ? '#00B38C' : (props.theme === "light" ? Colors.light.border : Colors.dark.border)};
     border-width: 1px;
     border-radius: 12px;
-    color: ${(props) => props.theme == "light" ? Colors.color.black : Colors.dark.text};
-    background-color: ${(props) => props.theme == "light" ? '#FFFFFF' : '#111827'};
+    color: ${(props) => props.theme === "light" ? Colors.color.black : Colors.dark.text};
+    background-color: ${(props) => props.theme === "light" ? '#FFFFFF' : Colors.dark.card};
     padding: 12px;
 `;
 

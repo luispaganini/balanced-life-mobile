@@ -14,7 +14,7 @@ export async function getSnackAsync(date: Date): Promise<ISnackInterface> {
 }
 
 export async function getSnackDetailsAsync(idMeal: number, idTypeSnack: number): Promise<ISnackDetailsInterface> {
-    const response = await api.get(`/meal/${idMeal}/type-snack/${idTypeSnack}`);
+    const response = await api.get(`/meal/${idMeal}`);
 
     if (response.status != 200)
         throw new Error(response.data.message);
@@ -55,4 +55,29 @@ export async function sendSnack(status: StatusMeal, observation: string, idMeal:
 
     if (response.status != 200)
         throw new Error();
+}
+
+export async function resetSnacksAsync(date: Date): Promise<ISnackInterface> {
+    const response = await api.delete('/meals/reset', { params: { date: date } });
+
+    if (response.status != 200)
+        throw new Error(response.data?.message || "Failed to reset snacks");
+    
+    return response.data;
+}
+
+export async function createMealAsync(meal: {
+    typeSnack: { name: string, timeSnack: string },
+    appointment: Date,
+    idUser: number,
+    status: number,
+    observation: string,
+    snacks?: any[]
+}): Promise<any> {
+    const response = await api.post('/meal', meal);
+
+    if (response.status !== 200 && response.status !== 201)
+        throw new Error(response.data?.message || "Failed to create meal");
+
+    return response.data;
 }

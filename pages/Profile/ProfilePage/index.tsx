@@ -1,59 +1,234 @@
-import { Dimensions, ScrollView, Touchable, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import { ButtonLogOut, ChangePasswordText, DividerContent, InfoExtraUserContainer, InfoExtraUserItems, LogoutText, NameText, PageContainer, ProfileInfoContainer, ProfileInfoContent, UserInfoContainer } from './styles'
+import { ScrollView, TouchableOpacity, View, Alert, ActivityIndicator } from 'react-native'
+import React, { useState } from 'react'
+import { 
+    PageContainer, 
+    ScrollContainer,
+    HeaderContainer,
+    HeaderTitle,
+    ProfileCard,
+    AvatarWrapper,
+    AvatarImage,
+    AvatarFallback,
+    AvatarFallbackText,
+    CameraBadge,
+    NameText,
+    AgeText,
+    OutlineButton,
+    OutlineButtonText,
+    SectionHeader,
+    SectionTitle,
+    EditLink,
+    EditLinkText,
+    InfoListCard,
+    InfoItemRow,
+    InfoIconWrapper,
+    InfoTextColumn,
+    InfoLabel,
+    InfoValue,
+    LogOutButton,
+    LogOutText
+} from './styles'
 import useUserStore from '@/store/UserStore'
-import { useColorScheme } from '@/hooks/useColorScheme'
-import { Divider, Icon, IconButton } from 'react-native-paper'
-import { AgeText } from '@/components/application/Lists/ItemSnackComponent/styles'
 import { calculateAge } from '@/utils/functionsUser'
 import IUserInterface from '@/interfaces/User/IUserInterface'
 import { useTranslation } from 'react-i18next'
-import ProfileInfoComponent from '@/components/application/Lists/ProfileInfoComponent'
 import { Colors } from '@/constants/Colors'
 import useTokenStore from '@/store/TokenStore'
-import { formatDate, formatToBr } from '@/utils/functionsApp'
+import { formatToBr } from '@/utils/functionsApp'
 import { router } from 'expo-router'
-import { ThemedText } from '@/components/ThemedText'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Ionicons } from '@expo/vector-icons'
+import * as ImagePicker from 'expo-image-picker'
+import { patchUser } from '@/services/user/user'
 
 export default function ProfilePage() {
-    const { user } = useUserStore() as { user: IUserInterface };
-    const colorScheme = useColorScheme()
+    const { user, setUser } = useUserStore() as { user: IUserInterface, setUser: (user: IUserInterface) => void };
     const { clearTokens } = useTokenStore();
-    const widthPage = Dimensions.get('window').width;
     const { t } = useTranslation();
+    const insets = useSafeAreaInsets();
+    const [uploading, setUploading] = useState(false);
+
+    const getInitials = (name?: string | null) => {
+        if (!name) return 'U';
+        const parts = name.trim().split(/\s+/);
+        if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+        return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+    };
+
+    const handlePickImage = async () => {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            Alert.alert(t('Permissão necessária'), t('Precisamos de permissão para acessar sua galeria.'));
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0.8,
+        });
+
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+            const pickedUri = result.assets[0].uri;
+            setUploading(true);
+            try {
+                const response = await patchUser({
+                    urlImage: pickedUri,
+                    id: undefined,
+                    name: undefined,
+                    birth: undefined,
+                    password: undefined,
+                    email: undefined,
+                    gender: undefined,
+                    cpf: undefined,
+                    street: undefined,
+                    number: undefined,
+                    zipCode: undefined,
+                    location: undefined,
+                    userRole: undefined,
+                    phoneNumber: undefined,
+                    instagram: undefined,
+                    facebook: undefined,
+                    whatsapp: undefined,
+                    expirationLicence: undefined,
+                    isCompleteProfile: undefined,
+                    district: undefined
+                }, user.id as number);
+
+                if ('id' in response) {
+                    setUser(response);
+                    Alert.alert(t('Sucesso'), t('Foto de perfil atualizada!'));
+                } else {
+                    Alert.alert(t('Erro'), response.message || t('Falha ao atualizar foto.'));
+                }
+            } catch (error) {
+                console.error(error);
+                Alert.alert(t('Erro'), t('Falha ao enviar imagem.'));
+            } finally {
+                setUploading(false);
+            }
+        }
+    };
+
     return (
-        <PageContainer>
-            <ScrollView>
-                <ProfileInfoContainer>
-                    <ProfileInfoContent>
-                        <Icon size={widthPage / 4} source="account-circle-outline" color={Colors[colorScheme === 'dark' ? 'dark' : 'light'].border} />
-                        <UserInfoContainer>
-                            <NameText numberOfLines={2} ellipsizeMode='tail'>{user?.name}</NameText>
-                            {user?.birth && calculateAge(user.birth) ? (
-                                <AgeText>{t('Age')}: {calculateAge(user.birth) + ' ' + t('years')}</AgeText>
-                            ) : null}
-                        <TouchableOpacity onPress={() => router.navigate('/change-password-page')}>
-                            <ChangePasswordText>{t('Change password')}</ChangePasswordText>
-                        </TouchableOpacity>
-                        </UserInfoContainer>
-                    </ProfileInfoContent>
-                    <IconButton icon="pencil" onPress={() => router.navigate('/edit-page')} size={30} />
-                </ProfileInfoContainer>
-                <DividerContent theme={colorScheme === 'dark' ? 'dark' : 'light'} />
-                <InfoExtraUserContainer>
-                    <InfoExtraUserItems>
-                        <ProfileInfoComponent title={'E-mail'} description={user.email as string} />
-                        <ProfileInfoComponent title={t('Number')} description={user.phoneNumber as string} />
-                        <ProfileInfoComponent title={t('Gender')} description={user.gender as string} />
-                        <ProfileInfoComponent title={t('Birthdate')} description={formatToBr(user.birth)} />
-                    </InfoExtraUserItems>
-                    <IconButton icon="pencil" onPress={() => router.navigate('/edit-extra-page')} size={30} />
-                </InfoExtraUserContainer>
-                <ButtonLogOut onPress={() => clearTokens()}>
-                    <Icon source="logout" size={30} color={Colors.color.red} />
-                    <LogoutText>{t('Log out')}</LogoutText>
-                </ButtonLogOut>
-            </ScrollView>
+        <PageContainer style={{ paddingTop: insets.top }}>
+            {/* Header */}
+            <HeaderContainer>
+                <HeaderTitle>{t('Meu Perfil')}</HeaderTitle>
+                <View style={{ width: 24 }} />
+            </HeaderContainer>
+
+            <ScrollContainer showsVerticalScrollIndicator={false}>
+                {/* Main Profile Info Card */}
+                <ProfileCard>
+                    <AvatarWrapper>
+                        {user.urlImage ? (
+                            <AvatarImage source={{ uri: user.urlImage }} />
+                        ) : (
+                            <AvatarFallback>
+                                <AvatarFallbackText>
+                                    {getInitials(user.name)}
+                                </AvatarFallbackText>
+                            </AvatarFallback>
+                        )}
+                        <CameraBadge onPress={handlePickImage} disabled={uploading}>
+                            {uploading ? (
+                                <ActivityIndicator size="small" color={Colors.color.white} />
+                            ) : (
+                                <Ionicons name="camera" size={16} color={Colors.color.white} />
+                            )}
+                        </CameraBadge>
+                    </AvatarWrapper>
+
+                    <NameText>{user?.name}</NameText>
+                    {user?.birth && calculateAge(user.birth) ? (
+                        <AgeText>{calculateAge(user.birth)} {t('anos')}</AgeText>
+                    ) : null}
+
+                    <OutlineButton onPress={() => router.navigate('/change-password-page')}>
+                        <OutlineButtonText>{t('Alterar Senha')}</OutlineButtonText>
+                    </OutlineButton>
+                </ProfileCard>
+
+                {/* Section: Basic Data */}
+                <SectionHeader>
+                    <SectionTitle>{t('Informações Básicas')}</SectionTitle>
+                    <EditLink onPress={() => router.navigate('/edit-page')}>
+                        <EditLinkText>{t('Editar')}</EditLinkText>
+                        <Ionicons name="pencil" size={14} color={Colors.color.green} />
+                    </EditLink>
+                </SectionHeader>
+
+                <InfoListCard>
+                    <InfoItemRow style={{ borderBottomWidth: 1, borderBottomColor: Colors.dark.border }}>
+                        <InfoIconWrapper>
+                            <Ionicons name="person-outline" size={18} color={Colors.color.green} />
+                        </InfoIconWrapper>
+                        <InfoTextColumn>
+                            <InfoLabel>{t('Nome Completo')}</InfoLabel>
+                            <InfoValue>{user.name}</InfoValue>
+                        </InfoTextColumn>
+                    </InfoItemRow>
+                </InfoListCard>
+
+                {/* Section: Extra Data */}
+                <SectionHeader>
+                    <SectionTitle>{t('Informações de Contato')}</SectionTitle>
+                    <EditLink onPress={() => router.navigate('/edit-extra-page')}>
+                        <EditLinkText>{t('Editar')}</EditLinkText>
+                        <Ionicons name="pencil" size={14} color={Colors.color.green} />
+                    </EditLink>
+                </SectionHeader>
+
+                <InfoListCard>
+                    <InfoItemRow style={{ borderBottomWidth: 1, borderBottomColor: Colors.dark.border }}>
+                        <InfoIconWrapper>
+                            <Ionicons name="mail-outline" size={18} color={Colors.color.green} />
+                        </InfoIconWrapper>
+                        <InfoTextColumn>
+                            <InfoLabel>E-mail</InfoLabel>
+                            <InfoValue>{user.email}</InfoValue>
+                        </InfoTextColumn>
+                    </InfoItemRow>
+
+                    <InfoItemRow style={{ borderBottomWidth: 1, borderBottomColor: Colors.dark.border }}>
+                        <InfoIconWrapper>
+                            <Ionicons name="call-outline" size={18} color={Colors.color.green} />
+                        </InfoIconWrapper>
+                        <InfoTextColumn>
+                            <InfoLabel>{t('Telefone')}</InfoLabel>
+                            <InfoValue>{user.phoneNumber || t('Não informado')}</InfoValue>
+                        </InfoTextColumn>
+                    </InfoItemRow>
+
+                    <InfoItemRow style={{ borderBottomWidth: 1, borderBottomColor: Colors.dark.border }}>
+                        <InfoIconWrapper>
+                            <Ionicons name="transgender-outline" size={18} color={Colors.color.green} />
+                        </InfoIconWrapper>
+                        <InfoTextColumn>
+                            <InfoLabel>{t('Gênero')}</InfoLabel>
+                            <InfoValue>{user.gender || t('Não informado')}</InfoValue>
+                        </InfoTextColumn>
+                    </InfoItemRow>
+
+                    <InfoItemRow>
+                        <InfoIconWrapper>
+                            <Ionicons name="calendar-outline" size={18} color={Colors.color.green} />
+                        </InfoIconWrapper>
+                        <InfoTextColumn>
+                            <InfoLabel>{t('Data de Nascimento')}</InfoLabel>
+                            <InfoValue>{user.birth ? formatToBr(user.birth) : t('Não informado')}</InfoValue>
+                        </InfoTextColumn>
+                    </InfoItemRow>
+                </InfoListCard>
+
+                {/* Log Out Button */}
+                <LogOutButton onPress={() => clearTokens()}>
+                    <Ionicons name="log-out-outline" size={22} color={Colors.color.red} />
+                    <LogOutText>{t('Sair da Conta')}</LogOutText>
+                </LogOutButton>
+            </ScrollContainer>
         </PageContainer>
     )
 }

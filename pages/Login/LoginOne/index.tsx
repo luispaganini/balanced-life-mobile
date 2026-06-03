@@ -1,31 +1,31 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { SafeAreaViewComponent } from '@/styles/pages'
 import { ActivityIndicator, Alert, Keyboard, View } from 'react-native'
 import { 
     ButtonComponent, 
     ContainerPage, 
     ForgotPassword, 
+    ForgotPasswordText,
     ImageContainer, 
     ImageItem, 
     TextComponent, 
-    Title,
     DividerContainer,
     DividerLine,
     DividerText,
     GoogleButton,
-    GoogleButtonText
+    GoogleButtonText,
+    FormWrapper
 } from './styles'
 import { Controller, useForm } from 'react-hook-form'
 import InputFormComponent from '@/components/application/Inputs/InputFormComponent'
 import CreateAccountInfoComponent from '@/components/application/Info/CreateAccountInfoComponent'
 import { useTranslation } from 'react-i18next'
 import { router } from 'expo-router'
-import { login, loginVerifyCPF } from '@/services/login/login'
+import { login, loginVerifyCPF, googleLogin } from '@/services/login/login'
 import useUserStore from '@/store/UserStore'
 import useTokenStore from '@/store/TokenStore'
-import { ThemedText } from '@/components/ThemedText'
-import { Colors } from '@/constants/Colors'
 import { AntDesign } from '@expo/vector-icons'
+import { signInWithGoogle } from '@/services/auth/googleAuth'
 
 export default function LoginOne() {
     const { t } = useTranslation();
@@ -43,7 +43,6 @@ export default function LoginOne() {
                 setAccessToken(response.data.accessToken)
                 setRefreshToken(response.data.refreshToken)
                 
-                // Fetch and set user profile info
                 try {
                     const userResponse = await loginVerifyCPF(data.cpf)
                     if (userResponse) {
@@ -68,37 +67,37 @@ export default function LoginOne() {
     }
 
     const handleGoogleLogin = async () => {
-        Alert.alert(
-            t('Google Sign-In'),
-            t('Deseja entrar com a sua conta Google associada ao consultório?'),
-            [
-                {
-                    text: t('Simular'),
-                    onPress: async () => {
-                        setLoading(true);
+        setLoading(true);
+        try {
+            const googleRes = await signInWithGoogle();
+            if (googleRes.success && googleRes.idToken) {
+                // Role ID 1 is for Patient/User in mobile client
+                const response = await googleLogin(googleRes.idToken, 1);
+                if (response.status === 200) {
+                    setAccessToken(response.data.accessToken)
+                    setRefreshToken(response.data.refreshToken)
+                    
+                    if (googleRes.email) {
                         try {
-                            // Using local test CPF credentials configured in backend
-                            const response = await login("794.301.470-72", "admin123");
-                            if (response.status === 200) {
-                                setAccessToken(response.data.accessToken)
-                                setRefreshToken(response.data.refreshToken)
-                                const userResponse = await loginVerifyCPF("794.301.470-72")
-                                if (userResponse) setUser(userResponse)
-                                router.navigate("/")
+                            const userResponse = await loginVerifyCPF(googleRes.email)
+                            if (userResponse) {
+                                setUser(userResponse)
                             }
-                        } catch (err) {
-                            Alert.alert(t('Error'), t('Failed to authenticate with simulated Google account'));
-                        } finally {
-                            setLoading(false);
+                        } catch (userError) {
+                            console.log("Failed to fetch user profile for Google email", userError)
                         }
                     }
-                },
-                {
-                    text: t('Cancelar'),
-                    style: 'cancel'
+                    router.navigate("/")
+                } else {
+                    Alert.alert(t('Google Sign-In'), t('Failed to authenticate with Google'));
                 }
-            ]
-        );
+            }
+        } catch (error: any) {
+            console.error('Google Sign-In failed:', error);
+            Alert.alert(t('Google Sign-In'), t('Failed to authenticate with Google'));
+        } finally {
+            setLoading(false);
+        }
     }
 
     const {
@@ -111,14 +110,15 @@ export default function LoginOne() {
             password: "",
         },
     })
+
     return (
-        <SafeAreaViewComponent>
+        <SafeAreaViewComponent style={{ backgroundColor: '#111827' }}>
             <ContainerPage>
                 <ImageContainer>
                     <ImageItem source={require('@/assets/images/logo.png')} />
                 </ImageContainer>
 
-                <View>
+                <FormWrapper>
                     <Controller
                         control={control}
                         rules={{
@@ -158,7 +158,7 @@ export default function LoginOne() {
                     />
 
                     <ForgotPassword onPress={() => router.navigate("/pin-code")}>
-                        <ThemedText type='defaultSemiBold'>{t('I forgot my password')}</ThemedText>
+                        <ForgotPasswordText>{t('I forgot my password')}</ForgotPasswordText>
                     </ForgotPassword>
 
                     <ButtonComponent onPress={handleSubmit(onSubmit)}>
@@ -179,7 +179,8 @@ export default function LoginOne() {
                         <AntDesign name="google" size={20} color="#DB4437" />
                         <GoogleButtonText>{t('Entrar com o Google')}</GoogleButtonText>
                     </GoogleButton>
-                </View>
+                </FormWrapper>
+
                 <CreateAccountInfoComponent />
             </ContainerPage>
         </SafeAreaViewComponent>

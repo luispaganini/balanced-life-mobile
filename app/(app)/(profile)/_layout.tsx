@@ -19,7 +19,7 @@ export default function TabProfileLayout() {
         name="index"
         options={{
           title: t('Profile'),
-          headerShown: true,
+          headerShown: false,
           headerTitle: t('Profile')
         }}
       />
@@ -27,7 +27,7 @@ export default function TabProfileLayout() {
         name="edit-page"
         options={{
           title: t('Profile'),
-          headerShown: true,
+          headerShown: false,
           headerTitle: t('Profile')
         }}
       />
@@ -35,7 +35,7 @@ export default function TabProfileLayout() {
         name="edit-extra-page"
         options={{
           title: t('Profile'),
-          headerShown: true,
+          headerShown: false,
           headerTitle: t('Profile')
         }}
       />
@@ -43,7 +43,7 @@ export default function TabProfileLayout() {
         name="change-password-page"
         options={{
           title: t('Profile'),
-          headerShown: true,
+          headerShown: false,
           headerTitle: t('Profile')
         }}
       />

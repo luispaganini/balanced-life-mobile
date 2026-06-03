@@ -1,101 +1,359 @@
-import { View, Text, Dimensions, ScrollView, TextInput, ActivityIndicator } from 'react-native'
-import React, { useEffect } from 'react'
-import { router, useLocalSearchParams } from 'expo-router'
-import { ThemedText } from '@/components/ThemedText'
-import { AddItemContainer, ButtonText, IconAdd, InfoContainer, NotesContainer, NotesInputContainer, PageContainer, SnackInfoContainer, SubTitleText, TitleText } from './styles'
-import { getDataPieChart } from '@/constants/charts/dataPieChart'
-import { useColorScheme } from '@/hooks/useColorScheme'
+import { View, ScrollView, Animated, Alert, TextInput } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
+import { router, useLocalSearchParams, Stack } from 'expo-router'
+import { Ionicons } from '@expo/vector-icons'
+import Svg, { Circle } from 'react-native-svg'
 import { useTranslation } from 'react-i18next'
-import { chartConfig } from '@/constants/charts/chartConfig'
-import { PieChart } from 'react-native-chart-kit'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Colors } from '@/constants/Colors'
-import ItemSnackComponent from '@/components/application/Lists/ItemSnackComponent'
-import { ButtonComponentContainer } from '@/components/application/Forms/ButtonComponent/styles'
-import { deleteSnack, getSnackDetailsAsync, sendSnack } from '@/services/snack/snack'
-import { ISnackDetailsInterface } from '@/interfaces/Snack/ISnackDetailsInterface'
-import LoadingPageComponent from '@/components/application/Lists/LoadingPageComponent'
+import { getSnackDetailsAsync, deleteSnack, sendSnack } from '@/services/snack/snack'
 import { useSnackStore } from '@/store/SnackStore'
 import StatusMeal from '@/enums/StatusMeal'
-import { formatDate } from '@/utils/functionsApp'
+import {
+    PageContainer,
+    HeaderContainer,
+    HeaderButton,
+    HeaderTitle,
+    HeaderActionText,
+    CenterProgressWrapper,
+    CircularProgressInner,
+    CalorieValue,
+    CalorieLabel,
+    MacrosRow,
+    MacroCard,
+    MacroLabelRow,
+    MacroDot,
+    MacroLabel,
+    MacroValueText,
+    MacroProgressLine,
+    MacroProgressFill,
+    SectionTitle,
+    FoodListContainer,
+    FoodCard,
+    FoodIconContainer,
+    FoodTextColumn,
+    FoodNameText,
+    FoodDescText,
+    FoodCalorieContainer,
+    FoodCalorieText,
+    FoodCalorieLabel,
+    AddFoodButton,
+    AddFoodText,
+    ActionButton,
+    ActionButtonText,
+    PhotoUploadContainer,
+    PhotoUploadText,
+    ObservationContainer,
+    ObservationInput,
+    EmptyStateContainer,
+    EmptyStateText,
+    ScrollContainer
+} from './styles'
 
 export default function SnackDetailsPage() {
     const { idMeal, idTypeSnack } = useLocalSearchParams()
-    const screenWidth = Dimensions.get("window").width;
-    const theme = useColorScheme();
     const snackStore = useSnackStore()
     const { t } = useTranslation()
-    const [pieChartData, setPieChartData] = React.useState(getDataPieChart([], theme))
-    const [loading, setLoading] = React.useState(false)
+    const insets = useSafeAreaInsets()
+    const [loading, setLoading] = useState(false)
+
+    // Pulse animation for skeleton loading
+    const pulseAnim = useRef(new Animated.Value(0.4)).current
 
     useEffect(() => {
-        loadData();
+        loadData()
     }, [])
 
+    useEffect(() => {
+        if (loading) {
+            Animated.loop(
+                Animated.sequence([
+                    Animated.timing(pulseAnim, {
+                        toValue: 0.8,
+                        duration: 850,
+                        useNativeDriver: true,
+                    }),
+                    Animated.timing(pulseAnim, {
+                        toValue: 0.4,
+                        duration: 850,
+                        useNativeDriver: true,
+                    })
+                ])
+            ).start()
+        } else {
+            pulseAnim.setValue(0.4)
+        }
+    }, [loading])
+
     const loadData = async () => {
-        setLoading(true);
+        setLoading(true)
         try {
-            const snacksDetails = await getSnackDetailsAsync(parseInt(idMeal as string), parseInt(idTypeSnack as string));
-            snackStore.setSnackDetails(snacksDetails);
-            setPieChartData(getDataPieChart([
-                { nameKey: t("Carbohydrates"), population: snacksDetails.carbohydrates, color: Colors.color.orange },
-                { nameKey: t("Protein"), population: snacksDetails.protein, color: Colors.color.red },
-                { nameKey: t("Colesterol"), population: snacksDetails.colesterol, color: Colors.color.green },
-                { nameKey: t("Fat"), population: snacksDetails.fat, color: Colors.color.blue },
-            ], theme))
+            const snacksDetails = await getSnackDetailsAsync(parseInt(idMeal as string), parseInt(idTypeSnack as string))
+            snackStore.setSnackDetails(snacksDetails)
         } catch (error) {
-            console.error(error);
+            console.error("Failed to load snack details:", error)
         } finally {
-            setLoading(false);
+            setLoading(false)
         }
     }
 
     const deleteSnackFunction = async (idSnack: number) => {
+        Alert.alert(
+            t("Remover Alimento"),
+            t("Deseja realmente remover este alimento?"),
+            [
+                { text: t("Cancelar"), style: "cancel" },
+                {
+                    text: t("Remover"),
+                    style: "destructive",
+                    onPress: async () => {
+                        try {
+                            await deleteSnack(idSnack)
+                            snackStore.deleteSnackFromDetails(idSnack)
+                            loadData()
+                        } catch (error) {
+                            console.error(error)
+                        }
+                    }
+                }
+            ]
+        )
+    }
+
+    const handleSave = async () => {
         try {
-            await deleteSnack(idSnack);
-            snackStore.deleteSnackFromDetails(idSnack);
-            loadData();
+            await sendSnack(
+                snackStore.snackDetails?.status ?? StatusMeal.Finished,
+                snackStore.snackDetails?.observation ?? '',
+                parseInt(idMeal as string)
+            )
+            Alert.alert(t("Sucesso"), t("Refeição salva com sucesso!"))
+            router.navigate('/')
         } catch (error) {
-            console.error(error);
+            console.error(error)
+            Alert.alert(t("Erro"), t("Falha ao salvar as alterações."))
         }
     }
 
-    const sendMeal = async (status: StatusMeal) => {
-        try {
-            await sendSnack(status, snackStore.snackDetails?.observation as string, parseInt(idMeal as string));
-            loadData();
-        } catch (error) {
-            console.error(error);
-        }
+    const handleAddPhoto = () => {
+        Alert.alert(t("Foto"), t("Funcionalidade de foto em breve!"))
     }
+
+    // Helper component for skeleton loading elements
+    const SkeletonItem = ({ width, height, borderRadius = 8, style }: { width: any, height: any, borderRadius?: number, style?: any }) => (
+        <Animated.View
+            style={[
+                {
+                    width,
+                    height,
+                    borderRadius,
+                    backgroundColor: Colors.dark.border,
+                    opacity: pulseAnim,
+                },
+                style,
+            ]}
+        />
+    )
+
+    // Parse time from appointment or typeSnack name
+    const formatMealTime = (dateStr?: string) => {
+        if (!dateStr) return ""
+        const date = new Date(dateStr)
+        if (isNaN(date.getTime())) return ""
+        const hours = date.getHours().toString().padStart(2, '0')
+        const minutes = date.getMinutes().toString().padStart(2, '0')
+        return `${hours}:${minutes}`
+    }
+
+    const mealTime = formatMealTime(snackStore.snackDetails?.appointment)
+    const mealName = snackStore.snackDetails?.typeSnack?.name ?? t("Refeição")
+    const titleText = mealTime ? `${mealName} - ${mealTime}` : mealName
+
+    // Circular Progress settings
+    const currentCalories = snackStore.snackDetails?.calories ?? 0
+    const goalCalories = 800 // Default reference target for visual progress circle
+    const size = 160
+    const strokeWidth = 10
+    const radius = (size - strokeWidth) / 2
+    const circumference = 2 * Math.PI * radius
+    const progress = Math.min(currentCalories / goalCalories, 1.0)
+    const strokeDashoffset = circumference * (1 - progress)
+
+    // Macro goals for visual underlines
+    const protValue = snackStore.snackDetails?.protein ?? 0
+    const carbValue = snackStore.snackDetails?.carbohydrates ?? 0
+    const fatValue = snackStore.snackDetails?.fat ?? 0
+
+    const protPercent = Math.min((protValue / 50) * 100, 100)
+    const carbPercent = Math.min((carbValue / 100) * 100, 100)
+    const fatPercent = Math.min((fatValue / 30) * 100, 100)
+
+    const snacksList = snackStore.snackDetails?.snacks ?? []
 
     return (
-        <PageContainer>
-            {loading ? <LoadingPageComponent /> : (
-                <ScrollView>
-                    {(pieChartData.length > 0 && (snackStore.snackDetails && snackStore.snackDetails?.calories > 0)) &&
-                        <PieChart
-                            data={pieChartData}
-                            width={screenWidth - 40}
-                            height={150}
-                            chartConfig={chartConfig}
-                            accessor={"population"}
-                            backgroundColor={"transparent"}
-                            paddingLeft={"0"}
-                        />
-                    }
-                    <TitleText type='title'>{snackStore.snackDetails?.calories} Kcal</TitleText>
-                    <InfoContainer>
-                        <View>
-                            <SubTitleText type='subtitle'>{t("Dinner")}:</SubTitleText>
-                            <SnackInfoContainer>
-                                {snackStore.snackDetails?.snacks?.map((item, index) => (
-                                    <ItemSnackComponent
-                                        id={item.id}
-                                        quantity={item.quantity}
-                                        unitMeasurement={item.unitMeasurement.name}
-                                        name={item.food.name}
-                                        status={snackStore.snackDetails?.status as StatusMeal}
-                                        onPressEdit={() =>
+        <PageContainer style={{ paddingTop: insets.top }}>
+            <Stack.Screen options={{ headerShown: false }} />
+
+            {/* Custom Header */}
+            <HeaderContainer>
+                <HeaderButton onPress={() => router.back()}>
+                    <Ionicons name="chevron-back" size={26} color={Colors.dark.text} />
+                </HeaderButton>
+                <HeaderTitle>{titleText}</HeaderTitle>
+                <View style={{ width: 36 }} />
+            </HeaderContainer>
+
+            {loading ? (
+                <ScrollView contentContainerStyle={{ padding: 20 }}>
+                    {/* Skeleton Loading State */}
+                    <CenterProgressWrapper>
+                        <SkeletonItem width={160} height={160} borderRadius={80} />
+                    </CenterProgressWrapper>
+
+                    <MacrosRow>
+                        <MacroCard>
+                            <SkeletonItem width="100%" height={50} />
+                        </MacroCard>
+                        <MacroCard>
+                            <SkeletonItem width="100%" height={50} />
+                        </MacroCard>
+                        <MacroCard>
+                            <SkeletonItem width="100%" height={50} />
+                        </MacroCard>
+                    </MacrosRow>
+
+                    <SectionTitle>{t("Alimentos Consumidos")}</SectionTitle>
+                    <SkeletonItem width="100%" height={65} borderRadius={12} style={{ marginBottom: 10 }} />
+                    <SkeletonItem width="100%" height={65} borderRadius={12} style={{ marginBottom: 10 }} />
+                    <SkeletonItem width="100%" height={65} borderRadius={12} style={{ marginBottom: 20 }} />
+
+                    <SkeletonItem width="100%" height={85} borderRadius={12} style={{ marginBottom: 20 }} />
+                    
+                    <SectionTitle>{t("Observações")}</SectionTitle>
+                    <SkeletonItem width="100%" height={100} borderRadius={12} />
+                </ScrollView>
+            ) : (
+                <ScrollContainer showsVerticalScrollIndicator={false}>
+                    {/* Circular Calorie Progress */}
+                    <CenterProgressWrapper>
+                        <Svg width={size} height={size}>
+                            <Circle
+                                cx={size / 2}
+                                cy={size / 2}
+                                r={radius}
+                                stroke={Colors.dark.border}
+                                strokeWidth={strokeWidth}
+                                fill="transparent"
+                            />
+                            <Circle
+                                cx={size / 2}
+                                cy={size / 2}
+                                r={radius}
+                                stroke={Colors.color.green}
+                                strokeWidth={strokeWidth}
+                                fill="transparent"
+                                strokeDasharray={circumference}
+                                strokeDashoffset={strokeDashoffset}
+                                strokeLinecap="round"
+                                rotation="-90"
+                                origin={`${size / 2}, ${size / 2}`}
+                            />
+                        </Svg>
+                        <CircularProgressInner>
+                            <Ionicons name="flame" size={30} color={Colors.color.green} />
+                            <CalorieValue>{currentCalories}</CalorieValue>
+                            <CalorieLabel>Kcal</CalorieLabel>
+                        </CircularProgressInner>
+                    </CenterProgressWrapper>
+
+                    {/* Macro Summary Row */}
+                    <MacrosRow>
+                        <MacroCard>
+                            <MacroLabelRow>
+                                <MacroDot color={Colors.color.blue} />
+                                <MacroLabel>{t("Proteína")}</MacroLabel>
+                            </MacroLabelRow>
+                            <MacroValueText>{Math.round(protValue)}g</MacroValueText>
+                            <MacroProgressLine>
+                                <MacroProgressFill color={Colors.color.blue} width={protPercent} />
+                            </MacroProgressLine>
+                        </MacroCard>
+
+                        <MacroCard>
+                            <MacroLabelRow>
+                                <MacroDot color={Colors.color.green} />
+                                <MacroLabel>{t("Carb.")}</MacroLabel>
+                            </MacroLabelRow>
+                            <MacroValueText>{Math.round(carbValue)}g</MacroValueText>
+                            <MacroProgressLine>
+                                <MacroProgressFill color={Colors.color.green} width={carbPercent} />
+                            </MacroProgressLine>
+                        </MacroCard>
+
+                        <MacroCard>
+                            <MacroLabelRow>
+                                <MacroDot color={Colors.color.orange} />
+                                <MacroLabel>{t("Gordura")}</MacroLabel>
+                            </MacroLabelRow>
+                            <MacroValueText>{Math.round(fatValue)}g</MacroValueText>
+                            <MacroProgressLine>
+                                <MacroProgressFill color={Colors.color.orange} width={fatPercent} />
+                            </MacroProgressLine>
+                        </MacroCard>
+                    </MacrosRow>
+
+                    {/* Alimentos Consumidos */}
+                    <SectionTitle>{t("Alimentos Consumidos")}</SectionTitle>
+                    <FoodListContainer>
+                        {snacksList.length > 0 ? (
+                            snacksList.map((item, index) => {
+                                const energyInfo = item.food.foodNutritionInfo?.find(
+                                    (info: any) =>
+                                        info.nutritionalComposition?.item?.toLowerCase() === "energia" ||
+                                        info.idNutritionalCompositionNavigation?.item?.toLowerCase() === "energia"
+                                )
+                                const baseCalories = energyInfo?.quantity ?? 0
+                                
+                                const unitName = item.unitMeasurement?.name
+                                let quantityInGrams = item.quantity
+                                if (unitName) {
+                                    switch (unitName.toLowerCase()) {
+                                        case "g":
+                                            quantityInGrams = item.quantity
+                                            break
+                                        case "mg":
+                                            quantityInGrams = item.quantity * 0.001
+                                            break
+                                        case "kg":
+                                            quantityInGrams = item.quantity * 1000
+                                            break
+                                        case "µg":
+                                        case "mcg":
+                                            quantityInGrams = item.quantity * 1e-6
+                                            break
+                                        case "ng":
+                                            quantityInGrams = item.quantity * 1e-9
+                                            break
+                                        case "dg":
+                                            quantityInGrams = item.quantity * 0.1
+                                            break
+                                        case "hg":
+                                            quantityInGrams = item.quantity * 100
+                                            break
+                                        case "oz":
+                                            quantityInGrams = item.quantity * 28.3495
+                                            break
+                                        default:
+                                            quantityInGrams = item.quantity
+                                            break
+                                    }
+                                }
+                                const itemCalories = Math.round((baseCalories * quantityInGrams) / 100)
+
+                                return (
+                                    <FoodCard
+                                        key={item.id}
+                                        onPress={() => {
                                             router.push({
                                                 pathname: "/snack/food/[idMeal]/[idTypeSnack]/[idFood]",
                                                 params: {
@@ -106,46 +364,78 @@ export default function SnackDetailsPage() {
                                                     quantitySnack: item.quantity.toString(),
                                                     idUnitMeasurement: item.unitMeasurement.id.toString()
                                                 }
-                                            })}
-                                        onPressDelete={() => deleteSnackFunction(item.id)}
-                                        key={index}
-                                    />
-                                ))}
+                                            })
+                                        }}
+                                    >
+                                        <FoodIconContainer>
+                                            <Ionicons name="restaurant-outline" size={20} color={Colors.color.green} />
+                                        </FoodIconContainer>
+                                        
+                                        <FoodTextColumn>
+                                            <FoodNameText numberOfLines={1}>{item.food.name}</FoodNameText>
+                                            <FoodDescText>{item.quantity} {item.unitMeasurement.name}</FoodDescText>
+                                        </FoodTextColumn>
 
-                            </SnackInfoContainer>
-                        </View>
-                    </InfoContainer>
-                    {snackStore.snackDetails?.status == StatusMeal.NotAwnsered &&
-                        <ButtonComponentContainer color={Colors.color.blue} onPress={() => router.navigate(`/snack/food/${idMeal}/${idTypeSnack}/search-food`)}>
-                            <AddItemContainer>
-                                <IconAdd name="add-circle-outline" size={26} color={Colors.color.white} />
-                                <ButtonText>{t('Add new item')}</ButtonText>
-                            </AddItemContainer>
-                        </ButtonComponentContainer>
-                    }
+                                        <>
+                                            <FoodCalorieContainer>
+                                                <FoodCalorieText>{itemCalories}</FoodCalorieText>
+                                                <FoodCalorieLabel>kcal</FoodCalorieLabel>
+                                            </FoodCalorieContainer>
+                                            {(snackStore.snackDetails?.status === StatusMeal.NotAwnsered || snackStore.snackDetails?.status == null) && (
+                                                <HeaderButton 
+                                                    onPress={(e) => {
+                                                        e.stopPropagation() // Prevents card onPress navigation
+                                                        deleteSnackFunction(item.id)
+                                                    }}
+                                                    style={{ marginLeft: 10, padding: 5 }}
+                                                >
+                                                    <Ionicons name="trash-outline" size={20} color={Colors.color.red} />
+                                                </HeaderButton>
+                                            )}
+                                            <Ionicons name="chevron-forward" size={16} color={Colors.color.grey} style={{ marginLeft: 5 }} />
+                                        </>
+                                    </FoodCard>
+                                )
+                            })
+                        ) : (
+                            <EmptyStateContainer>
+                                <Ionicons name="receipt-outline" size={32} color={Colors.color.grey} />
+                                <EmptyStateText>
+                                    {t("Nenhum alimento cadastrado para esta refeição.")}
+                                </EmptyStateText>
+                            </EmptyStateContainer>
+                        )}
+                    </FoodListContainer>
 
-                    <NotesContainer>
-                        <ThemedText>{t('Notes')}:</ThemedText>
-                        <NotesInputContainer 
-                            theme={theme} 
-                            multiline={true} 
-                            editable={snackStore.snackDetails?.status == StatusMeal.NotAwnsered}
+                    {/* Add Food Button */}
+                    <AddFoodButton onPress={() => router.navigate(`/snack/food/${idMeal}/${idTypeSnack}/search-food`)}>
+                        <Ionicons name="add-circle" size={20} color={Colors.color.green} />
+                        <AddFoodText>{t("Adicionar Alimento")}</AddFoodText>
+                    </AddFoodButton>
+
+                    {/* Photo Attachment Container */}
+                    <PhotoUploadContainer onPress={handleAddPhoto}>
+                        <Ionicons name="camera" size={32} color={Colors.color.green} />
+                        <PhotoUploadText>{t("Toque para adicionar uma foto")}</PhotoUploadText>
+                    </PhotoUploadContainer>
+
+                    {/* Observations */}
+                    <ObservationContainer>
+                        <SectionTitle>{t("Observações")}</SectionTitle>
+                        <ObservationInput
+                            multiline
+                            placeholder={t("Como você se sentiu após a refeição? Fez alguma substituição?")}
+                            placeholderTextColor={Colors.color.grey}
                             value={snackStore.snackDetails?.observation}
                             onChangeText={(text) => snackStore.setObservation(text)}
                         />
-                    </NotesContainer>
+                    </ObservationContainer>
 
-                    {(snackStore.snackDetails?.status == StatusMeal.NotAwnsered && formatDate(snackStore.date) == formatDate(new Date)) && (
-                    <View>
-                        <ButtonComponentContainer color={Colors.color.green} onPress={() => sendMeal(StatusMeal.Finished)}>
-                            <ButtonText>{t('Completed Snack')}</ButtonText>
-                        </ButtonComponentContainer>
-                        <ButtonComponentContainer color={Colors.color.red} onPress={() => sendMeal(StatusMeal.NotFullyFinished)}>
-                            <ButtonText>{t('Snack not finished')}</ButtonText>
-                        </ButtonComponentContainer>
-                    </View>
-                    )}
-                </ScrollView>
+                    {/* Save Changes Button */}
+                    <ActionButton onPress={handleSave}>
+                        <ActionButtonText>{t("Salvar Alterações")}</ActionButtonText>
+                    </ActionButton>
+                </ScrollContainer>
             )}
         </PageContainer>
     )

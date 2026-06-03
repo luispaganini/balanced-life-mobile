@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { 
     PageContainer, 
     HeaderContainer, 
@@ -46,23 +46,43 @@ import {
     MealCaloriesText, 
     MealStatusText, 
     CheckboxContainer, 
-    CheckboxCircle 
+    CheckboxCircle,
+    DropdownContainer,
+    DropdownItem,
+    DropdownItemText,
+    ModalOverlay,
+    ModalCard,
+    ModalTitle,
+    MealPillsContainer,
+    MealPill,
+    MealPillText,
+    CustomInputWrapper,
+    ModalTextInput,
+    TimePickerRow,
+    TimeLabel,
+    TimeValue,
+    ModalActionsRow,
+    ModalActionButton,
+    ModalActionButtonText
 } from './styles'
 import { useTranslation } from 'react-i18next'
 import { Colors } from '@/constants/Colors';
 import { setupTokenRefresh } from '@/services/login/refreshToken';
-import { Alert, ScrollView, View, ActivityIndicator } from 'react-native';
+import { Alert, ScrollView, View, ActivityIndicator, Modal, TextInput, TouchableWithoutFeedback } from 'react-native';
 import useUserStore from '@/store/UserStore';
 import { useSnackStore } from '@/store/SnackStore';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { formatDate } from '@/utils/functionsApp';
-import { getSnackAsync, sendSnack } from '@/services/snack/snack';
+import { getSnackAsync, sendSnack, resetSnacksAsync, createMealAsync } from '@/services/snack/snack';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import StatusMeal from '@/enums/StatusMeal';
 import LoadingPageComponent from '@/components/application/Lists/LoadingPageComponent';
 import { ThemedText } from '@/components/ThemedText';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
+import { useNutritionistStore } from '@/store/NutritionistStore';
+import { getNutritionistList } from '@/services/user/user';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function HomePage() {
     const { t } = useTranslation();
@@ -71,14 +91,47 @@ export default function HomePage() {
     const colorScheme = useColorScheme();
     const [actionLoadingId, setActionLoadingId] = useState<number | null>(null);
     const [showDatePicker, setShowDatePicker] = useState(false);
+    const insets = useSafeAreaInsets();
+
+    const { nutritionistSelected, setNutritionistSelected } = useNutritionistStore();
+
+    // Dropdown & Manual Meal States
+    const [showDropdown, setShowDropdown] = useState(false);
+    const [showCreateMealModal, setShowCreateMealModal] = useState(false);
+    const [mealName, setMealName] = useState('Café da Manhã');
+    const [isCustomMeal, setIsCustomMeal] = useState(false);
+    const [customMealName, setCustomMealName] = useState('');
+    const [showTimePicker, setShowTimePicker] = useState(false);
+    const [selectedTime, setSelectedTime] = useState(new Date());
 
     useEffect(() => {
         setupTokenRefresh();
     }, []);
 
+    // 1. Sync nutritionist store with current active nutritionist on startup
     useEffect(() => {
-        loadDailySummary();
-    }, [snackStore.date]);
+        const fetchAndSyncNutritionist = async () => {
+            try {
+                const response = await getNutritionistList();
+                if (response.status === 200 && Array.isArray(response.data)) {
+                    const current = response.data.find((item: any) => item.link.isCurrentNutritionist);
+                    if (current) {
+                        setNutritionistSelected(current);
+                    }
+                }
+            } catch (error) {
+                console.log("Failed to sync active nutritionist", error);
+            }
+        };
+        fetchAndSyncNutritionist();
+    }, []);
+
+    // 2. Fetch daily summary when date or active nutritionist changes, and when screen is focused
+    useFocusEffect(
+        useCallback(() => {
+            loadDailySummary();
+        }, [snackStore.date, nutritionistSelected?.link?.idNutritionist])
+    );
 
     const loadDailySummary = async () => {
         snackStore.setLoading(true);
@@ -87,6 +140,67 @@ export default function HomePage() {
             snackStore.setData(data);
         } catch (error) {
             console.log("Failed to load daily snacks", error);
+        } finally {
+            snackStore.setLoading(false);
+        }
+    };
+
+    const handleResetMeals = async () => {
+        snackStore.setLoading(true);
+        try {
+            const data = await resetSnacksAsync(snackStore.date);
+            snackStore.setData(data);
+            Alert.alert(t('Sucesso'), t('Refeições geradas/reiniciadas com sucesso.'));
+        } catch (error) {
+            Alert.alert(t('Erro'), t('Falha ao reiniciar as refeições do dia.'));
+        } finally {
+            snackStore.setLoading(false);
+        }
+    };
+
+    const handleCreateMeal = async () => {
+        const finalName = isCustomMeal ? customMealName.trim() : mealName;
+        if (!finalName) {
+            Alert.alert(t('Erro'), t('Por favor, informe o nome da refeição.'));
+            return;
+        }
+
+        setShowCreateMealModal(false);
+        snackStore.setLoading(true);
+
+        try {
+            const hours = selectedTime.getHours().toString().padStart(2, '0');
+            const minutes = selectedTime.getMinutes().toString().padStart(2, '0');
+            const timeString = `${hours}:${minutes}`;
+
+            await createMealAsync({
+                typeSnack: {
+                    name: finalName,
+                    timeSnack: timeString,
+                },
+                appointment: snackStore.date,
+                idUser: user?.id || 0,
+                status: StatusMeal.NotAwnsered,
+                observation: '',
+                snacks: [],
+            });
+
+            await loadDailySummary();
+            setCustomMealName('');
+            setIsCustomMeal(false);
+            setMealName('Café da Manhã');
+            Alert.alert(t('Sucesso'), t('Refeição adicionada com sucesso.'));
+        } catch (error: any) {
+            console.error('Erro ao criar refeição:', error);
+            if (error?.response?.data) {
+                console.error('Detalhes do erro do servidor:', JSON.stringify(error.response.data, null, 2));
+            }
+            const details = error?.response?.data
+                ? typeof error.response.data === 'string'
+                    ? error.response.data
+                    : JSON.stringify(error.response.data)
+                : error?.message || String(error);
+            Alert.alert(t('Erro'), `${t('Falha ao criar refeição.')}\n\nDetalhes: ${details}`);
         } finally {
             snackStore.setLoading(false);
         }
@@ -227,7 +341,7 @@ export default function HomePage() {
     const totalCount = meals.length;
 
     return (
-        <PageContainer>
+        <PageContainer style={{ paddingTop: insets.top || 16 }}>
             {snackStore.loading ? (
                 <LoadingPageComponent />
             ) : (
@@ -247,10 +361,55 @@ export default function HomePage() {
                             <HeaderSubtitleText>{getHeaderDateSubtitle(snackStore.date)}</HeaderSubtitleText>
                         </HeaderTitleColumn>
                         
-                        <HeaderSideButton theme={colorScheme}>
+                        <HeaderSideButton theme={colorScheme} onPress={() => setShowDropdown(!showDropdown)}>
                             <Ionicons name="ellipsis-horizontal" size={20} color={colorScheme === 'light' ? Colors.light.text : Colors.dark.text} />
                         </HeaderSideButton>
                     </HeaderContainer>
+
+                    {showDropdown && (
+                        <>
+                            <TouchableWithoutFeedback onPress={() => setShowDropdown(false)}>
+                                <View style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    bottom: 0,
+                                    left: 0,
+                                    right: 0,
+                                    zIndex: 999,
+                                }} />
+                            </TouchableWithoutFeedback>
+                            <DropdownContainer theme={colorScheme} topInset={insets.top}>
+                                <DropdownItem onPress={() => {
+                                    setShowDropdown(false);
+                                    setShowCreateMealModal(true);
+                                }}>
+                                    <Ionicons name="add-circle-outline" size={20} color={Colors.color.blue} />
+                                    <DropdownItemText theme={colorScheme}>{t('Adicionar refeição')}</DropdownItemText>
+                                </DropdownItem>
+                                <DropdownItem onPress={() => {
+                                    setShowDropdown(false);
+                                    const hasMeals = (snackStore.data?.meals || []).length > 0;
+                                    if (hasMeals) {
+                                        Alert.alert(
+                                            t('Confirmação'),
+                                            t('Tem certeza que deseja reiniciar as refeições de hoje? Isso apagará todas as refeições atuais e registrará as refeições padrão/do nutricionista novamente.'),
+                                            [
+                                                { text: t('Cancelar'), style: 'cancel' as const },
+                                                { text: t('Confirmar'), onPress: handleResetMeals }
+                                            ]
+                                        );
+                                    } else {
+                                        handleResetMeals();
+                                    }
+                                }}>
+                                    <Ionicons name="refresh-outline" size={20} color={Colors.color.green} />
+                                    <DropdownItemText theme={colorScheme}>
+                                        {(snackStore.data?.meals || []).length > 0 ? t('Resetar refeições do dia') : t('Criar refeições do dia')}
+                                    </DropdownItemText>
+                                </DropdownItem>
+                            </DropdownContainer>
+                        </>
+                    )}
 
                     {showDatePicker && (
                         <RNDateTimePicker
@@ -430,6 +589,110 @@ export default function HomePage() {
 
                 </ScrollView>
             )}
+            <Modal
+                visible={showCreateMealModal}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={() => {
+                    setShowCreateMealModal(false);
+                    setIsCustomMeal(false);
+                    setMealName('Café da Manhã');
+                }}
+            >
+                <TouchableWithoutFeedback onPress={() => {
+                    setShowCreateMealModal(false);
+                    setIsCustomMeal(false);
+                    setMealName('Café da Manhã');
+                }}>
+                    <ModalOverlay>
+                        <TouchableWithoutFeedback>
+                            <ModalCard theme={colorScheme}>
+                                <ModalTitle theme={colorScheme}>{t('Adicionar Refeição')}</ModalTitle>
+                                
+                                <MealPillsContainer>
+                                    {['Café da Manhã', 'Almoço', 'Lanche da Tarde', 'Jantar'].map((name) => (
+                                        <MealPill 
+                                            key={name}
+                                            active={mealName === name && !isCustomMeal}
+                                            onPress={() => {
+                                                setMealName(name);
+                                                setIsCustomMeal(false);
+                                            }}
+                                        >
+                                            <MealPillText active={mealName === name && !isCustomMeal} theme={colorScheme}>
+                                                {t(name)}
+                                            </MealPillText>
+                                        </MealPill>
+                                    ))}
+                                    <MealPill 
+                                        active={isCustomMeal}
+                                        onPress={() => setIsCustomMeal(true)}
+                                    >
+                                        <MealPillText active={isCustomMeal} theme={colorScheme}>
+                                            {t('Outro')}
+                                        </MealPillText>
+                                    </MealPill>
+                                </MealPillsContainer>
+
+                                {isCustomMeal && (
+                                    <CustomInputWrapper>
+                                        <ModalTextInput
+                                            theme={colorScheme}
+                                            placeholder={t('Nome da Refeição')}
+                                            placeholderTextColor={Colors.color.grey}
+                                            value={customMealName}
+                                            onChangeText={setCustomMealName}
+                                            maxLength={30}
+                                        />
+                                    </CustomInputWrapper>
+                                )}
+
+                                <TimePickerRow theme={colorScheme} onPress={() => setShowTimePicker(true)}>
+                                    <TimeLabel>{t('Horário')}</TimeLabel>
+                                    <TimeValue theme={colorScheme}>
+                                        {selectedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </TimeValue>
+                                </TimePickerRow>
+
+                                {showTimePicker && (
+                                    <RNDateTimePicker
+                                        mode="time"
+                                        value={selectedTime}
+                                        display="spinner"
+                                        themeVariant={colorScheme === 'light' ? 'light' : 'dark'}
+                                        onChange={(event, date) => {
+                                            setShowTimePicker(false);
+                                            if (date) {
+                                                setSelectedTime(date);
+                                            }
+                                        }}
+                                    />
+                                )}
+
+                                <ModalActionsRow>
+                                    <ModalActionButton 
+                                        isCancel={true} 
+                                        onPress={() => {
+                                            setShowCreateMealModal(false);
+                                            setIsCustomMeal(false);
+                                            setMealName('Café da Manhã');
+                                        }}
+                                    >
+                                        <ModalActionButtonText isCancel={true}>
+                                            {t('Cancelar')}
+                                        </ModalActionButtonText>
+                                    </ModalActionButton>
+                                    <ModalActionButton onPress={handleCreateMeal}>
+                                        <ModalActionButtonText>
+                                            {t('Adicionar')}
+                                        </ModalActionButtonText>
+                                    </ModalActionButton>
+                                </ModalActionsRow>
+                            </ModalCard>
+                        </TouchableWithoutFeedback>
+                    </ModalOverlay>
+                </TouchableWithoutFeedback>
+            </Modal>
         </PageContainer>
     );
 }
