@@ -107,7 +107,7 @@ export default function MyBodyPage() {
         <PageContainer theme={colorTheme} style={{ paddingTop: insets.top }}>
             {/* Custom Header */}
             <HeaderContainer theme={colorTheme}>
-                <HeaderTitle theme={colorTheme}>{t('My Body')}</HeaderTitle>
+                <HeaderTitle testID="my-body-header" theme={colorTheme}>{t('My Body')}</HeaderTitle>
             </HeaderContainer>
 
             <ScrollContainer showsVerticalScrollIndicator={false}>
@@ -177,6 +177,7 @@ export default function MyBodyPage() {
                         {/* Full Width Update Action Button */}
                         <ButtonWrapper>
                             <ButtonComponent
+                                testID="update-body-data-button"
                                 title={t('Update body data')}
                                 onPress={() => router.push('/body/add-body-data')}
                                 color={Colors.color.green}

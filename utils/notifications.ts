@@ -147,9 +147,9 @@ export async function scheduleWaterReminders(
             }),
           },
           trigger: {
+            type: 'daily',
             hour: time.hour,
             minute: time.minute,
-            repeats: true,
           } as any,
         });
         console.log(`Scheduled reminder for ${String(time.hour).padStart(2, '0')}:${String(time.minute).padStart(2, '0')}`);

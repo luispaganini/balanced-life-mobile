@@ -1,4 +1,4 @@
-import { View, ScrollView, Animated, Alert, TextInput } from 'react-native'
+import { View, ScrollView, Animated, Alert, TextInput, Image, ActivityIndicator, TouchableOpacity } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { router, useLocalSearchParams, Stack } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
@@ -7,8 +7,10 @@ import { useTranslation } from 'react-i18next'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Colors } from '@/constants/Colors'
 import { getSnackDetailsAsync, deleteSnack, sendSnack } from '@/services/snack/snack'
+import { uploadMealPicture } from '@/services/user/user'
 import { useSnackStore } from '@/store/SnackStore'
 import StatusMeal from '@/enums/StatusMeal'
+import * as ImagePicker from 'expo-image-picker'
 import {
     PageContainer,
     HeaderContainer,
@@ -47,7 +49,10 @@ import {
     ObservationInput,
     EmptyStateContainer,
     EmptyStateText,
-    ScrollContainer
+    ScrollContainer,
+    MealPhotoWrapper,
+    MealPhotoImage,
+    RemovePhotoBadge
 } from './styles'
 
 export default function SnackDetailsPage() {
@@ -56,6 +61,8 @@ export default function SnackDetailsPage() {
     const { t } = useTranslation()
     const insets = useSafeAreaInsets()
     const [loading, setLoading] = useState(false)
+    const [uploadingPhoto, setUploadingPhoto] = useState(false)
+    const [localPhotoUri, setLocalPhotoUri] = useState<string | null>(null)
 
     // Pulse animation for skeleton loading
     const pulseAnim = useRef(new Animated.Value(0.4)).current
@@ -121,23 +128,108 @@ export default function SnackDetailsPage() {
     }
 
     const handleSave = async () => {
+        setUploadingPhoto(true);
         try {
+            if (localPhotoUri) {
+                const uploadResult = await uploadMealPicture(parseInt(idMeal as string), localPhotoUri);
+                if (uploadResult && uploadResult.url) {
+                    if (snackStore.snackDetails) {
+                        snackStore.setSnackDetails({
+                            ...snackStore.snackDetails,
+                            urlImage: uploadResult.url
+                        });
+                    }
+                } else {
+                    Alert.alert(t("Erro"), t("Falha ao salvar imagem da refeição."));
+                    setUploadingPhoto(false);
+                    return;
+                }
+            }
+
             await sendSnack(
                 snackStore.snackDetails?.status ?? StatusMeal.Finished,
                 snackStore.snackDetails?.observation ?? '',
                 parseInt(idMeal as string)
             )
+            setLocalPhotoUri(null);
             Alert.alert(t("Sucesso"), t("Refeição salva com sucesso!"))
             router.navigate('/')
         } catch (error) {
             console.error(error)
             Alert.alert(t("Erro"), t("Falha ao salvar as alterações."))
+        } finally {
+            setUploadingPhoto(false);
         }
     }
 
     const handleAddPhoto = () => {
-        Alert.alert(t("Foto"), t("Funcionalidade de foto em breve!"))
-    }
+        Alert.alert(
+            t("Selecionar Foto"),
+            t("Escolha como deseja obter a foto da refeição:"),
+            [
+                {
+                    text: t("Tirar Foto"),
+                    onPress: () => processMealImageSelection(true),
+                },
+                {
+                    text: t("Escolher da Galeria"),
+                    onPress: () => processMealImageSelection(false),
+                },
+                {
+                    text: t("Cancelar"),
+                    style: "cancel",
+                },
+            ]
+        );
+    };
+
+    const processMealImageSelection = async (useCamera: boolean) => {
+        try {
+            let status = "";
+            if (useCamera) {
+                const permission = await ImagePicker.requestCameraPermissionsAsync();
+                status = permission.status;
+            } else {
+                const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                status = permission.status;
+            }
+
+            if (status !== "granted") {
+                Alert.alert(
+                    t("Permissão necessária"),
+                    useCamera
+                        ? t("Precisamos de permissão para acessar sua câmera.")
+                        : t("Precisamos de permissão para acessar sua galeria.")
+                );
+                return;
+            }
+
+            const pickerOptions: ImagePicker.ImagePickerOptions = {
+                mediaTypes: ["images"],
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 0.7, // Compress quality (70%)
+            };
+
+            const result = useCamera
+                ? await ImagePicker.launchCameraAsync(pickerOptions)
+                : await ImagePicker.launchImageLibraryAsync(pickerOptions);
+
+            if (!result.canceled && result.assets && result.assets.length > 0) {
+                const pickedUri = result.assets[0].uri;
+                setLocalPhotoUri(pickedUri);
+                if (snackStore.snackDetails) {
+                    snackStore.setSnackDetails({
+                        ...snackStore.snackDetails,
+                        urlImage: pickedUri
+                    });
+                }
+            }
+        } catch (error) {
+            console.error(error);
+            Alert.alert(t("Erro"), t("Falha ao obter imagem."));
+        }
+    };
 
     // Helper component for skeleton loading elements
     const SkeletonItem = ({ width, height, borderRadius = 8, style }: { width: any, height: any, borderRadius?: number, style?: any }) => (
@@ -414,10 +506,26 @@ export default function SnackDetailsPage() {
                     </AddFoodButton>
 
                     {/* Photo Attachment Container */}
-                    <PhotoUploadContainer onPress={handleAddPhoto}>
-                        <Ionicons name="camera" size={32} color={Colors.color.green} />
-                        <PhotoUploadText>{t("Toque para adicionar uma foto")}</PhotoUploadText>
-                    </PhotoUploadContainer>
+                    {uploadingPhoto ? (
+                        <PhotoUploadContainer disabled>
+                            <ActivityIndicator size="large" color={Colors.color.green} />
+                            <PhotoUploadText>{t("Enviando foto...")}</PhotoUploadText>
+                        </PhotoUploadContainer>
+                    ) : snackStore.snackDetails?.urlImage ? (
+                        <MealPhotoWrapper>
+                            <TouchableOpacity onPress={handleAddPhoto} activeOpacity={0.8}>
+                                <MealPhotoImage source={{ uri: snackStore.snackDetails.urlImage }} />
+                            </TouchableOpacity>
+                            <RemovePhotoBadge onPress={handleAddPhoto}>
+                                <Ionicons name="camera" size={18} color={Colors.color.white} />
+                            </RemovePhotoBadge>
+                        </MealPhotoWrapper>
+                    ) : (
+                        <PhotoUploadContainer onPress={handleAddPhoto}>
+                            <Ionicons name="camera" size={32} color={Colors.color.green} />
+                            <PhotoUploadText>{t("Toque para adicionar uma foto")}</PhotoUploadText>
+                        </PhotoUploadContainer>
+                    )}
 
                     {/* Observations */}
                     <ObservationContainer>

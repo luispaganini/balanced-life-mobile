@@ -10,7 +10,7 @@ export default function CreateAccountInfoComponent() {
     return (
         <ContainerPage>
             <AskForCreateAccount>{t('Not have an account yet?')}</AskForCreateAccount>
-            <TouchableOpacity onPress={() => router.navigate('/create-one')}>
+            <TouchableOpacity testID="create-account-link" onPress={() => router.navigate('/create-one')}>
                 <RedirectLink>{t('Create an account')}</RedirectLink>
             </TouchableOpacity>
         </ContainerPage>

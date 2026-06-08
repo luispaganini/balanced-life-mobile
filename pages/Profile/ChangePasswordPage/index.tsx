@@ -132,6 +132,7 @@ export default function ChangePasswordPage() {
                                     }}
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <InputFormComponent
+                                            testID="new-password-input"
                                             placeholder={t("Senha")}
                                             onBlur={onBlur}
                                             onChangeText={onChange}
@@ -161,6 +162,7 @@ export default function ChangePasswordPage() {
                                     }}
                                     render={({ field: { onChange, onBlur, value } }) => (
                                         <InputFormComponent
+                                            testID="confirm-password-input"
                                             placeholder={t("Confirmar Senha")}
                                             onBlur={onBlur}
                                             onChangeText={onChange}
@@ -178,6 +180,7 @@ export default function ChangePasswordPage() {
 
                         <ButtonsContainer>
                             <ButtonComponent 
+                                testID="save-password-button"
                                 onPress={handleSubmit(onSubmit)} 
                                 title={t("Salvar Nova Senha")} 
                                 color={Colors.color.green} 

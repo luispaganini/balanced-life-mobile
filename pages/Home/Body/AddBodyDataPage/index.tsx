@@ -84,7 +84,7 @@ export default function AddBodyDataPage() {
                 <BackButton onPress={() => router.back()}>
                     <Ionicons name="arrow-back" size={24} color={iconColor} />
                 </BackButton>
-                <HeaderTitle theme={colorTheme}>{t('Update body data')}</HeaderTitle>
+                <HeaderTitle theme={colorTheme} testID="add-body-data-header">{t('Update body data')}</HeaderTitle>
                 <HeaderPlaceholder />
             </HeaderContainer>
 

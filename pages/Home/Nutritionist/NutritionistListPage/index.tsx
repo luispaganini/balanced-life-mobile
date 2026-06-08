@@ -72,7 +72,7 @@ export default function NutritionistListPage() {
         return (
             <EmptyContainer>
                 <Ionicons name="people-outline" size={48} color={Colors.color.grey} />
-                <EmptyText>{t('Nenhum nutricionista vinculado')}</EmptyText>
+                <EmptyText testID="nutritionist-empty-text">{t('Nenhum nutricionista vinculado')}</EmptyText>
                 <EmptySubtitle>{t('Quando você se vincular a um profissional, ele aparecerá aqui.')}</EmptySubtitle>
             </EmptyContainer>
         )
@@ -85,7 +85,7 @@ export default function NutritionistListPage() {
                 <HeaderIconContainer>
                     <Ionicons name="nutrition" size={22} color={Colors.color.green} />
                 </HeaderIconContainer>
-                <HeaderTitle theme={colorScheme}>{t('Nutritionists')}</HeaderTitle>
+                <HeaderTitle testID="nutritionist-header" theme={colorScheme}>{t('Nutritionists')}</HeaderTitle>
             </HeaderContainer>
 
             {loading ? (

@@ -1,14 +1,14 @@
 import React from 'react'
 import { SafeAreaViewComponent } from '@/styles/pages'
 import { ActivityIndicator, Alert, Keyboard, View } from 'react-native'
-import { 
-    ButtonComponent, 
-    ContainerPage, 
-    ForgotPassword, 
+import {
+    ButtonComponent,
+    ContainerPage,
+    ForgotPassword,
     ForgotPasswordText,
-    ImageContainer, 
-    ImageItem, 
-    TextComponent, 
+    ImageContainer,
+    ImageItem,
+    TextComponent,
     DividerContainer,
     DividerLine,
     DividerText,
@@ -38,11 +38,11 @@ export default function LoginOne() {
         setLoading(true);
         try {
             const response = await login(data.cpf, data.password);
-    
+
             if (response.status === 200) {
                 setAccessToken(response.data.accessToken)
                 setRefreshToken(response.data.refreshToken)
-                
+
                 try {
                     const userResponse = await loginVerifyCPF(data.cpf)
                     if (userResponse) {
@@ -76,7 +76,7 @@ export default function LoginOne() {
                 if (response.status === 200) {
                     setAccessToken(response.data.accessToken)
                     setRefreshToken(response.data.refreshToken)
-                    
+
                     if (googleRes.email) {
                         try {
                             const userResponse = await loginVerifyCPF(googleRes.email)
@@ -94,7 +94,10 @@ export default function LoginOne() {
             }
         } catch (error: any) {
             console.error('Google Sign-In failed:', error);
-            Alert.alert(t('Google Sign-In'), t('Failed to authenticate with Google'));
+            Alert.alert(
+                t('Google Sign-In'),
+                `Error: ${error.message || error}\nWeb`
+            );
         } finally {
             setLoading(false);
         }
@@ -114,7 +117,7 @@ export default function LoginOne() {
     return (
         <SafeAreaViewComponent style={{ backgroundColor: '#111827' }}>
             <ContainerPage>
-                <ImageContainer>
+                <ImageContainer testID="login-logo">
                     <ImageItem source={require('@/assets/images/logo.png')} />
                 </ImageContainer>
 
@@ -126,6 +129,7 @@ export default function LoginOne() {
                         }}
                         render={({ field: { onChange, onBlur, value } }) => (
                             <InputFormComponent
+                                testID="email-cpf-input"
                                 placeholder={t("E-mail or CPF")}
                                 onBlur={onBlur}
                                 onChangeText={onChange}
@@ -145,6 +149,7 @@ export default function LoginOne() {
                         }}
                         render={({ field: { onChange, onBlur, value } }) => (
                             <InputFormComponent
+                                testID="password-input"
                                 placeholder={t("Password")}
                                 onBlur={onBlur}
                                 onChangeText={onChange}
@@ -161,10 +166,10 @@ export default function LoginOne() {
                         <ForgotPasswordText>{t('I forgot my password')}</ForgotPasswordText>
                     </ForgotPassword>
 
-                    <ButtonComponent onPress={handleSubmit(onSubmit)}>
-                        {loading ? 
-                            <ActivityIndicator size="small" color="#fff" /> 
-                        : 
+                    <ButtonComponent testID="login-button" onPress={handleSubmit(onSubmit)}>
+                        {loading ?
+                            <ActivityIndicator size="small" color="#fff" />
+                            :
                             <TextComponent>{t("Login")}</TextComponent>
                         }
                     </ButtonComponent>
@@ -175,7 +180,7 @@ export default function LoginOne() {
                         <DividerLine />
                     </DividerContainer>
 
-                    <GoogleButton onPress={handleGoogleLogin}>
+                    <GoogleButton testID="google-login-button" onPress={handleGoogleLogin}>
                         <AntDesign name="google" size={20} color="#DB4437" />
                         <GoogleButtonText>{t('Entrar com o Google')}</GoogleButtonText>
                     </GoogleButton>

@@ -22,3 +22,5 @@ keystore.jks
 # @end expo-cli
 
 .env
+
+android

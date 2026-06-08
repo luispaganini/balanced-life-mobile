@@ -42,10 +42,10 @@ export default function WaterCustomInput({
                         style={{ width: '100%' }}
                     />
                 </InputWrapper>
-                <AddButton onPress={onAddPress}>
+                <AddButton onPress={onAddPress} testID="add-water-btn">
                     <Ionicons name="add" size={24} color={Colors.color.white} />
                 </AddButton>
-                <RemoveButton onPress={onRemovePress}>
+                <RemoveButton onPress={onRemovePress} testID="remove-water-btn">
                     <Ionicons name="remove" size={24} color={Colors.color.white} />
                 </RemoveButton>
             </InputRow>

@@ -5,9 +5,10 @@ import ITokenInterface from "@/interfaces/Login/ITokenInterface";
 
 
 export const refreshAccessToken = async (refreshToken: string, token: string): Promise<ITokenInterface> => {
-    const apiBaseUrl = appConfig.application.uris.api.endsWith('/')
-        ? appConfig.application.uris.api.slice(0, -1)
-        : appConfig.application.uris.api;
+    const rawUrl = process.env.EXPO_PUBLIC_API_URL || appConfig.application.uris.api;
+    const apiBaseUrl = rawUrl.endsWith('/')
+        ? rawUrl.slice(0, -1)
+        : rawUrl;
     const response = await axios.post(`${apiBaseUrl}/login/refresh`, { refreshToken, accessToken: token });
 
     return response.data;

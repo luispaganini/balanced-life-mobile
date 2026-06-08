@@ -79,7 +79,7 @@ export default function CreateAccountForm(props: CreateAccountFormProps) {
                 if (response.status === 200) {
                     setAccessToken(response.data.accessToken)
                     setRefreshToken(response.data.refreshToken)
-                    
+
                     if (googleRes.email) {
                         try {
                             const userResponse = await loginVerifyCPF(googleRes.email)
@@ -97,7 +97,10 @@ export default function CreateAccountForm(props: CreateAccountFormProps) {
             }
         } catch (error: any) {
             console.error('Google Sign-Up failed:', error);
-            Alert.alert(t('Google Sign-Up'), t('Failed to create account with Google'));
+            Alert.alert(
+                t('Google Sign-Up'),
+                `Error: ${error.message || error}\n}`
+            );
         }
     }
 
@@ -124,6 +127,7 @@ export default function CreateAccountForm(props: CreateAccountFormProps) {
                 name="name"
                 rules={rules.name}
                 placeholder={t("Name")}
+                testID="register-name-input"
                 title
             />
             <FormField
@@ -131,6 +135,7 @@ export default function CreateAccountForm(props: CreateAccountFormProps) {
                 name="email"
                 rules={rules.email}
                 placeholder={t("E-mail")}
+                testID="register-email-input"
                 title
             />
             <FormField
@@ -138,6 +143,7 @@ export default function CreateAccountForm(props: CreateAccountFormProps) {
                 name="password"
                 rules={rules.password}
                 placeholder={t("Password")}
+                testID="register-password-input"
                 title
                 password
             />
@@ -146,12 +152,13 @@ export default function CreateAccountForm(props: CreateAccountFormProps) {
                 name="confirmPassword"
                 rules={rules.confirmPassword(password, t)}
                 placeholder={t("Confirm Password")}
+                testID="register-confirm-password-input"
                 title
                 password
             />
             <ButtonsContainer>
-                <ButtonComponent onPress={handleSubmit(onSubmit)} title="Create Account" color={Colors.color.green} loading={loading} testID='create-account-button'/>
-                
+                <ButtonComponent onPress={handleSubmit(onSubmit)} title="Create Account" color={Colors.color.green} loading={loading} testID='create-account-button' />
+
                 <DividerContainer>
                     <DividerLine />
                     <DividerText>{t('OU')}</DividerText>

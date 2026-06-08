@@ -1,5 +1,5 @@
 import { ScrollView, TouchableOpacity, View, Alert, ActivityIndicator } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { 
     PageContainer, 
     ScrollContainer,
@@ -39,14 +39,74 @@ import { router } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
-import { patchUser } from '@/services/user/user'
+import { patchUser, uploadProfilePicture, getUser } from '@/services/user/user'
+
+const decodeBase64 = (str: string): string => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+    let output = '';
+    str = str.replace(/=+$/, '').replace(/-/g, '+').replace(/_/g, '/');
+    for (let bc = 0, bs = 0, buffer, i = 0; i < str.length; i++) {
+        const char = str.charAt(i);
+        const idx = chars.indexOf(char);
+        if (idx === -1) continue;
+        buffer = bc % 4 ? (buffer ?? 0) * 64 + idx : idx;
+        if (bc++ % 4) {
+            output += String.fromCharCode(255 & (buffer >> ((-2 * bc) & 6)));
+        }
+    }
+    return output;
+};
+
+const decodeJwt = (token: string) => {
+    try {
+        const parts = token.split('.');
+        if (parts.length !== 3) return null;
+        const decoded = decodeBase64(parts[1]);
+        return JSON.parse(decoded);
+    } catch (e) {
+        return null;
+    }
+};
 
 export default function ProfilePage() {
-    const { user, setUser } = useUserStore() as { user: IUserInterface, setUser: (user: IUserInterface) => void };
-    const { clearTokens } = useTokenStore();
+    const { user, setUser } = useUserStore() as { user: IUserInterface | null, setUser: (user: IUserInterface | null) => void };
+    const { clearTokens, accessToken } = useTokenStore();
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
     const [uploading, setUploading] = useState(false);
+    const [imageError, setImageError] = useState(false);
+    const [fetchingUser, setFetchingUser] = useState(false);
+
+    useEffect(() => {
+        if (!user && accessToken) {
+            const fetchUserProfile = async () => {
+                setFetchingUser(true);
+                try {
+                    const decoded = decodeJwt(accessToken);
+                    const userId = decoded?.jti || decoded?.sub || decoded?.id;
+                    if (userId) {
+                        const userData = await getUser(Number(userId));
+                        if (userData) {
+                            setUser(userData);
+                        }
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch user profile in ProfilePage:", error);
+                } finally {
+                    setFetchingUser(false);
+                }
+            };
+            fetchUserProfile();
+        }
+    }, [user, accessToken]);
+
+    if (!user) {
+        return (
+            <PageContainer style={{ paddingTop: insets.top, justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+                <ActivityIndicator size="large" color={Colors.color.green} />
+            </PageContainer>
+        );
+    }
 
     const getInitials = (name?: string | null) => {
         if (!name) return 'U';
@@ -55,59 +115,81 @@ export default function ProfilePage() {
         return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
     };
 
-    const handlePickImage = async () => {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-            Alert.alert(t('Permissão necessária'), t('Precisamos de permissão para acessar sua galeria.'));
-            return;
-        }
+    const handlePickImage = () => {
+        Alert.alert(
+            t('Selecionar Foto'),
+            t('Escolha como deseja obter a foto:'),
+            [
+                {
+                    text: t('Tirar Foto'),
+                    onPress: () => processImageSelection(true),
+                },
+                {
+                    text: t('Escolher da Galeria'),
+                    onPress: () => processImageSelection(false),
+                },
+                {
+                    text: t('Cancelar'),
+                    style: 'cancel',
+                },
+            ]
+        );
+    };
 
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images'],
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 0.8,
-        });
-
-        if (!result.canceled && result.assets && result.assets.length > 0) {
-            const pickedUri = result.assets[0].uri;
-            setUploading(true);
-            try {
-                const response = await patchUser({
-                    urlImage: pickedUri,
-                    id: undefined,
-                    name: undefined,
-                    birth: undefined,
-                    password: undefined,
-                    email: undefined,
-                    gender: undefined,
-                    cpf: undefined,
-                    street: undefined,
-                    number: undefined,
-                    zipCode: undefined,
-                    location: undefined,
-                    userRole: undefined,
-                    phoneNumber: undefined,
-                    instagram: undefined,
-                    facebook: undefined,
-                    whatsapp: undefined,
-                    expirationLicence: undefined,
-                    isCompleteProfile: undefined,
-                    district: undefined
-                }, user.id as number);
-
-                if ('id' in response) {
-                    setUser(response);
-                    Alert.alert(t('Sucesso'), t('Foto de perfil atualizada!'));
-                } else {
-                    Alert.alert(t('Erro'), response.message || t('Falha ao atualizar foto.'));
-                }
-            } catch (error) {
-                console.error(error);
-                Alert.alert(t('Erro'), t('Falha ao enviar imagem.'));
-            } finally {
-                setUploading(false);
+    const processImageSelection = async (useCamera: boolean) => {
+        try {
+            let status = '';
+            if (useCamera) {
+                const permission = await ImagePicker.requestCameraPermissionsAsync();
+                status = permission.status;
+            } else {
+                const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                status = permission.status;
             }
+
+            if (status !== 'granted') {
+                Alert.alert(
+                    t('Permissão necessária'),
+                    useCamera 
+                        ? t('Precisamos de permissão para acessar sua câmera.')
+                        : t('Precisamos de permissão para acessar sua galeria.')
+                );
+                return;
+            }
+
+            const pickerOptions: ImagePicker.ImagePickerOptions = {
+                mediaTypes: ['images'],
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 0.7, // Compress quality (70%)
+            };
+
+            const result = useCamera
+                ? await ImagePicker.launchCameraAsync(pickerOptions)
+                : await ImagePicker.launchImageLibraryAsync(pickerOptions);
+
+            if (!result.canceled && result.assets && result.assets.length > 0) {
+                const pickedUri = result.assets[0].uri;
+                setUploading(true);
+                try {
+                    const uploadResult = await uploadProfilePicture(pickedUri);
+                    if (uploadResult && uploadResult.url) {
+                        setUser({ ...user, urlImage: uploadResult.url });
+                        setImageError(false);
+                        Alert.alert(t('Sucesso'), t('Foto de perfil atualizada!'));
+                    } else {
+                        Alert.alert(t('Erro'), t('Falha ao atualizar foto.'));
+                    }
+                } catch (error) {
+                    console.error(error);
+                    Alert.alert(t('Erro'), t('Falha ao enviar imagem.'));
+                } finally {
+                    setUploading(false);
+                }
+            }
+        } catch (error) {
+            console.error(error);
+            Alert.alert(t('Erro'), t('Falha ao obter imagem.'));
         }
     };
 
@@ -115,7 +197,7 @@ export default function ProfilePage() {
         <PageContainer style={{ paddingTop: insets.top }}>
             {/* Header */}
             <HeaderContainer>
-                <HeaderTitle>{t('Meu Perfil')}</HeaderTitle>
+                <HeaderTitle testID="profile-header">{t('Meu Perfil')}</HeaderTitle>
                 <View style={{ width: 24 }} />
             </HeaderContainer>
 
@@ -123,8 +205,11 @@ export default function ProfilePage() {
                 {/* Main Profile Info Card */}
                 <ProfileCard>
                     <AvatarWrapper>
-                        {user.urlImage ? (
-                            <AvatarImage source={{ uri: user.urlImage }} />
+                        {user.urlImage && !imageError ? (
+                            <AvatarImage 
+                                source={{ uri: user.urlImage }} 
+                                onError={() => setImageError(true)}
+                            />
                         ) : (
                             <AvatarFallback>
                                 <AvatarFallbackText>
@@ -146,7 +231,7 @@ export default function ProfilePage() {
                         <AgeText>{calculateAge(user.birth)} {t('anos')}</AgeText>
                     ) : null}
 
-                    <OutlineButton onPress={() => router.navigate('/change-password-page')}>
+                    <OutlineButton testID="change-password-button" onPress={() => router.navigate('/change-password-page')}>
                         <OutlineButtonText>{t('Alterar Senha')}</OutlineButtonText>
                     </OutlineButton>
                 </ProfileCard>
@@ -224,7 +309,7 @@ export default function ProfilePage() {
                 </InfoListCard>
 
                 {/* Log Out Button */}
-                <LogOutButton onPress={() => clearTokens()}>
+                <LogOutButton testID="logout-button" onPress={() => clearTokens()}>
                     <Ionicons name="log-out-outline" size={22} color={Colors.color.red} />
                     <LogOutText>{t('Sair da Conta')}</LogOutText>
                 </LogOutButton>

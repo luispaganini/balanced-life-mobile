@@ -44,3 +44,54 @@ export async function getNutritionistByLink() {
 
     return response
 }
+
+export async function uploadProfilePicture(uri: string): Promise<{ url: string }> {
+    const formData = new FormData();
+    const filename = uri.split('/').pop() || 'profile.jpg';
+    
+    // Infer the type from the extension
+    const match = /\.(\w+)$/.exec(filename);
+    const type = match ? `image/${match[1]}` : `image/jpeg`;
+
+    formData.append('file', {
+        uri: uri,
+        name: filename,
+        type: type,
+    } as any);
+
+    const response = await api.post('/upload/profile', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+
+    return response.data;
+}
+
+export async function uploadMealPicture(mealId: number, uri: string): Promise<{ url: string }> {
+    const formData = new FormData();
+    const filename = uri.split('/').pop() || 'meal.jpg';
+    
+    // Infer the type from the extension
+    const match = /\.(\w+)$/.exec(filename);
+    const type = match ? `image/${match[1]}` : `image/jpeg`;
+
+    formData.append('file', {
+        uri: uri,
+        name: filename,
+        type: type,
+    } as any);
+
+    const response = await api.post(`/upload/meal/${mealId}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+
+    return response.data;
+}
+
+export async function getUser(idUser: number): Promise<IUserInterface> {
+    const response = await api.get(`/user/${idUser}`);
+    return response.data;
+}

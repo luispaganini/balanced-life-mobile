@@ -35,7 +35,7 @@ export default function WaterGoalCard({
     const isLight = colorTheme === 'light';
 
     return (
-        <GoalCard theme={colorTheme}>
+        <GoalCard testID="water-goal-card" theme={colorTheme}>
             <GoalHeaderRow>
                 <GoalTitle theme={colorTheme}>
                     {t('Goal')}: {goalWater}ml

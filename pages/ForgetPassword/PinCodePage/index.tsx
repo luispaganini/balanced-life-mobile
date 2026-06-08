@@ -143,6 +143,7 @@ export default function PinCodePage() {
                     {step === 'email' ? (
                         <View style={{ width: '100%' }}>
                             <InputFormComponent
+                                testID="forgot-email-cpf-input"
                                 placeholder={t("E-mail or CPF")}
                                 onBlur={() => {}}
                                 onChangeText={(text) => setEmailOrCpf(text)}
@@ -186,6 +187,7 @@ export default function PinCodePage() {
                 <ButtonContainer>
                     {step === 'email' ? (
                         <ButtonComponent 
+                            testID="verify-account-button"
                             title={t("Verify Account")} 
                             onPress={handleVerifyUser} 
                             color={Colors.color.green} 
@@ -200,6 +202,7 @@ export default function PinCodePage() {
                         />
                     )}
                     <ButtonComponent 
+                        testID="forgot-back-button"
                         title={t("Back")} 
                         onPress={() => {
                             if (step === 'otp') {

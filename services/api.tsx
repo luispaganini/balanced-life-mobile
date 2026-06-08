@@ -7,7 +7,7 @@ import { router } from 'expo-router';
 import * as Network from 'expo-network';
 
 const api = axios.create({
-    baseURL: appConfig.application.uris.api,
+    baseURL: process.env.EXPO_PUBLIC_API_URL || appConfig.application.uris.api,
 });
 
 api.interceptors.request.use((config) => {

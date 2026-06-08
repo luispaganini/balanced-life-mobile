@@ -7,15 +7,17 @@ type FormFieldProps<T = {}> = T & {
     name: "name" | "email" | "cpf" | "password" | "confirmPassword" | "phoneNumber" | "birthDate" | "gender";
     rules: any;
     placeholder: string;
+    testID?: string;
 };
 
-export const FormField = <T extends object>({ control, name, rules, placeholder, ...inputProps }: FormFieldProps<T>) => (
+export const FormField = <T extends object>({ control, name, rules, placeholder, testID, ...inputProps }: FormFieldProps<T>) => (
     <Controller
         control={control}
         name={name}
         rules={rules}
         render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
             <InputFormComponent
+                testID={testID}
                 placeholder={placeholder}
                 onBlur={onBlur}
                 onChangeText={onChange}

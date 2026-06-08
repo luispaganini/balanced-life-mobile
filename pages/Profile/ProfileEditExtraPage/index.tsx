@@ -40,6 +40,14 @@ export default function ProfileEditExtraPage() {
     const insets = useSafeAreaInsets();
     const { user, setUser } = useUserStore() as { user: IUserInterface, setUser: (user: IUserInterface) => void };
 
+    if (!user) {
+        return (
+            <PageContainer style={{ paddingTop: insets.top, justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+                <LoadingPageComponent />
+            </PageContainer>
+        );
+    }
+
     const {
         control,
         handleSubmit,

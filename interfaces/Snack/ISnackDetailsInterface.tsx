@@ -15,6 +15,7 @@ export interface ISnackDetailsInterface {
     status: StatusMeal
     typeSnack: TypeSnack
     snacks: Snack[]
+    urlImage?: string
 }
 
 export interface TypeSnack {

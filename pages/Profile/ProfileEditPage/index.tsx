@@ -33,6 +33,14 @@ export default function ProfileEditPage() {
     const insets = useSafeAreaInsets();
     const { user, setUser } = useUserStore() as { user: IUserInterface, setUser: (user: IUserInterface) => void };
 
+    if (!user) {
+        return (
+            <PageContainer style={{ paddingTop: insets.top, justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+                <LoadingPageComponent />
+            </PageContainer>
+        );
+    }
+
     const {
         control,
         handleSubmit,
@@ -110,6 +118,7 @@ export default function ProfileEditPage() {
                                 }}
                                 render={({ field: { onChange, onBlur, value } }) => (
                                     <InputFormComponent
+                                        testID="edit-name-input"
                                         placeholder={t("Nome")}
                                         onBlur={onBlur}
                                         onChangeText={onChange}
@@ -125,6 +134,7 @@ export default function ProfileEditPage() {
 
                         <ButtonsContainer>
                             <ButtonComponent 
+                                testID="save-name-button"
                                 onPress={handleSubmit(onSubmit)} 
                                 title={t("Salvar Nome")} 
                                 color={Colors.color.green} 

@@ -20,6 +20,7 @@ interface InputFormProps {
     keyboardType?: "default" | "number-pad" | "decimal-pad" | "numeric" | "email-address" | "phone-pad"
     title?: boolean
     options?: TextInputMaskOptionProp
+    testID?: string
 }
 
 export default function InputFormComponent(props: InputFormProps) {
@@ -33,6 +34,7 @@ export default function InputFormComponent(props: InputFormProps) {
                 <View>
                     {props.title && <TitleInput>{t(props.placeholder)}</TitleInput>}
                     <TextInputComponentWithMask
+                        testID={props.testID}
                         type={props.typeMask}
                         placeholder={props.placeholder}
                         onChangeText={props.onChangeText}
@@ -54,6 +56,7 @@ export default function InputFormComponent(props: InputFormProps) {
                 <View>
                     {props.title && <TitleInput>{t(props.placeholder)}</TitleInput>}
                     <TextInputComponent
+                        testID={props.testID}
                         placeholder={props.placeholder}
                         onChangeText={props.onChangeText}
                         value={props.value}
@@ -71,7 +74,7 @@ export default function InputFormComponent(props: InputFormProps) {
                     />
                 </View>
             }
-            {props.errors && <ErrorText>{t(props.errors.message ?? "This is required")}</ErrorText>}
+            {props.errors && <ErrorText testID={props.testID ? `${props.testID}-error` : undefined}>{t(props.errors.message ?? "This is required")}</ErrorText>}
         </TextInputContainer>
     );
 };

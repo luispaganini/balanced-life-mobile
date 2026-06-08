@@ -54,8 +54,8 @@ export default function RootLayout() {
               headerShown: false,
             }}
           >
-              <Stack.Screen name="(app)" options={{ headerShown: false }} />
-              <Stack.Screen name="(login)" options={{ headerShown: false }} />
+            <Stack.Screen name="(app)" options={{ headerShown: false }} />
+            <Stack.Screen name="(login)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
           </Stack>
         </I18nextProvider>

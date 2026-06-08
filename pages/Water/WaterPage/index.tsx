@@ -120,13 +120,6 @@ export default function WaterPage() {
             </HeaderContainer>
 
             <ContentContainer showsVerticalScrollIndicator={false}>
-                {/* WaterEditModal */}
-                <WaterEditModal 
-                    visible={modalVisible} 
-                    setVisible={setModalVisible} 
-                    onPress={waterStore.setGoalWater} 
-                />
-
                 {/* Progress Visualizer Card */}
                 <WaterGoalCard
                     goalWater={waterStore.goalWater}
@@ -188,6 +181,13 @@ export default function WaterPage() {
                     }}
                 />
             )}
+
+            {/* WaterEditModal */}
+            <WaterEditModal 
+                visible={modalVisible} 
+                setVisible={setModalVisible} 
+                onPress={waterStore.setGoalWater} 
+            />
         </ContainerPage>
     );
 }

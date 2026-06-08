@@ -283,3 +283,28 @@ export const SkeletonPulse = styled.View`
     background-color: ${Colors.dark.card};
     border-radius: 8px;
 `;
+
+export const MealPhotoWrapper = styled.View`
+    width: 100%;
+    margin-bottom: 25px;
+    position: relative;
+`;
+
+export const MealPhotoImage = styled.Image`
+    width: 100%;
+    height: 200px;
+    border-radius: 12px;
+`;
+
+export const RemovePhotoBadge = styled.TouchableOpacity`
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(220, 53, 69, 0.9);
+    width: 32px;
+    height: 32px;
+    border-radius: 16px;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+`;

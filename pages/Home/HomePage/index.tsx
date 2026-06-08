@@ -427,7 +427,7 @@ export default function HomePage() {
 
                     {/* Weekly Calendar */}
                     <View>
-                        <CalendarScrollView horizontal showsHorizontalScrollIndicator={false}>
+                        <CalendarScrollView testID="home-calendar-scroll" horizontal showsHorizontalScrollIndicator={false}>
                             {weekDays.map((dayDate, idx) => {
                                 const isSelected = formatDate(dayDate) === formatDate(snackStore.date);
                                 return (
@@ -446,7 +446,7 @@ export default function HomePage() {
                     </View>
 
                     {/* Resumo Diário Card */}
-                    <NutritionalSummaryCard theme={colorScheme}>
+                    <NutritionalSummaryCard testID="home-daily-summary-card" theme={colorScheme}>
                         <CardHeader>
                             <CardTitle>{t('Resumo Diário')}</CardTitle>
                         </CardHeader>
@@ -514,7 +514,7 @@ export default function HomePage() {
                     </NutritionalSummaryCard>
 
                     {/* Meals Header Row */}
-                    <MealsHeaderRow>
+                    <MealsHeaderRow testID="home-meals-header">
                         <MealsTitle>{t('Refeições')}</MealsTitle>
                         <MealsCountBadge>
                             <MealsCountText>{completedCount} {t('de')} {totalCount} {t('Feitas')}</MealsCountText>
