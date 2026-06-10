@@ -95,3 +95,8 @@ export async function getUser(idUser: number): Promise<IUserInterface> {
     const response = await api.get(`/user/${idUser}`);
     return response.data;
 }
+
+export async function deleteMealPicture(mealId: number): Promise<any> {
+    const response = await api.delete(`/upload/meal/${mealId}`);
+    return response.data;
+}

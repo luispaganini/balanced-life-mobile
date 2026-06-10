@@ -1,4 +1,4 @@
-import { View, ScrollView, TextInput, ActivityIndicator } from 'react-native'
+import { View, ScrollView, TextInput, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router, useLocalSearchParams, Stack } from 'expo-router'
 import { 
@@ -87,7 +87,13 @@ export default function FoodDetailsPage() {
             })
 
             snackStore.addSnackToDetails(snack)
-            router.dismiss(2)
+            router.navigate({
+                pathname: "/snack/[idMeal]/[idTypeSnack]",
+                params: {
+                    idMeal: idMeal as string,
+                    idTypeSnack: idTypeSnack as string
+                }
+            })
         } catch (error) {
             console.error(error)
         }
@@ -105,7 +111,13 @@ export default function FoodDetailsPage() {
             }, parseInt(idSnack as string))
 
             snackStore.updateSnackInDetails(snack)
-            router.dismiss(1)
+            router.navigate({
+                pathname: "/snack/[idMeal]/[idTypeSnack]",
+                params: {
+                    idMeal: idMeal as string,
+                    idTypeSnack: idTypeSnack as string
+                }
+            })
         } catch (error) {
             console.error(error)
         }
@@ -151,118 +163,123 @@ export default function FoodDetailsPage() {
     }
 
     return (
-        <PageContainer style={{ paddingTop: insets.top }}>
-            <Stack.Screen options={{ headerShown: false }} />
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1 }}
+        >
+            <PageContainer style={{ paddingTop: insets.top }}>
+                <Stack.Screen options={{ headerShown: false }} />
 
-            {/* Custom Header */}
-            <HeaderContainer>
-                <HeaderButton onPress={() => router.back()}>
-                    <Ionicons name="chevron-back" size={26} color={Colors.dark.text} />
-                </HeaderButton>
-                <HeaderTitle>{t("Informação Nutricional")}</HeaderTitle>
-                <View style={{ width: 36 }} />
-            </HeaderContainer>
+                {/* Custom Header */}
+                <HeaderContainer>
+                    <HeaderButton onPress={() => router.back()}>
+                        <Ionicons name="chevron-back" size={26} color={Colors.dark.text} />
+                    </HeaderButton>
+                    <HeaderTitle>{t("Informação Nutricional")}</HeaderTitle>
+                    <View style={{ width: 36 }} />
+                </HeaderContainer>
 
-            <ScrollContainer showsVerticalScrollIndicator={false}>
-                {/* Food Meta Info */}
-                <FoodInfoCard>
-                    <FoodTitleText>{food.name}</FoodTitleText>
-                    {food.brand && <FoodMetaText>{t("Brand")}: {food.brand}</FoodMetaText>}
-                    <FoodMetaText>{t("Reference Table")}: {food.referenceTable}</FoodMetaText>
-                    <FoodMetaText style={{ marginTop: 6, fontWeight: '700', color: Colors.color.green, fontSize: 15 }}>
-                        {Math.round(calories)} kcal / {quantity || '0'}g
-                    </FoodMetaText>
-                </FoodInfoCard>
+                <ScrollContainer showsVerticalScrollIndicator={false}>
+                    {/* Food Meta Info */}
+                    <FoodInfoCard>
+                        <FoodTitleText>{food.name}</FoodTitleText>
+                        {food.brand && <FoodMetaText>{t("Brand")}: {food.brand}</FoodMetaText>}
+                        <FoodMetaText>{t("Reference Table")}: {food.referenceTable}</FoodMetaText>
+                        <FoodMetaText style={{ marginTop: 6, fontWeight: '700', color: Colors.color.green, fontSize: 15 }}>
+                            {Math.round(calories)} kcal / {quantity || '0'}g
+                        </FoodMetaText>
+                    </FoodInfoCard>
 
-                {/* Macros Row */}
-                <SectionTitle>{t("Macronutrientes")}</SectionTitle>
-                <MacrosRow>
-                    <MacroCard>
-                        <MacroLabelRow>
-                            <MacroDot color={Colors.color.blue} />
-                            <MacroLabel>{t("Proteína")}</MacroLabel>
-                        </MacroLabelRow>
-                        <MacroValueText>{protein.toFixed(1)}g</MacroValueText>
-                        <MacroProgressLine>
-                            <MacroProgressFill color={Colors.color.blue} width={protPercent} />
-                        </MacroProgressLine>
-                    </MacroCard>
+                    {/* Macros Row */}
+                    <SectionTitle>{t("Macronutrientes")}</SectionTitle>
+                    <MacrosRow>
+                        <MacroCard>
+                            <MacroLabelRow>
+                                <MacroDot color={Colors.color.blue} />
+                                <MacroLabel>{t("Proteína")}</MacroLabel>
+                            </MacroLabelRow>
+                            <MacroValueText>{protein.toFixed(1)}g</MacroValueText>
+                            <MacroProgressLine>
+                                <MacroProgressFill color={Colors.color.blue} width={protPercent} />
+                            </MacroProgressLine>
+                        </MacroCard>
 
-                    <MacroCard>
-                        <MacroLabelRow>
-                            <MacroDot color={Colors.color.green} />
-                            <MacroLabel>{t("Carb.")}</MacroLabel>
-                        </MacroLabelRow>
-                        <MacroValueText>{carbs.toFixed(1)}g</MacroValueText>
-                        <MacroProgressLine>
-                            <MacroProgressFill color={Colors.color.green} width={carbPercent} />
-                        </MacroProgressLine>
-                    </MacroCard>
+                        <MacroCard>
+                            <MacroLabelRow>
+                                <MacroDot color={Colors.color.green} />
+                                <MacroLabel>{t("Carb.")}</MacroLabel>
+                            </MacroLabelRow>
+                            <MacroValueText>{carbs.toFixed(1)}g</MacroValueText>
+                            <MacroProgressLine>
+                                <MacroProgressFill color={Colors.color.green} width={carbPercent} />
+                            </MacroProgressLine>
+                        </MacroCard>
 
-                    <MacroCard>
-                        <MacroLabelRow>
-                            <MacroDot color={Colors.color.orange} />
-                            <MacroLabel>{t("Gordura")}</MacroLabel>
-                        </MacroLabelRow>
-                        <MacroValueText>{fat.toFixed(1)}g</MacroValueText>
-                        <MacroProgressLine>
-                            <MacroProgressFill color={Colors.color.orange} width={fatPercent} />
-                        </MacroProgressLine>
-                    </MacroCard>
-                </MacrosRow>
+                        <MacroCard>
+                            <MacroLabelRow>
+                                <MacroDot color={Colors.color.orange} />
+                                <MacroLabel>{t("Gordura")}</MacroLabel>
+                            </MacroLabelRow>
+                            <MacroValueText>{fat.toFixed(1)}g</MacroValueText>
+                            <MacroProgressLine>
+                                <MacroProgressFill color={Colors.color.orange} width={fatPercent} />
+                            </MacroProgressLine>
+                        </MacroCard>
+                    </MacrosRow>
 
-                {/* Detailed Table */}
-                {otherNutrients.length > 0 && (
-                    <>
-                        <SectionTitle>{t("Detalhes Nutricionais")}</SectionTitle>
-                        <NutrientTableCard>
-                            {otherNutrients.map((item, index) => {
-                                const itemName = item.nutritionalComposition?.item;
-                                return (
-                                    <NutrientRow 
-                                        key={index}
-                                        style={{ 
-                                            borderBottomWidth: index === otherNutrients.length - 1 ? 0 : 1,
-                                            borderBottomColor: Colors.dark.border 
-                                        }}
-                                    >
-                                        <NutrientName>{t(itemName)}</NutrientName>
-                                        <NutrientValue>
-                                            {item.quantity.toFixed(2)} {item.unitMeasurement?.name}
-                                        </NutrientValue>
-                                    </NutrientRow>
-                                )
-                            })}
-                        </NutrientTableCard>
-                    </>
-                )}
-            </ScrollContainer>
+                    {/* Detailed Table */}
+                    {otherNutrients.length > 0 && (
+                        <>
+                            <SectionTitle>{t("Detalhes Nutricionais")}</SectionTitle>
+                            <NutrientTableCard>
+                                {otherNutrients.map((item, index) => {
+                                    const itemName = item.nutritionalComposition?.item;
+                                    return (
+                                        <NutrientRow 
+                                            key={index}
+                                            style={{ 
+                                                borderBottomWidth: index === otherNutrients.length - 1 ? 0 : 1,
+                                                borderBottomColor: Colors.dark.border 
+                                            }}
+                                        >
+                                            <NutrientName>{t(itemName)}</NutrientName>
+                                            <NutrientValue>
+                                                {item.quantity.toFixed(2)} {item.unitMeasurement?.name}
+                                            </NutrientValue>
+                                        </NutrientRow>
+                                    )
+                                })}
+                            </NutrientTableCard>
+                        </>
+                    )}
+                </ScrollContainer>
 
-            <BottomFixedPanel style={{ paddingBottom: insets.bottom > 0 ? insets.bottom : 15 }}>
-                {/* Portion Size Input */}
-                <InputCard>
-                    <InputLabel>{t("Quantidade Consumida")}</InputLabel>
-                    <InputRow>
-                        <PortionInput
-                            keyboardType="numeric"
-                            value={quantity}
-                            onChangeText={setQuantity}
-                            placeholder="100"
-                            placeholderTextColor={Colors.color.grey}
-                        />
-                        <UnitTagContainer>
-                            <UnitTagText>g</UnitTagText>
-                        </UnitTagContainer>
-                    </InputRow>
-                </InputCard>
+                <BottomFixedPanel style={{ paddingBottom: insets.bottom > 0 ? insets.bottom : 15 }}>
+                    {/* Portion Size Input */}
+                    <InputCard>
+                        <InputLabel>{t("Quantidade Consumida")}</InputLabel>
+                        <InputRow>
+                            <PortionInput
+                                keyboardType="numeric"
+                                value={quantity}
+                                onChangeText={setQuantity}
+                                placeholder="100"
+                                placeholderTextColor={Colors.color.grey}
+                            />
+                            <UnitTagContainer>
+                                <UnitTagText>g</UnitTagText>
+                            </UnitTagContainer>
+                        </InputRow>
+                    </InputCard>
 
-                {/* Save / Add Action Button */}
-                <ActionButton onPress={idSnack ? handleUpdateSnack : handleAddSnack}>
-                    <ActionButtonText>
-                        {idSnack ? t("Salvar Alterações") : t("Adicionar à Refeição")}
-                    </ActionButtonText>
-                </ActionButton>
-            </BottomFixedPanel>
-        </PageContainer>
+                    {/* Save / Add Action Button */}
+                    <ActionButton onPress={idSnack ? handleUpdateSnack : handleAddSnack}>
+                        <ActionButtonText>
+                            {idSnack ? t("Salvar Alterações") : t("Adicionar à Refeição")}
+                        </ActionButtonText>
+                    </ActionButton>
+                </BottomFixedPanel>
+            </PageContainer>
+        </KeyboardAvoidingView>
     )
 }

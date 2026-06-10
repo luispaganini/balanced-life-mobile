@@ -1,6 +1,6 @@
+import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
-import useUserStore from '@/store/UserStore';
 import { useCreateAccount } from '@/hooks/useCreateAccount';
 import CreateAccountForm from '../application/Forms/CreateAccountForm';
 

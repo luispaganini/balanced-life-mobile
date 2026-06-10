@@ -1,7 +1,7 @@
 {
   "name": "veben",
   "main": "expo-router/entry",
-  "version": "1.0.1",
+  "version": "1.0.11",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -20,7 +20,10 @@
     ],
     "moduleNameMapper": {
       "^react-i18next$": "<rootDir>/__mocks__/react-i18next.ts"
-    }
+    },
+    "testPathIgnorePatterns": [
+      "<rootDir>/e2e/"
+    ]
   },
   "dependencies": {
     "@expo/config-plugins": "^56.0.8",
@@ -70,6 +73,7 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@config-plugins/detox": "^11.0.0",
+    "@jest/globals": "^30.4.1",
     "@react-native/jest-preset": "^0.85.3",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^12.8.1",

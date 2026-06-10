@@ -26,6 +26,7 @@ import useUserStore from '@/store/UserStore'
 import useTokenStore from '@/store/TokenStore'
 import { AntDesign } from '@expo/vector-icons'
 import { signInWithGoogle } from '@/services/auth/googleAuth'
+import { getFriendlyErrorMessage } from '../../../utils/errorHelper'
 
 export default function LoginOne() {
     const { t } = useTranslation();
@@ -56,11 +57,8 @@ export default function LoginOne() {
             }
         } catch (error: any) {
             console.log(error)
-            if (error.response?.status === 401) {
-                Alert.alert("Login", t("Invalid CPF or password"))
-            } else {
-                Alert.alert("Login", t("Error on login"))
-            }
+            const friendlyMessage = getFriendlyErrorMessage(error, t("Error on login"));
+            Alert.alert("Login", friendlyMessage);
         } finally {
             setLoading(false)
         }
@@ -94,9 +92,10 @@ export default function LoginOne() {
             }
         } catch (error: any) {
             console.error('Google Sign-In failed:', error);
+            const friendlyMessage = getFriendlyErrorMessage(error, t("Failed to authenticate with Google"));
             Alert.alert(
                 t('Google Sign-In'),
-                `Error: ${error.message || error}\nWeb`
+                friendlyMessage
             );
         } finally {
             setLoading(false);

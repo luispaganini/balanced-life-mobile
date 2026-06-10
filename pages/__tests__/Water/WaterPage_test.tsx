@@ -1,3 +1,4 @@
+import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import WaterPage from '../../Water/WaterPage';

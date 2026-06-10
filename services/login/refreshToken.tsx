@@ -22,12 +22,21 @@ export const setupTokenRefresh = async () => {
         if (!refreshToken || !accessToken) return;
 
         const tokens = await refreshAccessToken(refreshToken, accessToken);
-        if (!tokens.success) throw new Error('Erro ao renovar o token');
+        if (!tokens.success) {
+            clearTokens();
+            return;
+        }
 
         setAccessToken(tokens.accessToken);
         setRefreshToken(tokens.refreshToken);
-    } catch (error) {
+    } catch (error: any) {
         console.error('Erro ao renovar o token:', error);
-        clearTokens();
+        if (error.response) {
+            const status = error.response.status;
+            if (status === 400 || status === 401) {
+                clearTokens();
+            }
+        }
+        throw error;
     }
 };

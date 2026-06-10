@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Colors } from '@/constants/Colors'
 import { getSnackDetailsAsync, deleteSnack, sendSnack } from '@/services/snack/snack'
-import { uploadMealPicture } from '@/services/user/user'
+import { uploadMealPicture, deleteMealPicture } from '@/services/user/user'
 import { useSnackStore } from '@/store/SnackStore'
 import StatusMeal from '@/enums/StatusMeal'
 import * as ImagePicker from 'expo-image-picker'
@@ -63,6 +63,7 @@ export default function SnackDetailsPage() {
     const [loading, setLoading] = useState(false)
     const [uploadingPhoto, setUploadingPhoto] = useState(false)
     const [localPhotoUri, setLocalPhotoUri] = useState<string | null>(null)
+    const [photoRemoved, setPhotoRemoved] = useState(false)
 
     // Pulse animation for skeleton loading
     const pulseAnim = useRef(new Animated.Value(0.4)).current
@@ -97,6 +98,13 @@ export default function SnackDetailsPage() {
         try {
             const snacksDetails = await getSnackDetailsAsync(parseInt(idMeal as string), parseInt(idTypeSnack as string))
             snackStore.setSnackDetails(snacksDetails)
+            // Sync localPhotoUri from server so previously-saved photos show on mount
+            if (snacksDetails.urlImage) {
+                setLocalPhotoUri(snacksDetails.urlImage)
+            } else {
+                setLocalPhotoUri(null)
+            }
+            setPhotoRemoved(false)
         } catch (error) {
             console.error("Failed to load snack details:", error)
         } finally {
@@ -127,12 +135,28 @@ export default function SnackDetailsPage() {
         )
     }
 
+    // Derive the URI to display — prefer the locally-picked/loaded URI
+    const displayPhotoUri = photoRemoved ? null : (localPhotoUri || snackStore.snackDetails?.urlImage || null)
+
+    // True when there is a locally-selected NEW file that hasn't been uploaded yet
+    const hasLocalNewPhoto = !photoRemoved && !!localPhotoUri && localPhotoUri !== snackStore.snackDetails?.urlImage
+
     const handleSave = async () => {
         setUploadingPhoto(true);
         try {
-            if (localPhotoUri) {
+            if (photoRemoved) {
+                await deleteMealPicture(parseInt(idMeal as string));
+                if (snackStore.snackDetails) {
+                    snackStore.setSnackDetails({
+                        ...snackStore.snackDetails,
+                        urlImage: undefined
+                    });
+                }
+                setLocalPhotoUri(null);
+            } else if (hasLocalNewPhoto && localPhotoUri) {
                 const uploadResult = await uploadMealPicture(parseInt(idMeal as string), localPhotoUri);
                 if (uploadResult && uploadResult.url) {
+                    setLocalPhotoUri(uploadResult.url);
                     if (snackStore.snackDetails) {
                         snackStore.setSnackDetails({
                             ...snackStore.snackDetails,
@@ -151,7 +175,7 @@ export default function SnackDetailsPage() {
                 snackStore.snackDetails?.observation ?? '',
                 parseInt(idMeal as string)
             )
-            setLocalPhotoUri(null);
+            setPhotoRemoved(false);
             Alert.alert(t("Sucesso"), t("Refeição salva com sucesso!"))
             router.navigate('/')
         } catch (error) {
@@ -163,23 +187,44 @@ export default function SnackDetailsPage() {
     }
 
     const handleAddPhoto = () => {
+        const options: any[] = [
+            {
+                text: t("Tirar Foto"),
+                onPress: () => processMealImageSelection(true),
+            },
+            {
+                text: t("Escolher da Galeria"),
+                onPress: () => processMealImageSelection(false),
+            },
+        ];
+
+        // Show "Remover Foto" if there is any displayed photo (local or from server)
+        if (displayPhotoUri) {
+            options.push({
+                text: t("Remover Foto"),
+                onPress: () => {
+                    setLocalPhotoUri(null);
+                    setPhotoRemoved(true);
+                    if (snackStore.snackDetails) {
+                        snackStore.setSnackDetails({
+                            ...snackStore.snackDetails,
+                            urlImage: undefined
+                        });
+                    }
+                },
+            });
+        }
+
+        options.push({
+            text: t("Cancelar"),
+            style: "cancel" as any,
+            onPress: () => {}
+        });
+
         Alert.alert(
             t("Selecionar Foto"),
             t("Escolha como deseja obter a foto da refeição:"),
-            [
-                {
-                    text: t("Tirar Foto"),
-                    onPress: () => processMealImageSelection(true),
-                },
-                {
-                    text: t("Escolher da Galeria"),
-                    onPress: () => processMealImageSelection(false),
-                },
-                {
-                    text: t("Cancelar"),
-                    style: "cancel",
-                },
-            ]
+            options
         );
     };
 
@@ -218,12 +263,10 @@ export default function SnackDetailsPage() {
             if (!result.canceled && result.assets && result.assets.length > 0) {
                 const pickedUri = result.assets[0].uri;
                 setLocalPhotoUri(pickedUri);
-                if (snackStore.snackDetails) {
-                    snackStore.setSnackDetails({
-                        ...snackStore.snackDetails,
-                        urlImage: pickedUri
-                    });
-                }
+                setPhotoRemoved(false);
+                // Note: do NOT update store.urlImage with the local URI.
+                // displayPhotoUri is derived from localPhotoUri so the preview works automatically.
+                // The store.urlImage only holds the remote URL (set after successful upload).
             }
         } catch (error) {
             console.error(error);
@@ -511,10 +554,10 @@ export default function SnackDetailsPage() {
                             <ActivityIndicator size="large" color={Colors.color.green} />
                             <PhotoUploadText>{t("Enviando foto...")}</PhotoUploadText>
                         </PhotoUploadContainer>
-                    ) : snackStore.snackDetails?.urlImage ? (
+                    ) : displayPhotoUri ? (
                         <MealPhotoWrapper>
                             <TouchableOpacity onPress={handleAddPhoto} activeOpacity={0.8}>
-                                <MealPhotoImage source={{ uri: snackStore.snackDetails.urlImage }} />
+                                <MealPhotoImage source={{ uri: displayPhotoUri }} />
                             </TouchableOpacity>
                             <RemovePhotoBadge onPress={handleAddPhoto}>
                                 <Ionicons name="camera" size={18} color={Colors.color.white} />

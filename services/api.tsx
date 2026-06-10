@@ -22,11 +22,18 @@ api.interceptors.response.use(response => response, async (error) => {
     const isAuthRequest = originalRequest.url?.includes('/login');
     if (error.response && error.response.status === 401 && !isAuthRequest && !originalRequest._retry) {
         originalRequest._retry = true;
-        await setupTokenRefresh();
-        const { accessToken } = useTokenStore.getState();
-        axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-        originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
-        return api(originalRequest);
+        try {
+            await setupTokenRefresh();
+            const { accessToken } = useTokenStore.getState();
+            if (!accessToken) {
+                return Promise.reject(error);
+            }
+            axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+            originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+            return api(originalRequest);
+        } catch (refreshError) {
+            return Promise.reject(refreshError);
+        }
     }
     return Promise.reject(error);
 });
@@ -34,17 +41,10 @@ api.interceptors.response.use(response => response, async (error) => {
 api.interceptors.request.use(
     async (config) => {
         const networkState = await Network.getNetworkStateAsync();
-        const { clearTokens } = useTokenStore.getState();
         if (!networkState.isConnected) {
             Alert.alert(
                 'Sem Conexão',
-                'Você está sem conexão com a internet. Você será redirecionado para a página de login.',
-                [
-                    {
-                        text: 'OK',
-                        onPress: () => clearTokens(),
-                    },
-                ]
+                'Você está sem conexão com a internet. Por favor, verifique sua conexão.'
             );
 
             throw new axios.Cancel('Sem conexão com a internet');
