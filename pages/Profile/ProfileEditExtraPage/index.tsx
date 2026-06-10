@@ -26,6 +26,7 @@ import { patchUser } from '@/services/user/user';
 import LoadingPageComponent from '@/components/application/Lists/LoadingPageComponent';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 type FormData = {
     email: string;
@@ -38,11 +39,12 @@ export default function ProfileEditExtraPage() {
     const [loading, setLoading] = React.useState(false)
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
+    const colorTheme = useColorScheme();
     const { user, setUser } = useUserStore() as { user: IUserInterface, setUser: (user: IUserInterface) => void };
 
     if (!user) {
         return (
-            <PageContainer style={{ paddingTop: insets.top, justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+            <PageContainer theme={colorTheme} style={{ paddingTop: insets.top, justifyContent: 'center', alignItems: 'center', flex: 1 }}>
                 <LoadingPageComponent />
             </PageContainer>
         );
@@ -104,13 +106,12 @@ export default function ProfileEditExtraPage() {
     }
 
     return (
-        <PageContainer style={{ paddingTop: insets.top }}>
-            {/* Header */}
-            <HeaderContainer>
+        <PageContainer theme={colorTheme} style={{ paddingTop: insets.top }}>
+            <HeaderContainer theme={colorTheme}>
                 <HeaderButton onPress={() => router.back()}>
-                    <Ionicons name="chevron-back" size={26} color={Colors.dark.text} />
+                    <Ionicons name="chevron-back" size={26} color={colorTheme === 'dark' ? Colors.dark.text : Colors.light.text} />
                 </HeaderButton>
-                <HeaderTitle>{t('Editar Informações')}</HeaderTitle>
+                <HeaderTitle theme={colorTheme}>{t('Editar Informações')}</HeaderTitle>
                 <View style={{ width: 36 }} />
             </HeaderContainer>
 
@@ -119,9 +120,9 @@ export default function ProfileEditExtraPage() {
             ) : (
                 <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
                     <FormWrapper>
-                        <CardContainer>
+                        <CardContainer theme={colorTheme}>
                             <InputGroup>
-                                <InputLabel>E-mail</InputLabel>
+                                <InputLabel theme={colorTheme}>E-mail</InputLabel>
                                 <Controller
                                     control={control}
                                     rules={{
@@ -148,7 +149,7 @@ export default function ProfileEditExtraPage() {
                             </InputGroup>
 
                             <InputGroup>
-                                <InputLabel>{t('Telefone')}</InputLabel>
+                                <InputLabel theme={colorTheme}>{t('Telefone')}</InputLabel>
                                 <Controller
                                     control={control}
                                     rules={{
@@ -173,7 +174,7 @@ export default function ProfileEditExtraPage() {
                             </InputGroup>
 
                             <InputGroup>
-                                <InputLabel>{t('Data de Nascimento')}</InputLabel>
+                                <InputLabel theme={colorTheme}>{t('Data de Nascimento')}</InputLabel>
                                 <Controller
                                     control={control}
                                     rules={{
@@ -194,7 +195,7 @@ export default function ProfileEditExtraPage() {
                             </InputGroup>
 
                             <InputGroup style={{ marginBottom: 0 }}>
-                                <InputLabel>{t('Gênero')}</InputLabel>
+                                <InputLabel theme={colorTheme}>{t('Gênero')}</InputLabel>
                                 <Controller
                                     control={control}
                                     rules={{

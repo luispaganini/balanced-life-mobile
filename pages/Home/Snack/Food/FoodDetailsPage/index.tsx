@@ -34,6 +34,7 @@ import {
     BottomFixedPanel
 } from './styles'
 import { Colors } from '@/constants/Colors'
+import { useColorScheme } from '@/hooks/useColorScheme'
 import { useTranslation } from 'react-i18next'
 import { getFoodById } from '@/services/snack/food'
 import IFoodInterface from '@/interfaces/Snack/Food/IFoodInterface'
@@ -50,6 +51,7 @@ export default function FoodDetailsPage() {
 
     const { t } = useTranslation()
     const insets = useSafeAreaInsets()
+    const colorTheme = useColorScheme()
     const [food, setFood] = useState<IFoodInterface>()
     const [quantity, setQuantity] = useState(quantitySnack ? quantitySnack as string : '100')
     const [adjustedNutritionalInfo, setAdjustedNutritionalInfo] = useState<IFoodNutritionInfo[]>([])
@@ -156,7 +158,7 @@ export default function FoodDetailsPage() {
 
     if (!food) {
         return (
-            <PageContainer style={{ paddingTop: insets.top, justifyContent: 'center', alignItems: 'center' }}>
+            <PageContainer theme={colorTheme} style={{ paddingTop: insets.top, justifyContent: 'center', alignItems: 'center' }}>
                 <ActivityIndicator size="large" color={Colors.color.green} />
             </PageContainer>
         )
@@ -167,22 +169,20 @@ export default function FoodDetailsPage() {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={{ flex: 1 }}
         >
-            <PageContainer style={{ paddingTop: insets.top }}>
+            <PageContainer theme={colorTheme} style={{ paddingTop: insets.top }}>
                 <Stack.Screen options={{ headerShown: false }} />
 
-                {/* Custom Header */}
-                <HeaderContainer>
+                <HeaderContainer theme={colorTheme}>
                     <HeaderButton onPress={() => router.back()}>
-                        <Ionicons name="chevron-back" size={26} color={Colors.dark.text} />
+                        <Ionicons name="chevron-back" size={26} color={colorTheme === 'dark' ? Colors.dark.text : Colors.light.text} />
                     </HeaderButton>
-                    <HeaderTitle>{t("Informação Nutricional")}</HeaderTitle>
+                    <HeaderTitle theme={colorTheme}>{t("Informação Nutricional")}</HeaderTitle>
                     <View style={{ width: 36 }} />
                 </HeaderContainer>
 
                 <ScrollContainer showsVerticalScrollIndicator={false}>
-                    {/* Food Meta Info */}
-                    <FoodInfoCard>
-                        <FoodTitleText>{food.name}</FoodTitleText>
+                    <FoodInfoCard theme={colorTheme}>
+                        <FoodTitleText theme={colorTheme}>{food.name}</FoodTitleText>
                         {food.brand && <FoodMetaText>{t("Brand")}: {food.brand}</FoodMetaText>}
                         <FoodMetaText>{t("Reference Table")}: {food.referenceTable}</FoodMetaText>
                         <FoodMetaText style={{ marginTop: 6, fontWeight: '700', color: Colors.color.green, fontSize: 15 }}>
@@ -190,48 +190,46 @@ export default function FoodDetailsPage() {
                         </FoodMetaText>
                     </FoodInfoCard>
 
-                    {/* Macros Row */}
-                    <SectionTitle>{t("Macronutrientes")}</SectionTitle>
+                    <SectionTitle theme={colorTheme}>{t("Macronutrientes")}</SectionTitle>
                     <MacrosRow>
-                        <MacroCard>
+                        <MacroCard theme={colorTheme}>
                             <MacroLabelRow>
                                 <MacroDot color={Colors.color.blue} />
                                 <MacroLabel>{t("Proteína")}</MacroLabel>
                             </MacroLabelRow>
-                            <MacroValueText>{protein.toFixed(1)}g</MacroValueText>
-                            <MacroProgressLine>
+                            <MacroValueText theme={colorTheme}>{protein.toFixed(1)}g</MacroValueText>
+                            <MacroProgressLine theme={colorTheme}>
                                 <MacroProgressFill color={Colors.color.blue} width={protPercent} />
                             </MacroProgressLine>
                         </MacroCard>
 
-                        <MacroCard>
+                        <MacroCard theme={colorTheme}>
                             <MacroLabelRow>
                                 <MacroDot color={Colors.color.green} />
                                 <MacroLabel>{t("Carb.")}</MacroLabel>
                             </MacroLabelRow>
-                            <MacroValueText>{carbs.toFixed(1)}g</MacroValueText>
-                            <MacroProgressLine>
+                            <MacroValueText theme={colorTheme}>{carbs.toFixed(1)}g</MacroValueText>
+                            <MacroProgressLine theme={colorTheme}>
                                 <MacroProgressFill color={Colors.color.green} width={carbPercent} />
                             </MacroProgressLine>
                         </MacroCard>
 
-                        <MacroCard>
+                        <MacroCard theme={colorTheme}>
                             <MacroLabelRow>
                                 <MacroDot color={Colors.color.orange} />
                                 <MacroLabel>{t("Gordura")}</MacroLabel>
                             </MacroLabelRow>
-                            <MacroValueText>{fat.toFixed(1)}g</MacroValueText>
-                            <MacroProgressLine>
+                            <MacroValueText theme={colorTheme}>{fat.toFixed(1)}g</MacroValueText>
+                            <MacroProgressLine theme={colorTheme}>
                                 <MacroProgressFill color={Colors.color.orange} width={fatPercent} />
                             </MacroProgressLine>
                         </MacroCard>
                     </MacrosRow>
 
-                    {/* Detailed Table */}
                     {otherNutrients.length > 0 && (
                         <>
-                            <SectionTitle>{t("Detalhes Nutricionais")}</SectionTitle>
-                            <NutrientTableCard>
+                            <SectionTitle theme={colorTheme}>{t("Detalhes Nutricionais")}</SectionTitle>
+                            <NutrientTableCard theme={colorTheme}>
                                 {otherNutrients.map((item, index) => {
                                     const itemName = item.nutritionalComposition?.item;
                                     return (
@@ -239,11 +237,11 @@ export default function FoodDetailsPage() {
                                             key={index}
                                             style={{ 
                                                 borderBottomWidth: index === otherNutrients.length - 1 ? 0 : 1,
-                                                borderBottomColor: Colors.dark.border 
+                                                borderBottomColor: colorTheme === 'dark' ? Colors.dark.border : Colors.light.border
                                             }}
                                         >
-                                            <NutrientName>{t(itemName)}</NutrientName>
-                                            <NutrientValue>
+                                            <NutrientName theme={colorTheme}>{t(itemName)}</NutrientName>
+                                            <NutrientValue theme={colorTheme}>
                                                 {item.quantity.toFixed(2)} {item.unitMeasurement?.name}
                                             </NutrientValue>
                                         </NutrientRow>
@@ -254,25 +252,24 @@ export default function FoodDetailsPage() {
                     )}
                 </ScrollContainer>
 
-                <BottomFixedPanel style={{ paddingBottom: insets.bottom > 0 ? insets.bottom : 15 }}>
-                    {/* Portion Size Input */}
+                <BottomFixedPanel theme={colorTheme} style={{ paddingBottom: insets.bottom > 0 ? insets.bottom : 15 }}>
                     <InputCard>
-                        <InputLabel>{t("Quantidade Consumida")}</InputLabel>
-                        <InputRow>
+                        <InputLabel theme={colorTheme}>{t("Quantidade Consumida")}</InputLabel>
+                        <InputRow theme={colorTheme}>
                             <PortionInput
+                                theme={colorTheme}
                                 keyboardType="numeric"
                                 value={quantity}
                                 onChangeText={setQuantity}
                                 placeholder="100"
                                 placeholderTextColor={Colors.color.grey}
                             />
-                            <UnitTagContainer>
-                                <UnitTagText>g</UnitTagText>
+                            <UnitTagContainer theme={colorTheme}>
+                                <UnitTagText theme={colorTheme}>g</UnitTagText>
                             </UnitTagContainer>
                         </InputRow>
                     </InputCard>
 
-                    {/* Save / Add Action Button */}
                     <ActionButton onPress={idSnack ? handleUpdateSnack : handleAddSnack}>
                         <ActionButtonText>
                             {idSnack ? t("Salvar Alterações") : t("Adicionar à Refeição")}

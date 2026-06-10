@@ -2,6 +2,7 @@ import React from 'react'
 import { CardFoodContainer, FoodIconContainer, FoodTextColumn, FoodNameText, FoodDescText } from './styles'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 type CardFoodProps = {
     id: number;
@@ -11,14 +12,16 @@ type CardFoodProps = {
 }
 
 export default function CardFood(props: CardFoodProps) {
+    const colorTheme = useColorScheme();
+
     return (
-        <CardFoodContainer onPress={() => props.onPress(props.id)}>
+        <CardFoodContainer theme={colorTheme} onPress={() => props.onPress(props.id)}>
             <FoodIconContainer>
                 <Ionicons name="restaurant-outline" size={20} color={Colors.color.green} />
             </FoodIconContainer>
             
             <FoodTextColumn>
-                <FoodNameText numberOfLines={1}>{props.name}</FoodNameText>
+                <FoodNameText theme={colorTheme} numberOfLines={1}>{props.name}</FoodNameText>
                 <FoodDescText>{props.table}</FoodDescText>
             </FoodTextColumn>
 

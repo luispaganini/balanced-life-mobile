@@ -1,29 +1,30 @@
 import { Colors } from "@/constants/Colors";
+import { ColorSchemeName } from "react-native";
 import styled from "styled-components/native";
 
-export const PageContainer = styled.View`
+export const PageContainer = styled.View<{ theme: ColorSchemeName }>`
     flex: 1;
-    background-color: ${Colors.dark.background};
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.background : Colors.dark.background};
 `;
 
-export const HeaderContainer = styled.View`
+export const HeaderContainer = styled.View<{ theme: ColorSchemeName }>`
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     padding-vertical: 15px;
     padding-horizontal: 20px;
     border-bottom-width: 1px;
-    border-bottom-color: ${Colors.dark.border};
+    border-bottom-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
 `;
 
 export const HeaderButton = styled.TouchableOpacity`
     padding: 5px;
 `;
 
-export const HeaderTitle = styled.Text`
+export const HeaderTitle = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 18px;
     font-weight: bold;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
 `;
 
 export const ScrollContainer = styled.ScrollView`
@@ -31,19 +32,19 @@ export const ScrollContainer = styled.ScrollView`
     padding-horizontal: 20px;
 `;
 
-export const FoodInfoCard = styled.View`
-    background-color: ${Colors.dark.card};
+export const FoodInfoCard = styled.View<{ theme: ColorSchemeName }>`
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.card : Colors.dark.card};
     border-radius: 12px;
     padding: 16px 20px;
     margin-vertical: 15px;
     border-width: 1px;
-    border-color: ${Colors.dark.border};
+    border-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
 `;
 
-export const FoodTitleText = styled.Text`
+export const FoodTitleText = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 20px;
     font-weight: 700;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
     margin-bottom: 8px;
 `;
 
@@ -57,50 +58,50 @@ export const InputCard = styled.View`
     margin-bottom: 12px;
 `;
 
-export const InputLabel = styled.Text`
+export const InputLabel = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 14px;
     font-weight: 600;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
     margin-bottom: 8px;
 `;
 
-export const InputRow = styled.View`
+export const InputRow = styled.View<{ theme: ColorSchemeName }>`
     flex-direction: row;
     align-items: center;
-    background-color: ${Colors.dark.card};
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.card : Colors.dark.card};
     border-radius: 12px;
     border-width: 1px;
-    border-color: ${Colors.dark.border};
+    border-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
     overflow: hidden;
     height: 50px;
 `;
 
-export const PortionInput = styled.TextInput`
+export const PortionInput = styled.TextInput<{ theme: ColorSchemeName }>`
     flex: 1;
     padding-horizontal: 15px;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
     font-size: 16px;
     font-weight: 600;
 `;
 
-export const UnitTagContainer = styled.View`
-    background-color: ${Colors.dark.border};
+export const UnitTagContainer = styled.View<{ theme: ColorSchemeName }>`
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
     padding-horizontal: 20px;
     height: 100%;
     justify-content: center;
     align-items: center;
 `;
 
-export const UnitTagText = styled.Text`
+export const UnitTagText = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 16px;
     font-weight: 600;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
 `;
 
-export const SectionTitle = styled.Text`
+export const SectionTitle = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 18px;
     font-weight: 700;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
     margin-top: 15px;
     margin-bottom: 12px;
 `;
@@ -111,14 +112,14 @@ export const MacrosRow = styled.View`
     margin-bottom: 20px;
 `;
 
-export const MacroCard = styled.View`
+export const MacroCard = styled.View<{ theme: ColorSchemeName }>`
     flex: 1;
-    background-color: ${Colors.dark.card};
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.card : Colors.dark.card};
     border-radius: 12px;
     padding: 12px;
     margin-horizontal: 4px;
     border-width: 1px;
-    border-color: ${Colors.dark.border};
+    border-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
 `;
 
 export const MacroLabelRow = styled.View`
@@ -142,16 +143,16 @@ export const MacroLabel = styled.Text`
     text-transform: uppercase;
 `;
 
-export const MacroValueText = styled.Text`
+export const MacroValueText = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 16px;
     font-weight: 700;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
     margin-bottom: 4px;
 `;
 
-export const MacroProgressLine = styled.View`
+export const MacroProgressLine = styled.View<{ theme: ColorSchemeName }>`
     height: 4px;
-    background-color: ${Colors.dark.border};
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
     border-radius: 2px;
     overflow: hidden;
 `;
@@ -163,13 +164,13 @@ export const MacroProgressFill = styled.View<{ color: string; width: number }>`
     border-radius: 2px;
 `;
 
-export const NutrientTableCard = styled.View`
-    background-color: ${Colors.dark.card};
+export const NutrientTableCard = styled.View<{ theme: ColorSchemeName }>`
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.card : Colors.dark.card};
     border-radius: 12px;
     padding: 10px 20px;
     margin-bottom: 25px;
     border-width: 1px;
-    border-color: ${Colors.dark.border};
+    border-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
 `;
 
 export const NutrientRow = styled.View`
@@ -179,15 +180,15 @@ export const NutrientRow = styled.View`
     padding-vertical: 12px;
 `;
 
-export const NutrientName = styled.Text`
+export const NutrientName = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 14px;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
 `;
 
-export const NutrientValue = styled.Text`
+export const NutrientValue = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 14px;
     font-weight: 600;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
 `;
 
 export const ActionButton = styled.TouchableOpacity`
@@ -209,10 +210,10 @@ export const ActionButtonText = styled.Text`
     color: ${Colors.color.white};
 `;
 
-export const BottomFixedPanel = styled.View`
+export const BottomFixedPanel = styled.View<{ theme: ColorSchemeName }>`
     padding-horizontal: 20px;
     padding-top: 10px;
     border-top-width: 1px;
-    border-top-color: ${Colors.dark.border};
-    background-color: ${Colors.dark.background};
+    border-top-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.background : Colors.dark.background};
 `;

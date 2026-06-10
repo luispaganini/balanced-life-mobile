@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Searchbar } from 'react-native-paper'
 import { Colors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import {
     PageContainer,
     HeaderContainer,
@@ -30,6 +31,7 @@ export default function SearchFoodPage() {
     const [foods, setFoods] = useState<Array<IFoodInterface>>([]);
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
+    const colorTheme = useColorScheme();
 
     useEffect(() => {
         foodStore.setLoading(false);
@@ -95,15 +97,14 @@ export default function SearchFoodPage() {
     })
 
     return (
-        <PageContainer style={{ paddingTop: insets.top }}>
+        <PageContainer theme={colorTheme} style={{ paddingTop: insets.top }}>
             <Stack.Screen options={{ headerShown: false }} />
 
-            {/* Custom Header */}
-            <HeaderContainer>
+            <HeaderContainer theme={colorTheme}>
                 <HeaderButton onPress={() => router.back()}>
-                    <Ionicons name="chevron-back" size={26} color={Colors.dark.text} />
+                    <Ionicons name="chevron-back" size={26} color={colorTheme === 'dark' ? Colors.dark.text : Colors.light.text} />
                 </HeaderButton>
-                <HeaderTitle>{t("Buscar Alimento")}</HeaderTitle>
+                <HeaderTitle theme={colorTheme}>{t("Buscar Alimento")}</HeaderTitle>
                 <View style={{ width: 36 }} />
             </HeaderContainer>
 
@@ -113,13 +114,13 @@ export default function SearchFoodPage() {
                         placeholder={t("Pesquisar alimento...")}
                         onChangeText={setSearchQuery}
                         value={searchQuery}
-                        inputStyle={{ color: Colors.dark.text }}
+                        inputStyle={{ color: colorTheme === 'dark' ? Colors.dark.text : Colors.light.text }}
                         iconColor={Colors.color.green}
                         placeholderTextColor={Colors.color.grey}
                         style={{
-                            backgroundColor: Colors.dark.card,
+                            backgroundColor: colorTheme === 'dark' ? Colors.dark.card : Colors.light.card,
                             borderWidth: 1,
-                            borderColor: Colors.dark.border,
+                            borderColor: colorTheme === 'dark' ? Colors.dark.border : Colors.light.border,
                             borderRadius: 12
                         }}
                         theme={{ colors: { primary: Colors.color.green } }}

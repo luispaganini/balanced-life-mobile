@@ -148,8 +148,8 @@ export default function NutritionistPage() {
             <HeaderContainer topInset={insets.top} theme={colorScheme}>
                 <HeaderButton onPress={() => router.back()}>
                     <Ionicons 
-                        name="arrow-back" 
-                        size={24} 
+                        name="chevron-back" 
+                        size={26} 
                         color={colorScheme === 'light' ? Colors.light.text : Colors.dark.text} 
                     />
                 </HeaderButton>

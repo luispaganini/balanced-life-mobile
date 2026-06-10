@@ -1,10 +1,10 @@
 import { Colors } from "@/constants/Colors";
-import { Ionicons } from "@expo/vector-icons";
+import { ColorSchemeName } from "react-native";
 import styled from "styled-components/native";
 
-export const PageContainer = styled.View`
+export const PageContainer = styled.View<{ theme: ColorSchemeName }>`
     flex: 1;
-    background-color: ${Colors.dark.background};
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.background : Colors.dark.background};
 `;
 
 export const ScrollContainer = styled.ScrollView`
@@ -12,24 +12,24 @@ export const ScrollContainer = styled.ScrollView`
     padding-horizontal: 20px;
 `;
 
-export const HeaderContainer = styled.View`
+export const HeaderContainer = styled.View<{ theme: ColorSchemeName }>`
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     padding-vertical: 15px;
     padding-horizontal: 20px;
     border-bottom-width: 1px;
-    border-bottom-color: ${Colors.dark.border};
+    border-bottom-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
 `;
 
 export const HeaderButton = styled.TouchableOpacity`
     padding: 5px;
 `;
 
-export const HeaderTitle = styled.Text`
+export const HeaderTitle = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 18px;
     font-weight: bold;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
 `;
 
 export const HeaderActionText = styled.Text<{ active?: boolean }>`
@@ -50,10 +50,10 @@ export const CircularProgressInner = styled.View`
     justify-content: center;
 `;
 
-export const CalorieValue = styled.Text`
+export const CalorieValue = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 38px;
     font-weight: 800;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
     margin-top: 2px;
 `;
 
@@ -69,14 +69,14 @@ export const MacrosRow = styled.View`
     margin-bottom: 25px;
 `;
 
-export const MacroCard = styled.View`
+export const MacroCard = styled.View<{ theme: ColorSchemeName }>`
     flex: 1;
-    background-color: ${Colors.dark.card};
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.card : Colors.dark.card};
     border-radius: 12px;
     padding: 12px;
     margin-horizontal: 5px;
     border-width: 1px;
-    border-color: ${Colors.dark.border};
+    border-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
 `;
 
 export const MacroLabelRow = styled.View`
@@ -100,16 +100,16 @@ export const MacroLabel = styled.Text`
     text-transform: uppercase;
 `;
 
-export const MacroValueText = styled.Text`
+export const MacroValueText = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 18px;
     font-weight: 700;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
     margin-bottom: 8px;
 `;
 
-export const MacroProgressLine = styled.View`
+export const MacroProgressLine = styled.View<{ theme: ColorSchemeName }>`
     height: 4px;
-    background-color: ${Colors.dark.border};
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
     border-radius: 2px;
     overflow: hidden;
 `;
@@ -121,10 +121,10 @@ export const MacroProgressFill = styled.View<{ color: string; width: number }>`
     border-radius: 2px;
 `;
 
-export const SectionTitle = styled.Text`
+export const SectionTitle = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 18px;
     font-weight: 700;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
     margin-top: 10px;
     margin-bottom: 15px;
 `;
@@ -133,15 +133,15 @@ export const FoodListContainer = styled.View`
     margin-bottom: 15px;
 `;
 
-export const FoodCard = styled.TouchableOpacity`
+export const FoodCard = styled.TouchableOpacity<{ theme: ColorSchemeName }>`
     flex-direction: row;
     align-items: center;
-    background-color: ${Colors.dark.card};
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.card : Colors.dark.card};
     border-radius: 12px;
     padding: 12px 15px;
     margin-bottom: 10px;
     border-width: 1px;
-    border-color: ${Colors.dark.border};
+    border-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
 `;
 
 export const FoodIconContainer = styled.View`
@@ -158,10 +158,10 @@ export const FoodTextColumn = styled.View`
     flex: 1;
 `;
 
-export const FoodNameText = styled.Text`
+export const FoodNameText = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 15px;
     font-weight: 600;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
     margin-bottom: 2px;
 `;
 
@@ -175,10 +175,10 @@ export const FoodCalorieContainer = styled.View`
     margin-right: 8px;
 `;
 
-export const FoodCalorieText = styled.Text`
+export const FoodCalorieText = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 15px;
     font-weight: 700;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
 `;
 
 export const FoodCalorieLabel = styled.Text`
@@ -225,12 +225,12 @@ export const ActionButtonText = styled.Text`
     color: ${Colors.color.white};
 `;
 
-export const PhotoUploadContainer = styled.TouchableOpacity`
+export const PhotoUploadContainer = styled.TouchableOpacity<{ theme: ColorSchemeName }>`
     border-width: 1.5px;
     border-style: dashed;
-    border-color: ${Colors.dark.border};
+    border-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
     border-radius: 12px;
-    background-color: ${Colors.dark.card};
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.card : Colors.dark.card};
     padding: 25px;
     align-items: center;
     justify-content: center;
@@ -247,28 +247,28 @@ export const ObservationContainer = styled.View`
     margin-bottom: 30px;
 `;
 
-export const ObservationInput = styled.TextInput`
-    background-color: ${Colors.dark.card};
+export const ObservationInput = styled.TextInput<{ theme: ColorSchemeName }>`
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.card : Colors.dark.card};
     border-radius: 12px;
     border-width: 1px;
-    border-color: ${Colors.dark.border};
+    border-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
     padding: 15px;
     min-height: 100px;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
     font-size: 14px;
     text-align-vertical: top;
 `;
 
-export const EmptyStateContainer = styled.View`
+export const EmptyStateContainer = styled.View<{ theme: ColorSchemeName }>`
     align-items: center;
     justify-content: center;
     padding: 30px;
-    background-color: ${Colors.dark.card};
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.card : Colors.dark.card};
     border-radius: 12px;
     margin-bottom: 15px;
     border-width: 1px;
     border-style: dashed;
-    border-color: ${Colors.dark.border};
+    border-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
 `;
 
 export const EmptyStateText = styled.Text`
@@ -278,9 +278,8 @@ export const EmptyStateText = styled.Text`
     margin-top: 10px;
 `;
 
-// Skeleton Loading Styled Components
-export const SkeletonPulse = styled.View`
-    background-color: ${Colors.dark.card};
+export const SkeletonPulse = styled.View<{ theme: ColorSchemeName }>`
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.card : Colors.dark.card};
     border-radius: 8px;
 `;
 

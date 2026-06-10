@@ -13,7 +13,7 @@ import { Colors } from '@/constants/Colors';
 import { useCreateAccount } from '@/hooks/useCreateAccount';
 import IFormCreateAccountValues from '@/interfaces/App/Form/IFormCreateAccountValues';
 import { signInWithGoogle } from '@/services/auth/googleAuth';
-import { googleLogin, loginVerifyCPF } from '@/services/login/login';
+import { googleLogin, getUserMe } from '@/services/login/login';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 import styled from 'styled-components/native';
@@ -82,15 +82,13 @@ export default function CreateAccountForm(props: CreateAccountFormProps) {
                     setAccessToken(response.data.accessToken)
                     setRefreshToken(response.data.refreshToken)
 
-                    if (googleRes.email) {
-                        try {
-                            const userResponse = await loginVerifyCPF(googleRes.email, response.data.accessToken)
-                            if (userResponse) {
-                                setUser(userResponse)
-                            }
-                        } catch (userError) {
-                            console.log("Failed to fetch user profile for Google register email", userError)
+                    try {
+                        const userResponse = await getUserMe();
+                        if (userResponse) {
+                            setUser(userResponse);
                         }
+                    } catch (userError) {
+                        console.log("Failed to fetch user profile for Google email", userError);
                     }
                     router.navigate("/")
                 } else {

@@ -22,6 +22,7 @@ import { patchUser } from '@/services/user/user';
 import LoadingPageComponent from '@/components/application/Lists/LoadingPageComponent';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 type FormData = {
     name: string;
@@ -31,11 +32,12 @@ export default function ProfileEditPage() {
     const [loading, setLoading] = React.useState(false)
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
+    const colorTheme = useColorScheme();
     const { user, setUser } = useUserStore() as { user: IUserInterface, setUser: (user: IUserInterface) => void };
 
     if (!user) {
         return (
-            <PageContainer style={{ paddingTop: insets.top, justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+            <PageContainer theme={colorTheme} style={{ paddingTop: insets.top, justifyContent: 'center', alignItems: 'center', flex: 1 }}>
                 <LoadingPageComponent />
             </PageContainer>
         );
@@ -94,13 +96,12 @@ export default function ProfileEditPage() {
     }
 
     return (
-        <PageContainer style={{ paddingTop: insets.top }}>
-            {/* Header */}
-            <HeaderContainer>
+        <PageContainer theme={colorTheme} style={{ paddingTop: insets.top }}>
+            <HeaderContainer theme={colorTheme}>
                 <HeaderButton onPress={() => router.back()}>
-                    <Ionicons name="chevron-back" size={26} color={Colors.dark.text} />
+                    <Ionicons name="chevron-back" size={26} color={colorTheme === 'dark' ? Colors.dark.text : Colors.light.text} />
                 </HeaderButton>
-                <HeaderTitle>{t('Editar Nome')}</HeaderTitle>
+                <HeaderTitle theme={colorTheme}>{t('Editar Nome')}</HeaderTitle>
                 <View style={{ width: 36 }} />
             </HeaderContainer>
 
@@ -109,8 +110,8 @@ export default function ProfileEditPage() {
             ) : (
                 <ScrollView keyboardShouldPersistTaps="handled">
                     <FormWrapper>
-                        <CardContainer>
-                            <InputLabel>{t('Nome Completo')}</InputLabel>
+                        <CardContainer theme={colorTheme}>
+                            <InputLabel theme={colorTheme}>{t('Nome Completo')}</InputLabel>
                             <Controller
                                 control={control}
                                 rules={{

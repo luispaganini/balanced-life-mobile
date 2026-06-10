@@ -1,7 +1,7 @@
 import { ScrollView, TouchableOpacity, View, Alert, ActivityIndicator } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { 
-    PageContainer, 
+import {
+    PageContainer,
     ScrollContainer,
     HeaderContainer,
     HeaderTitle,
@@ -40,6 +40,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import { patchUser, uploadProfilePicture, getUser } from '@/services/user/user'
+import { useColorScheme } from '@/hooks/useColorScheme'
 
 const decodeBase64 = (str: string): string => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -73,6 +74,7 @@ export default function ProfilePage() {
     const { clearTokens, accessToken } = useTokenStore();
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
+    const colorTheme = useColorScheme();
     const [uploading, setUploading] = useState(false);
     const [imageError, setImageError] = useState(false);
     const [fetchingUser, setFetchingUser] = useState(false);
@@ -102,7 +104,7 @@ export default function ProfilePage() {
 
     if (!user) {
         return (
-            <PageContainer style={{ paddingTop: insets.top, justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+            <PageContainer theme={colorTheme} style={{ paddingTop: insets.top, justifyContent: 'center', alignItems: 'center', flex: 1 }}>
                 <ActivityIndicator size="large" color={Colors.color.green} />
             </PageContainer>
         );
@@ -150,7 +152,7 @@ export default function ProfilePage() {
             if (status !== 'granted') {
                 Alert.alert(
                     t('Permissão necessária'),
-                    useCamera 
+                    useCamera
                         ? t('Precisamos de permissão para acessar sua câmera.')
                         : t('Precisamos de permissão para acessar sua galeria.')
                 );
@@ -194,20 +196,18 @@ export default function ProfilePage() {
     };
 
     return (
-        <PageContainer style={{ paddingTop: insets.top }}>
-            {/* Header */}
-            <HeaderContainer>
-                <HeaderTitle testID="profile-header">{t('Meu Perfil')}</HeaderTitle>
+        <PageContainer theme={colorTheme} style={{ paddingTop: insets.top }}>
+            <HeaderContainer theme={colorTheme}>
+                <HeaderTitle theme={colorTheme} testID="profile-header">{t('Meu Perfil')}</HeaderTitle>
                 <View style={{ width: 24 }} />
             </HeaderContainer>
 
             <ScrollContainer showsVerticalScrollIndicator={false}>
-                {/* Main Profile Info Card */}
-                <ProfileCard>
+                <ProfileCard theme={colorTheme}>
                     <AvatarWrapper>
                         {user.urlImage && !imageError ? (
-                            <AvatarImage 
-                                source={{ uri: user.urlImage }} 
+                            <AvatarImage
+                                source={{ uri: user.urlImage }}
                                 onError={() => setImageError(true)}
                             />
                         ) : (
@@ -217,7 +217,7 @@ export default function ProfilePage() {
                                 </AvatarFallbackText>
                             </AvatarFallback>
                         )}
-                        <CameraBadge onPress={handlePickImage} disabled={uploading}>
+                        <CameraBadge theme={colorTheme} onPress={handlePickImage} disabled={uploading}>
                             {uploading ? (
                                 <ActivityIndicator size="small" color={Colors.color.white} />
                             ) : (
@@ -226,7 +226,7 @@ export default function ProfilePage() {
                         </CameraBadge>
                     </AvatarWrapper>
 
-                    <NameText>{user?.name}</NameText>
+                    <NameText theme={colorTheme}>{user?.name}</NameText>
                     {user?.birth && calculateAge(user.birth) ? (
                         <AgeText>{calculateAge(user.birth)} {t('anos')}</AgeText>
                     ) : null}
@@ -236,79 +236,76 @@ export default function ProfilePage() {
                     </OutlineButton>
                 </ProfileCard>
 
-                {/* Section: Basic Data */}
                 <SectionHeader>
-                    <SectionTitle>{t('Informações Básicas')}</SectionTitle>
+                    <SectionTitle theme={colorTheme}>{t('Informações Básicas')}</SectionTitle>
                     <EditLink onPress={() => router.navigate('/edit-page')}>
                         <EditLinkText>{t('Editar')}</EditLinkText>
                         <Ionicons name="pencil" size={14} color={Colors.color.green} />
                     </EditLink>
                 </SectionHeader>
 
-                <InfoListCard>
-                    <InfoItemRow style={{ borderBottomWidth: 1, borderBottomColor: Colors.dark.border }}>
-                        <InfoIconWrapper>
+                <InfoListCard theme={colorTheme}>
+                    <InfoItemRow style={{ borderBottomWidth: 1, borderBottomColor: colorTheme === 'dark' ? Colors.dark.border : Colors.light.border }}>
+                        <InfoIconWrapper theme={colorTheme}>
                             <Ionicons name="person-outline" size={18} color={Colors.color.green} />
                         </InfoIconWrapper>
                         <InfoTextColumn>
                             <InfoLabel>{t('Nome Completo')}</InfoLabel>
-                            <InfoValue>{user.name}</InfoValue>
+                            <InfoValue theme={colorTheme}>{user.name}</InfoValue>
                         </InfoTextColumn>
                     </InfoItemRow>
                 </InfoListCard>
 
-                {/* Section: Extra Data */}
                 <SectionHeader>
-                    <SectionTitle>{t('Informações de Contato')}</SectionTitle>
+                    <SectionTitle theme={colorTheme}>{t('Informações de Contato')}</SectionTitle>
                     <EditLink onPress={() => router.navigate('/edit-extra-page')}>
                         <EditLinkText>{t('Editar')}</EditLinkText>
                         <Ionicons name="pencil" size={14} color={Colors.color.green} />
                     </EditLink>
                 </SectionHeader>
 
-                <InfoListCard>
-                    <InfoItemRow style={{ borderBottomWidth: 1, borderBottomColor: Colors.dark.border }}>
-                        <InfoIconWrapper>
+                <InfoListCard theme={colorTheme}>
+                    <InfoItemRow style={{ borderBottomWidth: 1, borderBottomColor: colorTheme === 'dark' ? Colors.dark.border : Colors.light.border }}>
+                        <InfoIconWrapper theme={colorTheme}>
                             <Ionicons name="mail-outline" size={18} color={Colors.color.green} />
                         </InfoIconWrapper>
                         <InfoTextColumn>
                             <InfoLabel>E-mail</InfoLabel>
-                            <InfoValue>{user.email}</InfoValue>
+                            <InfoValue theme={colorTheme}>{user.email}</InfoValue>
                         </InfoTextColumn>
                     </InfoItemRow>
 
-                    <InfoItemRow style={{ borderBottomWidth: 1, borderBottomColor: Colors.dark.border }}>
-                        <InfoIconWrapper>
+                    <InfoItemRow style={{ borderBottomWidth: 1, borderBottomColor: colorTheme === 'dark' ? Colors.dark.border : Colors.light.border }}>
+                        <InfoIconWrapper theme={colorTheme}>
                             <Ionicons name="call-outline" size={18} color={Colors.color.green} />
                         </InfoIconWrapper>
                         <InfoTextColumn>
                             <InfoLabel>{t('Telefone')}</InfoLabel>
-                            <InfoValue>{user.phoneNumber || t('Não informado')}</InfoValue>
+                            <InfoValue theme={colorTheme}>{user.phoneNumber || t('Não informado')}</InfoValue>
                         </InfoTextColumn>
                     </InfoItemRow>
 
-                    <InfoItemRow style={{ borderBottomWidth: 1, borderBottomColor: Colors.dark.border }}>
-                        <InfoIconWrapper>
+                    <InfoItemRow style={{ borderBottomWidth: 1, borderBottomColor: colorTheme === 'dark' ? Colors.dark.border : Colors.light.border }}>
+                        <InfoIconWrapper theme={colorTheme}>
                             <Ionicons name="transgender-outline" size={18} color={Colors.color.green} />
                         </InfoIconWrapper>
                         <InfoTextColumn>
                             <InfoLabel>{t('Gênero')}</InfoLabel>
-                            <InfoValue>{user.gender || t('Não informado')}</InfoValue>
+                            <InfoValue theme={colorTheme}>{user.gender || t('Não informado')}</InfoValue>
                         </InfoTextColumn>
                     </InfoItemRow>
 
                     <InfoItemRow>
-                        <InfoIconWrapper>
+                        <InfoIconWrapper theme={colorTheme}>
                             <Ionicons name="calendar-outline" size={18} color={Colors.color.green} />
                         </InfoIconWrapper>
                         <InfoTextColumn>
                             <InfoLabel>{t('Data de Nascimento')}</InfoLabel>
-                            <InfoValue>{user.birth ? formatToBr(user.birth) : t('Não informado')}</InfoValue>
+                            <InfoValue theme={colorTheme}>{user.birth ? formatToBr(user.birth) : t('Não informado')}</InfoValue>
                         </InfoTextColumn>
                     </InfoItemRow>
                 </InfoListCard>
 
-                {/* Log Out Button */}
                 <LogOutButton testID="logout-button" onPress={() => clearTokens()}>
                     <Ionicons name="log-out-outline" size={22} color={Colors.color.red} />
                     <LogOutText>{t('Sair da Conta')}</LogOutText>

@@ -2,18 +2,14 @@ import ITokenInterface from '@/interfaces/Login/ITokenInterface'
 import api from '../api'
 import IUserInterface from '@/interfaces/User/IUserInterface'
 
-export async function loginVerifyCPF(identifier: string, token?: string): Promise<IUserInterface> {
-    const payload = identifier.includes('@') ? { email: identifier } : { login: identifier.replace(/[^\d]/g, '') };
-    const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
-    const response = await api.post('/login/verify', payload, { headers })
-    if (response.status !== 200 && response.status !== 204)
-        throw new Error(response.data.message)
+export async function getUserMe(): Promise<IUserInterface> {
+    const response = await api.get('/login/verify')
 
     return response.data
 }
 
-export async function login(email: string, password: string) {
-    const response = await api.post('/login', { login: email, password })
+export async function login(loginValue: string, password: string) {
+    const response = await api.post('/login', { login: loginValue, password })
 
     return response
 }

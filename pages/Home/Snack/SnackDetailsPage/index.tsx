@@ -6,6 +6,7 @@ import Svg, { Circle } from 'react-native-svg'
 import { useTranslation } from 'react-i18next'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Colors } from '@/constants/Colors'
+import { useColorScheme } from '@/hooks/useColorScheme'
 import { getSnackDetailsAsync, deleteSnack, sendSnack } from '@/services/snack/snack'
 import { uploadMealPicture, deleteMealPicture } from '@/services/user/user'
 import { useSnackStore } from '@/store/SnackStore'
@@ -60,12 +61,12 @@ export default function SnackDetailsPage() {
     const snackStore = useSnackStore()
     const { t } = useTranslation()
     const insets = useSafeAreaInsets()
+    const colorTheme = useColorScheme()
     const [loading, setLoading] = useState(false)
     const [uploadingPhoto, setUploadingPhoto] = useState(false)
     const [localPhotoUri, setLocalPhotoUri] = useState<string | null>(null)
     const [photoRemoved, setPhotoRemoved] = useState(false)
 
-    // Pulse animation for skeleton loading
     const pulseAnim = useRef(new Animated.Value(0.4)).current
 
     useEffect(() => {
@@ -274,7 +275,6 @@ export default function SnackDetailsPage() {
         }
     };
 
-    // Helper component for skeleton loading elements
     const SkeletonItem = ({ width, height, borderRadius = 8, style }: { width: any, height: any, borderRadius?: number, style?: any }) => (
         <Animated.View
             style={[
@@ -282,7 +282,7 @@ export default function SnackDetailsPage() {
                     width,
                     height,
                     borderRadius,
-                    backgroundColor: Colors.dark.border,
+                    backgroundColor: colorTheme === 'dark' ? Colors.dark.border : Colors.light.border,
                     opacity: pulseAnim,
                 },
                 style,
@@ -326,15 +326,14 @@ export default function SnackDetailsPage() {
     const snacksList = snackStore.snackDetails?.snacks ?? []
 
     return (
-        <PageContainer style={{ paddingTop: insets.top }}>
+        <PageContainer theme={colorTheme} style={{ paddingTop: insets.top }}>
             <Stack.Screen options={{ headerShown: false }} />
 
-            {/* Custom Header */}
-            <HeaderContainer>
+            <HeaderContainer theme={colorTheme}>
                 <HeaderButton onPress={() => router.back()}>
-                    <Ionicons name="chevron-back" size={26} color={Colors.dark.text} />
+                    <Ionicons name="chevron-back" size={26} color={colorTheme === 'dark' ? Colors.dark.text : Colors.light.text} />
                 </HeaderButton>
-                <HeaderTitle>{titleText}</HeaderTitle>
+                <HeaderTitle theme={colorTheme}>{titleText}</HeaderTitle>
                 <View style={{ width: 36 }} />
             </HeaderContainer>
 
@@ -346,37 +345,36 @@ export default function SnackDetailsPage() {
                     </CenterProgressWrapper>
 
                     <MacrosRow>
-                        <MacroCard>
+                        <MacroCard theme={colorTheme}>
                             <SkeletonItem width="100%" height={50} />
                         </MacroCard>
-                        <MacroCard>
+                        <MacroCard theme={colorTheme}>
                             <SkeletonItem width="100%" height={50} />
                         </MacroCard>
-                        <MacroCard>
+                        <MacroCard theme={colorTheme}>
                             <SkeletonItem width="100%" height={50} />
                         </MacroCard>
                     </MacrosRow>
 
-                    <SectionTitle>{t("Alimentos Consumidos")}</SectionTitle>
+                    <SectionTitle theme={colorTheme}>{t("Alimentos Consumidos")}</SectionTitle>
                     <SkeletonItem width="100%" height={65} borderRadius={12} style={{ marginBottom: 10 }} />
                     <SkeletonItem width="100%" height={65} borderRadius={12} style={{ marginBottom: 10 }} />
                     <SkeletonItem width="100%" height={65} borderRadius={12} style={{ marginBottom: 20 }} />
 
                     <SkeletonItem width="100%" height={85} borderRadius={12} style={{ marginBottom: 20 }} />
                     
-                    <SectionTitle>{t("Observações")}</SectionTitle>
+                    <SectionTitle theme={colorTheme}>{t("Observações")}</SectionTitle>
                     <SkeletonItem width="100%" height={100} borderRadius={12} />
                 </ScrollView>
             ) : (
                 <ScrollContainer showsVerticalScrollIndicator={false}>
-                    {/* Circular Calorie Progress */}
                     <CenterProgressWrapper>
                         <Svg width={size} height={size}>
                             <Circle
                                 cx={size / 2}
                                 cy={size / 2}
                                 r={radius}
-                                stroke={Colors.dark.border}
+                                stroke={colorTheme === 'dark' ? Colors.dark.border : Colors.light.border}
                                 strokeWidth={strokeWidth}
                                 fill="transparent"
                             />
@@ -396,49 +394,47 @@ export default function SnackDetailsPage() {
                         </Svg>
                         <CircularProgressInner>
                             <Ionicons name="flame" size={30} color={Colors.color.green} />
-                            <CalorieValue>{currentCalories}</CalorieValue>
+                            <CalorieValue theme={colorTheme}>{currentCalories}</CalorieValue>
                             <CalorieLabel>Kcal</CalorieLabel>
                         </CircularProgressInner>
                     </CenterProgressWrapper>
 
-                    {/* Macro Summary Row */}
                     <MacrosRow>
-                        <MacroCard>
+                        <MacroCard theme={colorTheme}>
                             <MacroLabelRow>
                                 <MacroDot color={Colors.color.blue} />
                                 <MacroLabel>{t("Proteína")}</MacroLabel>
                             </MacroLabelRow>
-                            <MacroValueText>{Math.round(protValue)}g</MacroValueText>
-                            <MacroProgressLine>
+                            <MacroValueText theme={colorTheme}>{Math.round(protValue)}g</MacroValueText>
+                            <MacroProgressLine theme={colorTheme}>
                                 <MacroProgressFill color={Colors.color.blue} width={protPercent} />
                             </MacroProgressLine>
                         </MacroCard>
 
-                        <MacroCard>
+                        <MacroCard theme={colorTheme}>
                             <MacroLabelRow>
                                 <MacroDot color={Colors.color.green} />
                                 <MacroLabel>{t("Carb.")}</MacroLabel>
                             </MacroLabelRow>
-                            <MacroValueText>{Math.round(carbValue)}g</MacroValueText>
-                            <MacroProgressLine>
+                            <MacroValueText theme={colorTheme}>{Math.round(carbValue)}g</MacroValueText>
+                            <MacroProgressLine theme={colorTheme}>
                                 <MacroProgressFill color={Colors.color.green} width={carbPercent} />
                             </MacroProgressLine>
                         </MacroCard>
 
-                        <MacroCard>
+                        <MacroCard theme={colorTheme}>
                             <MacroLabelRow>
                                 <MacroDot color={Colors.color.orange} />
                                 <MacroLabel>{t("Gordura")}</MacroLabel>
                             </MacroLabelRow>
-                            <MacroValueText>{Math.round(fatValue)}g</MacroValueText>
-                            <MacroProgressLine>
+                            <MacroValueText theme={colorTheme}>{Math.round(fatValue)}g</MacroValueText>
+                            <MacroProgressLine theme={colorTheme}>
                                 <MacroProgressFill color={Colors.color.orange} width={fatPercent} />
                             </MacroProgressLine>
                         </MacroCard>
                     </MacrosRow>
 
-                    {/* Alimentos Consumidos */}
-                    <SectionTitle>{t("Alimentos Consumidos")}</SectionTitle>
+                    <SectionTitle theme={colorTheme}>{t("Alimentos Consumidos")}</SectionTitle>
                     <FoodListContainer>
                         {snacksList.length > 0 ? (
                             snacksList.map((item, index) => {
@@ -487,6 +483,7 @@ export default function SnackDetailsPage() {
 
                                 return (
                                     <FoodCard
+                                        theme={colorTheme}
                                         key={item.id}
                                         onPress={() => {
                                             router.push({
@@ -507,19 +504,19 @@ export default function SnackDetailsPage() {
                                         </FoodIconContainer>
                                         
                                         <FoodTextColumn>
-                                            <FoodNameText numberOfLines={1}>{item.food.name}</FoodNameText>
+                                            <FoodNameText theme={colorTheme} numberOfLines={1}>{item.food.name}</FoodNameText>
                                             <FoodDescText>{item.quantity} {item.unitMeasurement.name}</FoodDescText>
                                         </FoodTextColumn>
 
                                         <>
                                             <FoodCalorieContainer>
-                                                <FoodCalorieText>{itemCalories}</FoodCalorieText>
+                                                <FoodCalorieText theme={colorTheme}>{itemCalories}</FoodCalorieText>
                                                 <FoodCalorieLabel>kcal</FoodCalorieLabel>
                                             </FoodCalorieContainer>
                                             {(snackStore.snackDetails?.status === StatusMeal.NotAwnsered || snackStore.snackDetails?.status == null) && (
                                                 <HeaderButton 
                                                     onPress={(e) => {
-                                                        e.stopPropagation() // Prevents card onPress navigation
+                                                        e.stopPropagation()
                                                         deleteSnackFunction(item.id)
                                                     }}
                                                     style={{ marginLeft: 10, padding: 5 }}
@@ -533,7 +530,7 @@ export default function SnackDetailsPage() {
                                 )
                             })
                         ) : (
-                            <EmptyStateContainer>
+                            <EmptyStateContainer theme={colorTheme}>
                                 <Ionicons name="receipt-outline" size={32} color={Colors.color.grey} />
                                 <EmptyStateText>
                                     {t("Nenhum alimento cadastrado para esta refeição.")}
@@ -548,9 +545,8 @@ export default function SnackDetailsPage() {
                         <AddFoodText>{t("Adicionar Alimento")}</AddFoodText>
                     </AddFoodButton>
 
-                    {/* Photo Attachment Container */}
                     {uploadingPhoto ? (
-                        <PhotoUploadContainer disabled>
+                        <PhotoUploadContainer theme={colorTheme} disabled>
                             <ActivityIndicator size="large" color={Colors.color.green} />
                             <PhotoUploadText>{t("Enviando foto...")}</PhotoUploadText>
                         </PhotoUploadContainer>
@@ -564,16 +560,16 @@ export default function SnackDetailsPage() {
                             </RemovePhotoBadge>
                         </MealPhotoWrapper>
                     ) : (
-                        <PhotoUploadContainer onPress={handleAddPhoto}>
+                        <PhotoUploadContainer theme={colorTheme} onPress={handleAddPhoto}>
                             <Ionicons name="camera" size={32} color={Colors.color.green} />
                             <PhotoUploadText>{t("Toque para adicionar uma foto")}</PhotoUploadText>
                         </PhotoUploadContainer>
                     )}
 
-                    {/* Observations */}
                     <ObservationContainer>
-                        <SectionTitle>{t("Observações")}</SectionTitle>
+                        <SectionTitle theme={colorTheme}>{t("Observações")}</SectionTitle>
                         <ObservationInput
+                            theme={colorTheme}
                             multiline
                             placeholder={t("Como você se sentiu após a refeição? Fez alguma substituição?")}
                             placeholderTextColor={Colors.color.grey}
@@ -582,7 +578,6 @@ export default function SnackDetailsPage() {
                         />
                     </ObservationContainer>
 
-                    {/* Save Changes Button */}
                     <ActionButton onPress={handleSave}>
                         <ActionButtonText>{t("Salvar Alterações")}</ActionButtonText>
                     </ActionButton>

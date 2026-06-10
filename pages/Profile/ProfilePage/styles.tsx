@@ -1,9 +1,10 @@
 import { Colors } from "@/constants/Colors";
+import { ColorSchemeName } from "react-native";
 import styled from "styled-components/native";
 
-export const PageContainer = styled.View`
+export const PageContainer = styled.View<{ theme: ColorSchemeName }>`
     flex: 1;
-    background-color: ${Colors.dark.background};
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.background : Colors.dark.background};
 `;
 
 export const ScrollContainer = styled.ScrollView`
@@ -11,31 +12,31 @@ export const ScrollContainer = styled.ScrollView`
     padding-horizontal: 20px;
 `;
 
-export const HeaderContainer = styled.View`
+export const HeaderContainer = styled.View<{ theme: ColorSchemeName }>`
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     padding-vertical: 15px;
     padding-horizontal: 20px;
     border-bottom-width: 1px;
-    border-bottom-color: ${Colors.dark.border};
+    border-bottom-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
 `;
 
-export const HeaderTitle = styled.Text`
+export const HeaderTitle = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 20px;
     font-weight: bold;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
 `;
 
-export const ProfileCard = styled.View`
-    background-color: ${Colors.dark.card};
+export const ProfileCard = styled.View<{ theme: ColorSchemeName }>`
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.card : Colors.dark.card};
     border-radius: 16px;
     padding: 24px;
     align-items: center;
     margin-top: 20px;
     margin-bottom: 20px;
     border-width: 1px;
-    border-color: ${Colors.dark.border};
+    border-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
 `;
 
 export const AvatarWrapper = styled.View`
@@ -68,7 +69,7 @@ export const AvatarFallbackText = styled.Text`
     color: ${Colors.color.green};
 `;
 
-export const CameraBadge = styled.TouchableOpacity`
+export const CameraBadge = styled.TouchableOpacity<{ theme: ColorSchemeName }>`
     position: absolute;
     bottom: 0;
     right: 0;
@@ -79,14 +80,14 @@ export const CameraBadge = styled.TouchableOpacity`
     align-items: center;
     justify-content: center;
     border-width: 2px;
-    border-color: ${Colors.dark.card};
+    border-color: ${(props) => props.theme === 'light' ? Colors.light.card : Colors.dark.card};
     elevation: 3;
 `;
 
-export const NameText = styled.Text`
+export const NameText = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 22px;
     font-weight: bold;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
     text-align: center;
     margin-bottom: 4px;
 `;
@@ -120,10 +121,10 @@ export const SectionHeader = styled.View`
     padding-horizontal: 4px;
 `;
 
-export const SectionTitle = styled.Text`
+export const SectionTitle = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 16px;
     font-weight: bold;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
 `;
 
 export const EditLink = styled.TouchableOpacity`
@@ -138,11 +139,11 @@ export const EditLinkText = styled.Text`
     margin-right: 4px;
 `;
 
-export const InfoListCard = styled.View`
-    background-color: ${Colors.dark.card};
+export const InfoListCard = styled.View<{ theme: ColorSchemeName }>`
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.card : Colors.dark.card};
     border-radius: 16px;
     border-width: 1px;
-    border-color: ${Colors.dark.border};
+    border-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
     overflow: hidden;
     margin-bottom: 25px;
 `;
@@ -154,11 +155,11 @@ export const InfoItemRow = styled.View`
     padding-horizontal: 20px;
 `;
 
-export const InfoIconWrapper = styled.View`
+export const InfoIconWrapper = styled.View<{ theme: ColorSchemeName }>`
     width: 36px;
     height: 36px;
     border-radius: 18px;
-    background-color: #ffffff0a;
+    background-color: ${(props) => props.theme === 'light' ? '#00B38C1A' : '#ffffff0a'};
     align-items: center;
     justify-content: center;
     margin-right: 16px;
@@ -175,9 +176,9 @@ export const InfoLabel = styled.Text`
     text-transform: uppercase;
 `;
 
-export const InfoValue = styled.Text`
+export const InfoValue = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 15px;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
     font-weight: 500;
 `;
 

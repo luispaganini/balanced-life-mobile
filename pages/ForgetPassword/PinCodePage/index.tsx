@@ -19,9 +19,8 @@ import {
 import ButtonComponent from '@/components/application/Forms/ButtonComponent'
 import InputFormComponent from '@/components/application/Inputs/InputFormComponent'
 import { useTranslation } from 'react-i18next'
-import { loginVerifyCPF, generateResetCodeByLogin } from '@/services/login/login'
-import { resetPasswordGenerateCode, verifyPasswordCode } from '@/services/user/user'
-import IUserInterface from '@/interfaces/User/IUserInterface'
+import { generateResetCodeByLogin } from '@/services/login/login'
+import { verifyPasswordCode } from '@/services/user/user'
 import { router } from 'expo-router'
 import useTokenStore from '@/store/TokenStore'
 import { SafeAreaViewComponent } from '@/styles/pages'
@@ -33,7 +32,6 @@ export default function PinCodePage() {
 
     const [step, setStep] = useState<'email' | 'otp'>('email')
     const [emailOrCpf, setEmailOrCpf] = useState('')
-    const [recoveringUser, setRecoveringUser] = useState<IUserInterface | null>(null)
     const [code, setCode] = useState('')
     const [counter, setCounter] = useState(0)
     const [loading, setLoading] = useState(false)

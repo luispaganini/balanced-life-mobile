@@ -1,29 +1,30 @@
 import { Colors } from "@/constants/Colors";
+import { ColorSchemeName } from "react-native";
 import styled from "styled-components/native";
 
-export const PageContainer = styled.View`
+export const PageContainer = styled.View<{ theme: ColorSchemeName }>`
     flex: 1;
-    background-color: ${Colors.dark.background};
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.background : Colors.dark.background};
 `;
 
-export const HeaderContainer = styled.View`
+export const HeaderContainer = styled.View<{ theme: ColorSchemeName }>`
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     padding-vertical: 15px;
     padding-horizontal: 20px;
     border-bottom-width: 1px;
-    border-bottom-color: ${Colors.dark.border};
+    border-bottom-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
 `;
 
 export const HeaderButton = styled.TouchableOpacity`
     padding: 5px;
 `;
 
-export const HeaderTitle = styled.Text`
+export const HeaderTitle = styled.Text<{ theme: ColorSchemeName }>`
     font-size: 18px;
     font-weight: bold;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
 `;
 
 export const ContentPage = styled.View`

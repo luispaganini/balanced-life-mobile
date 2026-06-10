@@ -3,7 +3,7 @@ import { Keyboard, Alert } from 'react-native';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
-import { login, googleLogin, loginVerifyCPF } from '@/services/login/login';
+import { login, googleLogin, getUserMe } from '@/services/login/login';
 import useUserStore from '@/store/UserStore';
 import useTokenStore from '@/store/TokenStore';
 import { signInWithGoogle } from '@/services/auth/googleAuth';
@@ -39,7 +39,7 @@ export function useLoginOne() {
                 setRefreshToken(response.data.refreshToken);
 
                 try {
-                    const userResponse = await loginVerifyCPF(data.email, response.data.accessToken);
+                    const userResponse = await getUserMe();
                     if (userResponse) {
                         setUser(userResponse);
                     }
@@ -63,22 +63,20 @@ export function useLoginOne() {
         try {
             const googleRes = await signInWithGoogle();
             if (googleRes.success && googleRes.idToken) {
-                // Role ID 1 is for Patient/User in mobile client
                 const response = await googleLogin(googleRes.idToken, 1);
                 if (response.status === 200) {
                     setAccessToken(response.data.accessToken);
                     setRefreshToken(response.data.refreshToken);
 
-                    if (googleRes.email) {
-                        try {
-                            const userResponse = await loginVerifyCPF(googleRes.email, response.data.accessToken);
-                            if (userResponse) {
-                                setUser(userResponse);
-                            }
-                        } catch (userError) {
-                            console.log("Failed to fetch user profile for Google email", userError);
+                    try {
+                        const userResponse = await getUserMe();
+                        if (userResponse) {
+                            setUser(userResponse);
                         }
+                    } catch (userError) {
+                        console.log("Failed to fetch user profile for Google email", userError);
                     }
+
                     router.navigate("/");
                 } else {
                     Alert.alert(t('Google Sign-In'), t('Failed to authenticate with Google'));
