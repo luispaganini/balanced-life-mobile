@@ -3,13 +3,14 @@ import React, { useEffect, useState } from 'react'
 import { OtpInput } from 'react-native-otp-entry'
 import { useColorScheme } from '@/hooks/useColorScheme'
 import { Colors } from '@/constants/Colors'
-import { 
-    ButtonContainer, 
-    ContainerPage, 
-    ImageContainer, 
-    ImageItem, 
-    InputContainer, 
-    SendCodeButton, 
+import { StatusBar } from 'expo-status-bar'
+import {
+    ButtonContainer,
+    ContainerPage,
+    ImageContainer,
+    ImageItem,
+    InputContainer,
+    SendCodeButton,
     SendCodeButtonText,
     TitleItem,
     DescriptionText,
@@ -18,7 +19,7 @@ import {
 import ButtonComponent from '@/components/application/Forms/ButtonComponent'
 import InputFormComponent from '@/components/application/Inputs/InputFormComponent'
 import { useTranslation } from 'react-i18next'
-import { loginVerifyCPF } from '@/services/login/login'
+import { loginVerifyCPF, generateResetCodeByLogin } from '@/services/login/login'
 import { resetPasswordGenerateCode, verifyPasswordCode } from '@/services/user/user'
 import IUserInterface from '@/interfaces/User/IUserInterface'
 import { router } from 'expo-router'
@@ -29,7 +30,7 @@ export default function PinCodePage() {
     const colorScheme = useColorScheme()
     const { t } = useTranslation()
     const { setAccessToken, setRefreshToken } = useTokenStore()
-    
+
     const [step, setStep] = useState<'email' | 'otp'>('email')
     const [emailOrCpf, setEmailOrCpf] = useState('')
     const [recoveringUser, setRecoveringUser] = useState<IUserInterface | null>(null)
@@ -47,24 +48,17 @@ export default function PinCodePage() {
 
     const handleVerifyUser = async () => {
         if (!emailOrCpf.trim()) {
-            Alert.alert(t('Error'), t('E-mail or CPF is required'));
+            Alert.alert(t('Error'), t('E-mail is required'));
             return;
         }
         Keyboard.dismiss()
         setLoading(true);
         try {
-            const userRes = await loginVerifyCPF(emailOrCpf);
-            if (userRes && userRes.id) {
-                setRecoveringUser(userRes);
-                // Request code generation
-                const sendRes = await resetPasswordGenerateCode(userRes.id);
-                if (sendRes.status === 200) {
-                    Alert.alert(t('Success'), t('Code sent to your email'));
-                    setCounter(60);
-                    setStep('otp');
-                } else {
-                    Alert.alert(t('Error'), t('Failed to send code'));
-                }
+            const sendRes = await generateResetCodeByLogin(emailOrCpf);
+            if (sendRes.status === 200) {
+                Alert.alert(t('Success'), t('Code sent to your email'));
+                setCounter(60);
+                setStep('otp');
             } else {
                 Alert.alert(t('Error'), t('User not found'));
             }
@@ -77,10 +71,10 @@ export default function PinCodePage() {
     }
 
     const sendCodeAgain = async () => {
-        if (!recoveringUser || !recoveringUser.id) return;
+        if (!emailOrCpf.trim()) return;
         setLoading(true);
         try {
-            const response = await resetPasswordGenerateCode(recoveringUser.id)
+            const response = await generateResetCodeByLogin(emailOrCpf)
             if (response.status === 200) {
                 Alert.alert(t('Success'), t('Code sent to your email'))
                 setCounter(60);
@@ -105,11 +99,11 @@ export default function PinCodePage() {
                 } else {
                     setAccessToken(response.data.accessToken)
                     setRefreshToken(response.data.refreshToken)
-                    
+
                     // Replace to password reset page passing recovering user ID
                     router.replace({
                         pathname: '/new-password',
-                        params: { userId: recoveringUser?.id?.toString() }
+                        params: { userId: response.data.userId.toString() }
                     })
                 }
             } catch (error) {
@@ -124,15 +118,16 @@ export default function PinCodePage() {
     }
 
     return (
-        <SafeAreaViewComponent style={{ backgroundColor: '#111827' }}>
-            <ContainerPage>
+        <SafeAreaViewComponent style={{ backgroundColor: colorScheme === 'light' ? Colors.light.background : Colors.dark.background }}>
+            <StatusBar style={colorScheme === 'light' ? 'dark' : 'light'} />
+            <ContainerPage theme={colorScheme}>
                 <View>
                     <ImageContainer>
                         <ImageItem source={require('@/assets/images/logo.png')} />
                     </ImageContainer>
-                    <TitleItem>{t('Recover my password')}</TitleItem>
+                    <TitleItem theme={colorScheme}>{t('Recover my password')}</TitleItem>
                     <DescriptionText>
-                        {step === 'email' 
+                        {step === 'email'
                             ? t('Insira seu e-mail ou CPF cadastrado para receber o código de recuperação.')
                             : t('Digite o código de 6 dígitos enviado para seu e-mail cadastrado.')
                         }
@@ -144,13 +139,14 @@ export default function PinCodePage() {
                         <View style={{ width: '100%' }}>
                             <InputFormComponent
                                 testID="forgot-email-cpf-input"
-                                placeholder={t("E-mail or CPF")}
-                                onBlur={() => {}}
+                                placeholder={t("E-mail")}
+                                onBlur={() => { }}
                                 onChangeText={(text) => setEmailOrCpf(text)}
                                 value={emailOrCpf}
                                 errors={undefined}
                                 editable={true}
                                 keyboardType="default"
+                                title={true}
                             />
                         </View>
                     ) : (
@@ -165,17 +161,17 @@ export default function PinCodePage() {
                                     Keyboard.dismiss();
                                 }}
                                 theme={{
-                                    pinCodeContainerStyle: { 
+                                    pinCodeContainerStyle: {
                                         borderColor: Colors[colorScheme === 'dark' ? 'dark' : 'light'].border,
-                                        backgroundColor: Colors.dark.card 
+                                        backgroundColor: Colors[colorScheme === 'dark' ? 'dark' : 'light'].card
                                     },
                                     pinCodeTextStyle: { color: Colors[colorScheme === 'dark' ? 'dark' : 'light'].text },
                                 }}
                             />
                             <SendCodeButton onPress={sendCodeAgain} disabled={counter > 0}>
                                 <SendCodeButtonText>
-                                    {counter > 0 
-                                        ? `${t('Reenviar em')} ${counter}s` 
+                                    {counter > 0
+                                        ? `${t('Reenviar em')} ${counter}s`
                                         : t('Send Code Again')
                                     }
                                 </SendCodeButtonText>
@@ -186,33 +182,33 @@ export default function PinCodePage() {
 
                 <ButtonContainer>
                     {step === 'email' ? (
-                        <ButtonComponent 
+                        <ButtonComponent
                             testID="verify-account-button"
-                            title={t("Verify Account")} 
-                            onPress={handleVerifyUser} 
-                            color={Colors.color.green} 
-                            loading={loading} 
+                            title={t("Verify Account")}
+                            onPress={handleVerifyUser}
+                            color={Colors.color.green}
+                            loading={loading}
                         />
                     ) : (
-                        <ButtonComponent 
-                            title={t("Verify Code")} 
-                            onPress={onSubmitCode} 
-                            color={Colors.color.green} 
-                            loading={loading} 
+                        <ButtonComponent
+                            title={t("Verify Code")}
+                            onPress={onSubmitCode}
+                            color={Colors.color.green}
+                            loading={loading}
                         />
                     )}
-                    <ButtonComponent 
+                    <ButtonComponent
                         testID="forgot-back-button"
-                        title={t("Back")} 
+                        title={t("Back")}
                         onPress={() => {
                             if (step === 'otp') {
                                 setStep('email');
                             } else {
                                 router.back();
                             }
-                        }} 
-                        color={Colors.color.blue} 
-                        loading={false} 
+                        }}
+                        color={Colors.color.blue}
+                        loading={false}
                     />
                 </ButtonContainer>
             </ContainerPage>

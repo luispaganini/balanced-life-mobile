@@ -1,22 +1,22 @@
 import { Colors } from "@/constants/Colors";
-import { Dimensions } from "react-native";
+import { Dimensions, ColorSchemeName } from "react-native";
 import styled from "styled-components/native";
 
 const screenWidth = Dimensions.get('window').width;
 
-export const ContainerPage = styled.View`
+export const ContainerPage = styled.View<{ theme?: ColorSchemeName }>`
     flex: 1;
-    background-color: ${Colors.dark.background};
+    background-color: ${(props) => props.theme === "light" ? Colors.light.background : Colors.dark.background};
     justify-content: space-between;
     padding-vertical: 20px;
 `;
 
-export const TitleItem = styled.Text`
+export const TitleItem = styled.Text<{ theme?: ColorSchemeName }>`
     align-self: center;
     margin-bottom: 8px;
     font-size: 24px;
     font-weight: bold;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === "light" ? Colors.light.text : Colors.dark.text};
 `;
 
 export const DescriptionText = styled.Text`

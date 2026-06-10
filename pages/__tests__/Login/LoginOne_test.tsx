@@ -48,7 +48,7 @@ describe('LoginOne Screen', () => {
   it('renders all login fields and buttons', () => {
     const { getByPlaceholderText, getByText } = render(<LoginOne />);
 
-    expect(getByPlaceholderText('E-mail or CPF')).toBeTruthy();
+    expect(getByPlaceholderText('E-mail')).toBeTruthy();
     expect(getByPlaceholderText('Password')).toBeTruthy();
     expect(getByText('I forgot my password')).toBeTruthy();
     expect(getByText('Login')).toBeTruthy();
@@ -61,7 +61,7 @@ describe('LoginOne Screen', () => {
     fireEvent.press(getByText('Login'));
 
     await waitFor(() => {
-      expect(getByText('E-mail or CPF is required')).toBeTruthy();
+      expect(getByText('E-mail is required')).toBeTruthy();
       expect(getByText('Password is required')).toBeTruthy();
     });
   });

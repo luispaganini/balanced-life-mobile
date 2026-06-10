@@ -1,14 +1,15 @@
 import { ThemedText } from "@/components/ThemedText";
 import { Colors } from "@/constants/Colors";
 import { Dimensions } from "react-native";
+import { ColorSchemeName } from "react-native";
 import styled from "styled-components/native";
 
 const screenWidth = Dimensions.get('window').width;
 
-export const ContainerPage = styled.View`
+export const ContainerPage = styled.View<{ theme?: ColorSchemeName }>`
     flex: 1;
     justify-content: space-between;
-    background-color: ${Colors.dark.background};
+    background-color: ${(props) => props.theme === "light" ? Colors.light.background : Colors.dark.background};
     padding-vertical: 20px;
 `;
 
@@ -24,12 +25,12 @@ export const ImageItem = styled.Image`
     resize-mode: contain;
 `;
 
-export const Title = styled(ThemedText)`
+export const Title = styled(ThemedText)<{ theme?: ColorSchemeName }>`
     align-self: center;
     margin-bottom: 20px;
     font-size: 24px;
     font-weight: bold;
-    color: ${Colors.dark.text};
+    color: ${(props) => props.theme === "light" ? Colors.light.text : Colors.dark.text};
 `;
 
 export const FormWrapper = styled.View`
@@ -82,10 +83,10 @@ export const DividerContainer = styled.View`
     margin-bottom: 25px;
 `;
 
-export const DividerLine = styled.View`
+export const DividerLine = styled.View<{ theme?: ColorSchemeName }>`
     flex: 1;
     height: 1px;
-    background-color: ${Colors.dark.border};
+    background-color: ${(props) => props.theme === "light" ? Colors.light.border : Colors.dark.border};
 `;
 
 export const DividerText = styled.Text`
@@ -95,11 +96,11 @@ export const DividerText = styled.Text`
     color: ${Colors.color.grey};
 `;
 
-export const GoogleButton = styled.TouchableOpacity`
+export const GoogleButton = styled.TouchableOpacity<{ theme?: ColorSchemeName }>`
     flex-direction: row;
-    background-color: ${Colors.dark.card};
+    background-color: ${(props) => props.theme === "light" ? Colors.light.card : Colors.dark.card};
     border-width: 1px;
-    border-color: ${Colors.dark.border};
+    border-color: ${(props) => props.theme === "light" ? Colors.light.border : Colors.dark.border};
     padding: 15px;
     border-radius: 12px;
     align-items: center;
@@ -108,8 +109,8 @@ export const GoogleButton = styled.TouchableOpacity`
     align-self: center;
 `;
 
-export const GoogleButtonText = styled.Text`
-    color: ${Colors.dark.text};
+export const GoogleButtonText = styled.Text<{ theme?: ColorSchemeName }>`
+    color: ${(props) => props.theme === "light" ? Colors.light.text : Colors.dark.text};
     font-size: 16px;
     font-weight: bold;
     margin-left: 12px;

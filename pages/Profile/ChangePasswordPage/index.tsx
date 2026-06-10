@@ -1,9 +1,11 @@
 import { View, Keyboard, ScrollView, Alert } from 'react-native'
 import React from 'react'
 import { useTranslation } from 'react-i18next';
+import { StatusBar } from 'expo-status-bar';
 import useUserStore from '@/store/UserStore';
 import { Controller, useForm } from 'react-hook-form';
 import IUserInterface from '@/interfaces/User/IUserInterface';
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { 
     PageContainer, 
     HeaderContainer, 
@@ -34,6 +36,7 @@ export default function ChangePasswordPage() {
     const [loading, setLoading] = React.useState(false)
     const { t } = useTranslation();
     const insets = useSafeAreaInsets();
+    const colorTheme = useColorScheme();
     const { userId: paramUserId } = useLocalSearchParams<{ userId?: string }>();
     const isRecovery = !!paramUserId;
     const { user, setUser } = useUserStore() as { user: IUserInterface | null, setUser: (user: IUserInterface) => void };
@@ -103,13 +106,14 @@ export default function ChangePasswordPage() {
     }
 
     return (
-        <PageContainer style={{ paddingTop: insets.top }}>
+        <PageContainer theme={colorTheme} style={{ paddingTop: insets.top }}>
+            <StatusBar style={colorTheme === 'light' ? 'dark' : 'light'} />
             {/* Header */}
-            <HeaderContainer>
+            <HeaderContainer theme={colorTheme}>
                 <HeaderButton onPress={() => router.back()}>
-                    <Ionicons name="chevron-back" size={26} color={Colors.dark.text} />
+                    <Ionicons name="chevron-back" size={26} color={colorTheme === 'dark' ? Colors.dark.text : Colors.light.text} />
                 </HeaderButton>
-                <HeaderTitle>{isRecovery ? t('Recuperar Senha') : t('Alterar Senha')}</HeaderTitle>
+                <HeaderTitle theme={colorTheme}>{isRecovery ? t('Recuperar Senha') : t('Alterar Senha')}</HeaderTitle>
                 <View style={{ width: 36 }} />
             </HeaderContainer>
 
@@ -118,9 +122,9 @@ export default function ChangePasswordPage() {
             ) : (
                 <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
                     <FormWrapper>
-                        <CardContainer>
+                        <CardContainer theme={colorTheme}>
                             <InputGroup>
-                                <InputLabel>{t('Nova Senha')}</InputLabel>
+                                <InputLabel theme={colorTheme}>{t('Nova Senha')}</InputLabel>
                                 <Controller
                                     control={control}
                                     rules={{
@@ -148,7 +152,7 @@ export default function ChangePasswordPage() {
                             </InputGroup>
 
                             <InputGroup style={{ marginBottom: 0 }}>
-                                <InputLabel>{t('Confirmar Nova Senha')}</InputLabel>
+                                <InputLabel theme={colorTheme}>{t('Confirmar Nova Senha')}</InputLabel>
                                 <Controller
                                     control={control}
                                     rules={{

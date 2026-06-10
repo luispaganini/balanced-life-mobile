@@ -1,4 +1,4 @@
-import { View, Alert } from 'react-native'
+import { View, Alert, ColorSchemeName } from 'react-native'
 import React from 'react'
 import { useTranslation } from 'react-i18next';
 import useUserStore from '@/store/UserStore';
@@ -14,6 +14,7 @@ import { useCreateAccount } from '@/hooks/useCreateAccount';
 import IFormCreateAccountValues from '@/interfaces/App/Form/IFormCreateAccountValues';
 import { signInWithGoogle } from '@/services/auth/googleAuth';
 import { googleLogin, loginVerifyCPF } from '@/services/login/login';
+import { useColorScheme } from '@/hooks/useColorScheme';
 
 import styled from 'styled-components/native';
 import { AntDesign } from '@expo/vector-icons';
@@ -26,10 +27,10 @@ const DividerContainer = styled.View`
     margin-bottom: 20px;
 `;
 
-const DividerLine = styled.View`
+const DividerLine = styled.View<{ theme?: ColorSchemeName }>`
     flex: 1;
     height: 1px;
-    background-color: ${Colors.dark.border};
+    background-color: ${(props) => props.theme === "light" ? Colors.light.border : Colors.dark.border};
 `;
 
 const DividerText = styled.Text`
@@ -38,11 +39,11 @@ const DividerText = styled.Text`
     color: ${Colors.color.grey};
 `;
 
-const GoogleButton = styled.TouchableOpacity`
+const GoogleButton = styled.TouchableOpacity<{ theme?: ColorSchemeName }>`
     flex-direction: row;
-    background-color: ${Colors.dark.card};
+    background-color: ${(props) => props.theme === "light" ? Colors.light.card : Colors.dark.card};
     border-width: 1px;
-    border-color: ${Colors.dark.border};
+    border-color: ${(props) => props.theme === "light" ? Colors.light.border : Colors.dark.border};
     padding: 14px;
     border-radius: 12px;
     align-items: center;
@@ -51,8 +52,8 @@ const GoogleButton = styled.TouchableOpacity`
     margin-bottom: 15px;
 `;
 
-const GoogleButtonText = styled.Text`
-    color: ${Colors.dark.text};
+const GoogleButtonText = styled.Text<{ theme?: ColorSchemeName }>`
+    color: ${(props) => props.theme === "light" ? Colors.light.text : Colors.dark.text};
     font-size: 16px;
     font-weight: bold;
     margin-left: 10px;
@@ -65,6 +66,7 @@ type CreateAccountFormProps = {
 
 export default function CreateAccountForm(props: CreateAccountFormProps) {
     const { t } = useTranslation();
+    const colorScheme = useColorScheme();
     const { setUser } = useUserStore();
     const { setAccessToken, setRefreshToken } = useTokenStore();
     const { loading, submitAccount } = useCreateAccount();
@@ -82,7 +84,7 @@ export default function CreateAccountForm(props: CreateAccountFormProps) {
 
                     if (googleRes.email) {
                         try {
-                            const userResponse = await loginVerifyCPF(googleRes.email)
+                            const userResponse = await loginVerifyCPF(googleRes.email, response.data.accessToken)
                             if (userResponse) {
                                 setUser(userResponse)
                             }
@@ -160,14 +162,14 @@ export default function CreateAccountForm(props: CreateAccountFormProps) {
                 <ButtonComponent onPress={handleSubmit(onSubmit)} title="Create Account" color={Colors.color.green} loading={loading} testID='create-account-button' />
 
                 <DividerContainer>
-                    <DividerLine />
+                    <DividerLine theme={colorScheme} />
                     <DividerText>{t('OU')}</DividerText>
-                    <DividerLine />
+                    <DividerLine theme={colorScheme} />
                 </DividerContainer>
 
-                <GoogleButton onPress={handleGoogleSignUp}>
+                <GoogleButton theme={colorScheme} onPress={handleGoogleSignUp}>
                     <AntDesign name="google" size={20} color="#DB4437" />
-                    <GoogleButtonText>{t('Cadastrar com o Google')}</GoogleButtonText>
+                    <GoogleButtonText theme={colorScheme}>{t('Cadastrar com o Google')}</GoogleButtonText>
                 </GoogleButton>
 
                 <ButtonComponent onPress={() => router.back()} title="Back" color={Colors.color.blue} />
