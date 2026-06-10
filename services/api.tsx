@@ -10,34 +10,6 @@ const api = axios.create({
     baseURL: process.env.EXPO_PUBLIC_API_URL || appConfig.application.uris.api,
 });
 
-api.interceptors.request.use((config) => {
-    const { accessToken } = useTokenStore.getState();
-
-    config.headers.Authorization = `Bearer ${accessToken}`;
-    return config;
-});
-
-api.interceptors.response.use(response => response, async (error) => {
-    const originalRequest = error.config;
-    const isAuthRequest = originalRequest.url?.includes('/login');
-    if (error.response && error.response.status === 401 && !isAuthRequest && !originalRequest._retry) {
-        originalRequest._retry = true;
-        try {
-            await setupTokenRefresh();
-            const { accessToken } = useTokenStore.getState();
-            if (!accessToken) {
-                return Promise.reject(error);
-            }
-            axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-            originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
-            return api(originalRequest);
-        } catch (refreshError) {
-            return Promise.reject(refreshError);
-        }
-    }
-    return Promise.reject(error);
-});
-
 api.interceptors.request.use(
     async (config) => {
         const networkState = await Network.getNetworkStateAsync();
@@ -50,12 +22,38 @@ api.interceptors.request.use(
             throw new axios.Cancel('Sem conexão com a internet');
         }
 
+        const { accessToken } = useTokenStore.getState();
+        if (accessToken) {
+            config.headers.Authorization = `Bearer ${accessToken}`;
+        }
+
         return config;
     },
     (error) => {
         return Promise.reject(error);
     }
 );
+
+api.interceptors.response.use(response => response, async (error) => {
+    const originalRequest = error.config;
+    const isAuthRequest = originalRequest.url?.includes('/login');
+    if (error.response && error.response.status === 401 && !isAuthRequest && !originalRequest._retry) {
+        originalRequest._retry = true;
+        try {
+            await setupTokenRefresh();
+            const { accessToken } = useTokenStore.getState();
+            if (!accessToken) {
+                return Promise.reject(error);
+            }
+            api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+            originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+            return api(originalRequest);
+        } catch (refreshError) {
+            return Promise.reject(refreshError);
+        }
+    }
+    return Promise.reject(error);
+});
 
 
 export default api;

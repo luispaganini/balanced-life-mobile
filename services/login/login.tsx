@@ -3,7 +3,7 @@ import api from '../api'
 import IUserInterface from '@/interfaces/User/IUserInterface'
 
 export async function getUserMe(): Promise<IUserInterface> {
-    const response = await api.get('/login/verify')
+    const response = await api.get('/user/me')
 
     return response.data
 }
