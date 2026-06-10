@@ -12,6 +12,7 @@
       "distribution": "internal"
     },
     "production": {
+      "autoIncrement": true,
       "env": {
         "EXPO_PUBLIC_API_URL": "https://balancedlifeapi20250317210846-faacg5fsh6fge8ft.eastus-01.azurewebsites.net/api",
         "EXPO_PUBLIC_GOOGLE_CLIENT_ID": "502500056574-j3pjpci1acb1imjgs3bo9gju2mvipsjl.apps.googleusercontent.com"
