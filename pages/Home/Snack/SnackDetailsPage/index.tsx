@@ -1,23 +1,16 @@
-import { View, ScrollView, Animated, Alert, TextInput, Image, ActivityIndicator, TouchableOpacity } from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
-import { router, useLocalSearchParams, Stack } from 'expo-router'
-import { Ionicons } from '@expo/vector-icons'
-import Svg, { Circle } from 'react-native-svg'
-import { useTranslation } from 'react-i18next'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Colors } from '@/constants/Colors'
-import { useColorScheme } from '@/hooks/useColorScheme'
-import { getSnackDetailsAsync, deleteSnack, sendSnack } from '@/services/snack/snack'
-import { uploadMealPicture, deleteMealPicture } from '@/services/user/user'
-import { useSnackStore } from '@/store/SnackStore'
-import StatusMeal from '@/enums/StatusMeal'
-import * as ImagePicker from 'expo-image-picker'
+import { View, ScrollView, Animated, Alert, TextInput, Image, ActivityIndicator, TouchableOpacity, Text } from 'react-native';
+import React from 'react';
+import { router, Stack } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import Svg, { Circle } from 'react-native-svg';
+import { Colors } from '@/constants/Colors';
+import StatusMeal from '@/enums/StatusMeal';
+import { useSnackDetails } from './hooks/useSnackDetails';
 import {
     PageContainer,
     HeaderContainer,
     HeaderButton,
     HeaderTitle,
-    HeaderActionText,
     CenterProgressWrapper,
     CircularProgressInner,
     CalorieValue,
@@ -53,227 +46,67 @@ import {
     ScrollContainer,
     MealPhotoWrapper,
     MealPhotoImage,
-    RemovePhotoBadge
-} from './styles'
+    RemovePhotoBadge,
+    SubstitutesContainer,
+    SubstituteRow,
+    SubstituteLeft,
+    SubstituteTextColumn,
+    SubstituteNameText,
+    SubstituteDescText,
+    SubstituteCal
+} from './styles';
 
 export default function SnackDetailsPage() {
-    const { idMeal, idTypeSnack } = useLocalSearchParams()
-    const snackStore = useSnackStore()
-    const { t } = useTranslation()
-    const insets = useSafeAreaInsets()
-    const colorTheme = useColorScheme()
-    const [loading, setLoading] = useState(false)
-    const [uploadingPhoto, setUploadingPhoto] = useState(false)
-    const [localPhotoUri, setLocalPhotoUri] = useState<string | null>(null)
-    const [photoRemoved, setPhotoRemoved] = useState(false)
+    const {
+        idMeal,
+        idTypeSnack,
+        snackStore,
+        t,
+        insets,
+        colorTheme,
+        loading,
+        uploadingPhoto,
+        displayPhotoUri,
+        pulseAnim,
+        selectedSubstitutions,
+        setSelectedSubstitutions,
+        showModalForSnack,
+        setShowModalForSnack,
+        handleSave,
+        deleteSnackFunction,
+        handleAddPhoto,
+        calculateTotals,
+    } = useSnackDetails();
 
-    const pulseAnim = useRef(new Animated.Value(0.4)).current
-
-    useEffect(() => {
-        loadData()
-    }, [])
-
-    useEffect(() => {
-        if (loading) {
-            Animated.loop(
-                Animated.sequence([
-                    Animated.timing(pulseAnim, {
-                        toValue: 0.8,
-                        duration: 850,
-                        useNativeDriver: true,
-                    }),
-                    Animated.timing(pulseAnim, {
-                        toValue: 0.4,
-                        duration: 850,
-                        useNativeDriver: true,
-                    })
-                ])
-            ).start()
-        } else {
-            pulseAnim.setValue(0.4)
-        }
-    }, [loading])
-
-    const loadData = async () => {
-        setLoading(true)
-        try {
-            const snacksDetails = await getSnackDetailsAsync(parseInt(idMeal as string), parseInt(idTypeSnack as string))
-            snackStore.setSnackDetails(snacksDetails)
-            // Sync localPhotoUri from server so previously-saved photos show on mount
-            if (snacksDetails.urlImage) {
-                setLocalPhotoUri(snacksDetails.urlImage)
-            } else {
-                setLocalPhotoUri(null)
-            }
-            setPhotoRemoved(false)
-        } catch (error) {
-            console.error("Failed to load snack details:", error)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const deleteSnackFunction = async (idSnack: number) => {
-        Alert.alert(
-            t("Remover Alimento"),
-            t("Deseja realmente remover este alimento?"),
-            [
-                { text: t("Cancelar"), style: "cancel" },
-                {
-                    text: t("Remover"),
-                    style: "destructive",
-                    onPress: async () => {
-                        try {
-                            await deleteSnack(idSnack)
-                            snackStore.deleteSnackFromDetails(idSnack)
-                            loadData()
-                        } catch (error) {
-                            console.error(error)
-                        }
-                    }
-                }
-            ]
-        )
-    }
-
-    // Derive the URI to display — prefer the locally-picked/loaded URI
-    const displayPhotoUri = photoRemoved ? null : (localPhotoUri || snackStore.snackDetails?.urlImage || null)
-
-    // True when there is a locally-selected NEW file that hasn't been uploaded yet
-    const hasLocalNewPhoto = !photoRemoved && !!localPhotoUri && localPhotoUri !== snackStore.snackDetails?.urlImage
-
-    const handleSave = async () => {
-        setUploadingPhoto(true);
-        try {
-            if (photoRemoved) {
-                await deleteMealPicture(parseInt(idMeal as string));
-                if (snackStore.snackDetails) {
-                    snackStore.setSnackDetails({
-                        ...snackStore.snackDetails,
-                        urlImage: undefined
-                    });
-                }
-                setLocalPhotoUri(null);
-            } else if (hasLocalNewPhoto && localPhotoUri) {
-                const uploadResult = await uploadMealPicture(parseInt(idMeal as string), localPhotoUri);
-                if (uploadResult && uploadResult.url) {
-                    setLocalPhotoUri(uploadResult.url);
-                    if (snackStore.snackDetails) {
-                        snackStore.setSnackDetails({
-                            ...snackStore.snackDetails,
-                            urlImage: uploadResult.url
-                        });
-                    }
-                } else {
-                    Alert.alert(t("Erro"), t("Falha ao salvar imagem da refeição."));
-                    setUploadingPhoto(false);
-                    return;
-                }
-            }
-
-            await sendSnack(
-                snackStore.snackDetails?.status ?? StatusMeal.Finished,
-                snackStore.snackDetails?.observation ?? '',
-                parseInt(idMeal as string)
-            )
-            setPhotoRemoved(false);
-            Alert.alert(t("Sucesso"), t("Refeição salva com sucesso!"))
-            router.navigate('/')
-        } catch (error) {
-            console.error(error)
-            Alert.alert(t("Erro"), t("Falha ao salvar as alterações."))
-        } finally {
-            setUploadingPhoto(false);
-        }
-    }
-
-    const handleAddPhoto = () => {
-        const options: any[] = [
-            {
-                text: t("Tirar Foto"),
-                onPress: () => processMealImageSelection(true),
-            },
-            {
-                text: t("Escolher da Galeria"),
-                onPress: () => processMealImageSelection(false),
-            },
-        ];
-
-        // Show "Remover Foto" if there is any displayed photo (local or from server)
-        if (displayPhotoUri) {
-            options.push({
-                text: t("Remover Foto"),
-                onPress: () => {
-                    setLocalPhotoUri(null);
-                    setPhotoRemoved(true);
-                    if (snackStore.snackDetails) {
-                        snackStore.setSnackDetails({
-                            ...snackStore.snackDetails,
-                            urlImage: undefined
-                        });
-                    }
-                },
-            });
-        }
-
-        options.push({
-            text: t("Cancelar"),
-            style: "cancel" as any,
-            onPress: () => {}
-        });
-
-        Alert.alert(
-            t("Selecionar Foto"),
-            t("Escolha como deseja obter a foto da refeição:"),
-            options
-        );
+    const formatMealTime = (dateStr?: string) => {
+        if (!dateStr) return "";
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return "";
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
     };
 
-    const processMealImageSelection = async (useCamera: boolean) => {
-        try {
-            let status = "";
-            if (useCamera) {
-                const permission = await ImagePicker.requestCameraPermissionsAsync();
-                status = permission.status;
-            } else {
-                const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-                status = permission.status;
-            }
+    const mealTime = formatMealTime(snackStore.snackDetails?.appointment);
+    const mealName = snackStore.snackDetails?.typeSnack?.name ?? t("Refeição");
+    const titleText = mealTime ? `${mealName} - ${mealTime}` : mealName;
 
-            if (status !== "granted") {
-                Alert.alert(
-                    t("Permissão necessária"),
-                    useCamera
-                        ? t("Precisamos de permissão para acessar sua câmera.")
-                        : t("Precisamos de permissão para acessar sua galeria.")
-                );
-                return;
-            }
+    const { calories, carbohydrates, protein, fat } = calculateTotals();
 
-            const pickerOptions: ImagePicker.ImagePickerOptions = {
-                mediaTypes: ["images"],
-                allowsEditing: true,
-                aspect: [4, 3],
-                quality: 0.7, // Compress quality (70%)
-            };
+    const goalCalories = 800;
+    const size = 160;
+    const strokeWidth = 10;
+    const radius = (size - strokeWidth) / 2;
+    const circumference = 2 * Math.PI * radius;
+    const progress = Math.min(calories / goalCalories, 1.0);
+    const strokeDashoffset = circumference * (1 - progress);
 
-            const result = useCamera
-                ? await ImagePicker.launchCameraAsync(pickerOptions)
-                : await ImagePicker.launchImageLibraryAsync(pickerOptions);
+    const protPercent = Math.min((protein / 50) * 100, 100);
+    const carbPercent = Math.min((carbohydrates / 100) * 100, 100);
+    const fatPercent = Math.min((fat / 30) * 100, 100);
 
-            if (!result.canceled && result.assets && result.assets.length > 0) {
-                const pickedUri = result.assets[0].uri;
-                setLocalPhotoUri(pickedUri);
-                setPhotoRemoved(false);
-                // Note: do NOT update store.urlImage with the local URI.
-                // displayPhotoUri is derived from localPhotoUri so the preview works automatically.
-                // The store.urlImage only holds the remote URL (set after successful upload).
-            }
-        } catch (error) {
-            console.error(error);
-            Alert.alert(t("Erro"), t("Falha ao obter imagem."));
-        }
-    };
+    const snacksList = snackStore.snackDetails?.snacks ?? [];
+    const mainSnacks = snacksList.filter((item) => !item.isSubstitute);
 
     const SkeletonItem = ({ width, height, borderRadius = 8, style }: { width: any, height: any, borderRadius?: number, style?: any }) => (
         <Animated.View
@@ -288,42 +121,7 @@ export default function SnackDetailsPage() {
                 style,
             ]}
         />
-    )
-
-    // Parse time from appointment or typeSnack name
-    const formatMealTime = (dateStr?: string) => {
-        if (!dateStr) return ""
-        const date = new Date(dateStr)
-        if (isNaN(date.getTime())) return ""
-        const hours = date.getHours().toString().padStart(2, '0')
-        const minutes = date.getMinutes().toString().padStart(2, '0')
-        return `${hours}:${minutes}`
-    }
-
-    const mealTime = formatMealTime(snackStore.snackDetails?.appointment)
-    const mealName = snackStore.snackDetails?.typeSnack?.name ?? t("Refeição")
-    const titleText = mealTime ? `${mealName} - ${mealTime}` : mealName
-
-    // Circular Progress settings
-    const currentCalories = snackStore.snackDetails?.calories ?? 0
-    const goalCalories = 800 // Default reference target for visual progress circle
-    const size = 160
-    const strokeWidth = 10
-    const radius = (size - strokeWidth) / 2
-    const circumference = 2 * Math.PI * radius
-    const progress = Math.min(currentCalories / goalCalories, 1.0)
-    const strokeDashoffset = circumference * (1 - progress)
-
-    // Macro goals for visual underlines
-    const protValue = snackStore.snackDetails?.protein ?? 0
-    const carbValue = snackStore.snackDetails?.carbohydrates ?? 0
-    const fatValue = snackStore.snackDetails?.fat ?? 0
-
-    const protPercent = Math.min((protValue / 50) * 100, 100)
-    const carbPercent = Math.min((carbValue / 100) * 100, 100)
-    const fatPercent = Math.min((fatValue / 30) * 100, 100)
-
-    const snacksList = snackStore.snackDetails?.snacks ?? []
+    );
 
     return (
         <PageContainer theme={colorTheme} style={{ paddingTop: insets.top }}>
@@ -339,7 +137,6 @@ export default function SnackDetailsPage() {
 
             {loading ? (
                 <ScrollView contentContainerStyle={{ padding: 20 }}>
-                    {/* Skeleton Loading State */}
                     <CenterProgressWrapper>
                         <SkeletonItem width={160} height={160} borderRadius={80} />
                     </CenterProgressWrapper>
@@ -394,7 +191,7 @@ export default function SnackDetailsPage() {
                         </Svg>
                         <CircularProgressInner>
                             <Ionicons name="flame" size={30} color={Colors.color.green} />
-                            <CalorieValue theme={colorTheme}>{currentCalories}</CalorieValue>
+                            <CalorieValue theme={colorTheme}>{calories}</CalorieValue>
                             <CalorieLabel>Kcal</CalorieLabel>
                         </CircularProgressInner>
                     </CenterProgressWrapper>
@@ -405,7 +202,7 @@ export default function SnackDetailsPage() {
                                 <MacroDot color={Colors.color.blue} />
                                 <MacroLabel>{t("Proteína")}</MacroLabel>
                             </MacroLabelRow>
-                            <MacroValueText theme={colorTheme}>{Math.round(protValue)}g</MacroValueText>
+                            <MacroValueText theme={colorTheme}>{protein}g</MacroValueText>
                             <MacroProgressLine theme={colorTheme}>
                                 <MacroProgressFill color={Colors.color.blue} width={protPercent} />
                             </MacroProgressLine>
@@ -416,7 +213,7 @@ export default function SnackDetailsPage() {
                                 <MacroDot color={Colors.color.green} />
                                 <MacroLabel>{t("Carb.")}</MacroLabel>
                             </MacroLabelRow>
-                            <MacroValueText theme={colorTheme}>{Math.round(carbValue)}g</MacroValueText>
+                            <MacroValueText theme={colorTheme}>{carbohydrates}g</MacroValueText>
                             <MacroProgressLine theme={colorTheme}>
                                 <MacroProgressFill color={Colors.color.green} width={carbPercent} />
                             </MacroProgressLine>
@@ -427,7 +224,7 @@ export default function SnackDetailsPage() {
                                 <MacroDot color={Colors.color.orange} />
                                 <MacroLabel>{t("Gordura")}</MacroLabel>
                             </MacroLabelRow>
-                            <MacroValueText theme={colorTheme}>{Math.round(fatValue)}g</MacroValueText>
+                            <MacroValueText theme={colorTheme}>{fat}g</MacroValueText>
                             <MacroProgressLine theme={colorTheme}>
                                 <MacroProgressFill color={Colors.color.orange} width={fatPercent} />
                             </MacroProgressLine>
@@ -436,98 +233,190 @@ export default function SnackDetailsPage() {
 
                     <SectionTitle theme={colorTheme}>{t("Alimentos Consumidos")}</SectionTitle>
                     <FoodListContainer>
-                        {snacksList.length > 0 ? (
-                            snacksList.map((item, index) => {
-                                const energyInfo = item.food.foodNutritionInfo?.find(
+                        {mainSnacks.length > 0 ? (
+                            mainSnacks.map((item) => {
+                                const activeItem = selectedSubstitutions[item.id] || item;
+                                const allOptions = [item, ...(item.substitutions ?? [])];
+                                const alternativeOptions = allOptions.filter(opt => opt.id !== activeItem.id);
+                                const hasSubstitutions = alternativeOptions.length > 0;
+
+                                const energyInfo = activeItem.food.foodNutritionInfo?.find(
                                     (info: any) =>
                                         info.nutritionalComposition?.item?.toLowerCase() === "energia" ||
                                         info.idNutritionalCompositionNavigation?.item?.toLowerCase() === "energia"
-                                )
-                                const baseCalories = energyInfo?.quantity ?? 0
+                                );
+                                const baseCalories = energyInfo?.quantity ?? 0;
                                 
-                                const unitName = item.unitMeasurement?.name
-                                let quantityInGrams = item.quantity
+                                const unitName = activeItem.unitMeasurement?.name;
+                                let quantityInGrams = activeItem.quantity;
                                 if (unitName) {
                                     switch (unitName.toLowerCase()) {
                                         case "g":
-                                            quantityInGrams = item.quantity
-                                            break
+                                            quantityInGrams = activeItem.quantity;
+                                            break;
                                         case "mg":
-                                            quantityInGrams = item.quantity * 0.001
-                                            break
+                                            quantityInGrams = activeItem.quantity * 0.001;
+                                            break;
                                         case "kg":
-                                            quantityInGrams = item.quantity * 1000
-                                            break
-                                        case "µg":
+                                            quantityInGrams = activeItem.quantity * 1000;
+                                            break;
                                         case "mcg":
-                                            quantityInGrams = item.quantity * 1e-6
-                                            break
-                                        case "ng":
-                                            quantityInGrams = item.quantity * 1e-9
-                                            break
+                                        case "µg":
+                                            quantityInGrams = activeItem.quantity * 1e-6;
+                                            break;
                                         case "dg":
-                                            quantityInGrams = item.quantity * 0.1
-                                            break
+                                            quantityInGrams = activeItem.quantity * 0.1;
+                                            break;
                                         case "hg":
-                                            quantityInGrams = item.quantity * 100
-                                            break
+                                            quantityInGrams = activeItem.quantity * 100;
+                                            break;
                                         case "oz":
-                                            quantityInGrams = item.quantity * 28.3495
-                                            break
+                                            quantityInGrams = activeItem.quantity * 28.3495;
+                                            break;
                                         default:
-                                            quantityInGrams = item.quantity
-                                            break
+                                            quantityInGrams = activeItem.quantity;
+                                            break;
                                     }
                                 }
-                                const itemCalories = Math.round((baseCalories * quantityInGrams) / 100)
+                                const itemCalories = Math.round((baseCalories * quantityInGrams) / 100);
 
                                 return (
-                                    <FoodCard
-                                        theme={colorTheme}
-                                        key={item.id}
-                                        onPress={() => {
-                                            router.push({
-                                                pathname: "/snack/food/[idMeal]/[idTypeSnack]/[idFood]",
-                                                params: {
-                                                    idMeal: idMeal as string,
-                                                    idTypeSnack: idTypeSnack as string,
-                                                    idFood: item.food.id.toString(),
-                                                    idSnack: item.id.toString(),
-                                                    quantitySnack: item.quantity.toString(),
-                                                    idUnitMeasurement: item.unitMeasurement.id.toString()
-                                                }
-                                            })
-                                        }}
-                                    >
-                                        <FoodIconContainer>
-                                            <Ionicons name="restaurant-outline" size={20} color={Colors.color.green} />
-                                        </FoodIconContainer>
-                                        
-                                        <FoodTextColumn>
-                                            <FoodNameText theme={colorTheme} numberOfLines={1}>{item.food.name}</FoodNameText>
-                                            <FoodDescText>{item.quantity} {item.unitMeasurement.name}</FoodDescText>
-                                        </FoodTextColumn>
+                                    <React.Fragment key={item.id}>
+                                        <FoodCard
+                                            theme={colorTheme}
+                                            $hasSubstitutions={hasSubstitutions}
+                                            onPress={() => {
+                                                router.push({
+                                                    pathname: "/snack/food/[idMeal]/[idTypeSnack]/[idFood]",
+                                                    params: {
+                                                        idMeal: idMeal as string,
+                                                        idTypeSnack: idTypeSnack as string,
+                                                        idFood: activeItem.food.id.toString(),
+                                                        idSnack: activeItem.id.toString(),
+                                                        quantitySnack: activeItem.quantity.toString(),
+                                                        idUnitMeasurement: activeItem.unitMeasurement.id.toString()
+                                                    }
+                                                });
+                                            }}
+                                        >
+                                            <FoodIconContainer>
+                                                <Ionicons name="restaurant-outline" size={20} color={Colors.color.green} />
+                                            </FoodIconContainer>
+                                            
+                                            <FoodTextColumn>
+                                                <FoodNameText theme={colorTheme} numberOfLines={1}>
+                                                    {activeItem.food.name}
+                                                </FoodNameText>
+                                                <FoodDescText>{activeItem.quantity} {activeItem.unitMeasurement.name}</FoodDescText>
+                                                {activeItem.id !== item.id && (
+                                                    <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 2 }}>
+                                                        <Ionicons name="swap-horizontal" size={12} color={Colors.color.orange} style={{ marginRight: 4 }} />
+                                                        <Text style={{ fontSize: 11, color: Colors.color.orange, fontWeight: '600' }}>
+                                                            {t("Substituído")}
+                                                        </Text>
+                                                    </View>
+                                                )}
+                                            </FoodTextColumn>
 
-                                        <>
-                                            <FoodCalorieContainer>
-                                                <FoodCalorieText theme={colorTheme}>{itemCalories}</FoodCalorieText>
-                                                <FoodCalorieLabel>kcal</FoodCalorieLabel>
-                                            </FoodCalorieContainer>
-                                            {(snackStore.snackDetails?.status === StatusMeal.NotAwnsered || snackStore.snackDetails?.status == null) && (
-                                                <HeaderButton 
-                                                    onPress={(e) => {
-                                                        e.stopPropagation()
-                                                        deleteSnackFunction(item.id)
-                                                    }}
-                                                    style={{ marginLeft: 10, padding: 5 }}
-                                                >
-                                                    <Ionicons name="trash-outline" size={20} color={Colors.color.red} />
-                                                </HeaderButton>
-                                            )}
-                                            <Ionicons name="chevron-forward" size={16} color={Colors.color.grey} style={{ marginLeft: 5 }} />
-                                        </>
-                                    </FoodCard>
-                                )
+                                            <>
+                                                <FoodCalorieContainer>
+                                                    <FoodCalorieText theme={colorTheme}>{itemCalories}</FoodCalorieText>
+                                                    <FoodCalorieLabel>kcal</FoodCalorieLabel>
+                                                </FoodCalorieContainer>
+
+                                                {(snackStore.snackDetails?.status === StatusMeal.NotAwnsered || snackStore.snackDetails?.status == null) && (
+                                                    <HeaderButton 
+                                                        onPress={(e) => {
+                                                            e?.stopPropagation();
+                                                            deleteSnackFunction(item.id);
+                                                        }}
+                                                        style={{ marginLeft: 10, padding: 5 }}
+                                                    >
+                                                        <Ionicons name="trash-outline" size={20} color={Colors.color.red} />
+                                                    </HeaderButton>
+                                                )}
+                                                <Ionicons name="chevron-forward" size={16} color={Colors.color.grey} style={{ marginLeft: 5 }} />
+                                            </>
+                                        </FoodCard>
+
+                                        {hasSubstitutions && (
+                                            <SubstitutesContainer>
+                                                {alternativeOptions.map((alt, index) => {
+                                                    const altEnergyInfo = alt.food.foodNutritionInfo?.find(
+                                                        (info: any) =>
+                                                            info.nutritionalComposition?.item?.toLowerCase() === "energia" ||
+                                                            info.idNutritionalCompositionNavigation?.item?.toLowerCase() === "energia"
+                                                    );
+                                                    const altBaseCalories = altEnergyInfo?.quantity ?? 0;
+                                                    
+                                                    const altUnitName = alt.unitMeasurement?.name;
+                                                    let altQuantityInGrams = alt.quantity;
+                                                    if (altUnitName) {
+                                                        switch (altUnitName.toLowerCase()) {
+                                                            case "g":
+                                                                altQuantityInGrams = alt.quantity;
+                                                                break;
+                                                            case "mg":
+                                                                altQuantityInGrams = alt.quantity * 0.001;
+                                                                break;
+                                                            case "kg":
+                                                                altQuantityInGrams = alt.quantity * 1000;
+                                                                break;
+                                                            case "mcg":
+                                                            case "µg":
+                                                                altQuantityInGrams = alt.quantity * 1e-6;
+                                                                break;
+                                                            case "dg":
+                                                                altQuantityInGrams = alt.quantity * 0.1;
+                                                                break;
+                                                            case "hg":
+                                                                altQuantityInGrams = alt.quantity * 100;
+                                                                break;
+                                                            case "oz":
+                                                                altQuantityInGrams = alt.quantity * 28.3495;
+                                                                break;
+                                                            default:
+                                                                altQuantityInGrams = alt.quantity;
+                                                                break;
+                                                        }
+                                                    }
+                                                    const altCalories = Math.round((altBaseCalories * altQuantityInGrams) / 100);
+                                                    const isLast = index === alternativeOptions.length - 1;
+
+                                                    return (
+                                                        <SubstituteRow
+                                                            key={alt.id}
+                                                            theme={colorTheme}
+                                                            $isLast={isLast}
+                                                            onPress={() => {
+                                                                setSelectedSubstitutions(prev => ({
+                                                                    ...prev,
+                                                                    [item.id]: alt
+                                                                }));
+                                                            }}
+                                                        >
+                                                            <SubstituteLeft>
+                                                                <Ionicons name="swap-horizontal" size={16} color={colorTheme === 'light' ? '#16A34A' : '#4ADE80'} />
+                                                                <SubstituteTextColumn>
+                                                                    <SubstituteNameText theme={colorTheme}>
+                                                                        {alt.food.name}
+                                                                    </SubstituteNameText>
+                                                                    <SubstituteDescText>
+                                                                        {alt.quantity} {alt.unitMeasurement.name}
+                                                                    </SubstituteDescText>
+                                                                </SubstituteTextColumn>
+                                                            </SubstituteLeft>
+                                                            <SubstituteCal theme={colorTheme}>
+                                                                {altCalories} kcal
+                                                            </SubstituteCal>
+                                                            <Ionicons name="chevron-forward" size={14} color={colorTheme === 'light' ? '#16A34A' : '#4ADE80'} />
+                                                        </SubstituteRow>
+                                                    );
+                                                })}
+                                            </SubstitutesContainer>
+                                        )}
+                                    </React.Fragment>
+                                );
                             })
                         ) : (
                             <EmptyStateContainer theme={colorTheme}>
@@ -539,7 +428,6 @@ export default function SnackDetailsPage() {
                         )}
                     </FoodListContainer>
 
-                    {/* Add Food Button */}
                     <AddFoodButton onPress={() => router.navigate(`/snack/food/${idMeal}/${idTypeSnack}/search-food`)}>
                         <Ionicons name="add-circle" size={20} color={Colors.color.green} />
                         <AddFoodText>{t("Adicionar Alimento")}</AddFoodText>
@@ -584,5 +472,5 @@ export default function SnackDetailsPage() {
                 </ScrollContainer>
             )}
         </PageContainer>
-    )
+    );
 }

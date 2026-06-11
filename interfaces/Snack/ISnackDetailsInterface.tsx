@@ -29,6 +29,8 @@ export interface Snack {
     quantity: number
     unitMeasurement: UnitMeasurement
     food: Food
+    isSubstitute?: boolean
+    substitutions?: Snack[]
 }
 
 export interface UnitMeasurement {

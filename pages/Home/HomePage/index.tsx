@@ -68,7 +68,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { Colors } from '@/constants/Colors';
 import { setupTokenRefresh } from '@/services/login/refreshToken';
-import { Alert, ScrollView, View, ActivityIndicator, Modal, TextInput, TouchableWithoutFeedback } from 'react-native';
+import { Alert, ScrollView, View, ActivityIndicator, Modal, TextInput, TouchableWithoutFeedback, RefreshControl } from 'react-native';
 import useUserStore from '@/store/UserStore';
 import { useSnackStore } from '@/store/SnackStore';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -92,6 +92,7 @@ export default function HomePage() {
     const [actionLoadingId, setActionLoadingId] = useState<number | null>(null);
     const [showDatePicker, setShowDatePicker] = useState(false);
     const insets = useSafeAreaInsets();
+    const [refreshing, setRefreshing] = useState(false);
 
     const { nutritionistSelected, setNutritionistSelected } = useNutritionistStore();
 
@@ -144,6 +145,18 @@ export default function HomePage() {
             snackStore.setLoading(false);
         }
     };
+
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        try {
+            const data = await getSnackAsync(snackStore.date);
+            snackStore.setData(data);
+        } catch (error) {
+            console.log("Failed to refresh daily summary", error);
+        } finally {
+            setRefreshing(false);
+        }
+    }, [snackStore.date, nutritionistSelected?.link?.idNutritionist]);
 
     const handleResetMeals = async () => {
         snackStore.setLoading(true);
@@ -342,10 +355,20 @@ export default function HomePage() {
 
     return (
         <PageContainer style={{ paddingTop: insets.top || 16 }}>
-            {snackStore.loading ? (
+            {snackStore.loading && !refreshing ? (
                 <LoadingPageComponent />
             ) : (
-                <ScrollView showsVerticalScrollIndicator={false}>
+                <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={[Colors.color.green]}
+                            tintColor={colorScheme === 'dark' ? '#FFFFFF' : '#000000'}
+                        />
+                    }
+                >
                     
                     {/* Header */}
                     <HeaderContainer>

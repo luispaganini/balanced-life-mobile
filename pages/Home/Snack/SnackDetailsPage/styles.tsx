@@ -133,15 +133,19 @@ export const FoodListContainer = styled.View`
     margin-bottom: 15px;
 `;
 
-export const FoodCard = styled.TouchableOpacity<{ theme: ColorSchemeName }>`
+export const FoodCard = styled.TouchableOpacity<{ theme: ColorSchemeName; $hasSubstitutions?: boolean }>`
     flex-direction: row;
     align-items: center;
     background-color: ${(props) => props.theme === 'light' ? Colors.light.card : Colors.dark.card};
     border-radius: 12px;
     padding: 12px 15px;
-    margin-bottom: 10px;
+    margin-bottom: ${(props) => props.$hasSubstitutions ? '0px' : '10px'};
     border-width: 1px;
     border-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
+    ${(props) => props.$hasSubstitutions && `
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+    `}
 `;
 
 export const FoodIconContainer = styled.View`
@@ -306,4 +310,179 @@ export const RemovePhotoBadge = styled.TouchableOpacity`
     align-items: center;
     justify-content: center;
     z-index: 10;
+`;
+
+export const ModalOverlay = styled.View`
+    flex: 1;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+`;
+
+export const ModalContent = styled.View<{ theme: ColorSchemeName }>`
+    width: 100%;
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.card : Colors.dark.card};
+    border-radius: 16px;
+    padding: 20px;
+    border-width: 1px;
+    border-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
+`;
+
+export const ModalHeader = styled.View`
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+`;
+
+export const ModalTitle = styled.Text<{ theme: ColorSchemeName }>`
+    font-size: 18px;
+    font-weight: bold;
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
+`;
+
+export const ModalSubtitle = styled.Text`
+    font-size: 14px;
+    color: ${Colors.color.grey};
+    margin-bottom: 20px;
+`;
+
+export const ModalOptionCard = styled.TouchableOpacity<{ theme: ColorSchemeName; selected: boolean }>`
+    flex-direction: row;
+    align-items: center;
+    background-color: ${(props) => props.theme === 'light' ? Colors.light.background : Colors.dark.background};
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-width: 1.5px;
+    border-color: ${(props) => props.selected ? Colors.color.green : (props.theme === 'light' ? Colors.light.border : Colors.dark.border)};
+`;
+
+export const ModalOptionRadio = styled.View<{ selected: boolean }>`
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: ${(props) => props.selected ? Colors.color.green : Colors.color.grey};
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+`;
+
+export const ModalOptionRadioInner = styled.View`
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    background-color: ${Colors.color.green};
+`;
+
+export const ModalOptionTextColumn = styled.View`
+    flex: 1;
+`;
+
+export const ModalOptionName = styled.Text<{ theme: ColorSchemeName }>`
+    font-size: 15px;
+    font-weight: 600;
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
+    margin-bottom: 2px;
+`;
+
+export const ModalOptionDetails = styled.Text`
+    font-size: 13px;
+    color: ${Colors.color.grey};
+`;
+
+export const ModalOptionCalorie = styled.Text<{ theme: ColorSchemeName }>`
+    font-size: 15px;
+    font-weight: 700;
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
+`;
+
+export const ModalButtonGroup = styled.View`
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 15px;
+`;
+
+export const ModalCancelButton = styled.TouchableOpacity<{ theme: ColorSchemeName }>`
+    flex: 1;
+    border-width: 1px;
+    border-color: ${(props) => props.theme === 'light' ? Colors.light.border : Colors.dark.border};
+    border-radius: 12px;
+    padding: 14px;
+    align-items: center;
+    margin-right: 10px;
+`;
+
+export const ModalCancelButtonText = styled.Text<{ theme: ColorSchemeName }>`
+    font-size: 14px;
+    font-weight: bold;
+    color: ${(props) => props.theme === 'light' ? Colors.light.text : Colors.dark.text};
+`;
+
+export const ModalConfirmButton = styled.TouchableOpacity`
+    flex: 1;
+    background-color: ${Colors.color.green};
+    border-radius: 12px;
+    padding: 14px;
+    align-items: center;
+`;
+
+export const ModalConfirmButtonText = styled.Text`
+    font-size: 14px;
+    font-weight: bold;
+    color: ${Colors.color.white};
+`;
+
+export const SubstitutesContainer = styled.View`
+    margin-top: 0px;
+    margin-bottom: 10px;
+    padding-left: 0px;
+`;
+
+export const SubstituteRow = styled.TouchableOpacity<{ theme: ColorSchemeName; $isLast?: boolean }>`
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background-color: ${(props) => props.theme === 'light' ? '#16A34A0E' : '#16A34A25'};
+    padding: 12px 15px;
+    margin-bottom: 0px;
+    border-width: 1px;
+    border-top-width: 0px;
+    border-color: ${(props) => props.theme === 'light' ? '#16A34A33' : '#16A34A55'};
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: ${(props) => props.$isLast ? '12px' : '0px'};
+    border-bottom-right-radius: ${(props) => props.$isLast ? '12px' : '0px'};
+`;
+
+export const SubstituteLeft = styled.View`
+    flex-direction: row;
+    align-items: center;
+    flex: 1;
+`;
+
+export const SubstituteTextColumn = styled.View`
+    flex: 1;
+    margin-left: 8px;
+`;
+
+export const SubstituteNameText = styled.Text<{ theme: ColorSchemeName }>`
+    font-size: 13px;
+    font-weight: 600;
+    color: ${(props) => props.theme === 'light' ? '#16A34A' : '#4ADE80'};
+`;
+
+export const SubstituteDescText = styled.Text`
+    font-size: 11px;
+    color: ${Colors.color.grey};
+    margin-top: 1px;
+`;
+
+export const SubstituteCal = styled.Text<{ theme: ColorSchemeName }>`
+    font-size: 12px;
+    font-weight: 700;
+    color: ${(props) => props.theme === 'light' ? '#16A34A' : '#4ADE80'};
+    margin-right: 4px;
 `;
